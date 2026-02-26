@@ -15,7 +15,7 @@ const CNTutorial = () => {
     useEffect(() => {
         const fetchTopics = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/domains/topics/corecs?subject=CN&lessonType=theory');
+                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/domains/topics/corecs?subject=CN&lessonType=theory`);
                 if (res.data && res.data.length > 0) {
                     setTopic(res.data[0]);
                 }

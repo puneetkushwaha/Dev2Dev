@@ -87,7 +87,6 @@ const About = () => {
                     </Link>
                 </div>
                 <div className="nav-right">
-                    <Link to="/pricing" className="nav-item-v2">Pricing</Link>
                     <Link to="/register" className="btn-auth-nav">Initiate System</Link>
                 </div>
             </nav>

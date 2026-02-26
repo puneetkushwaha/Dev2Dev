@@ -20,7 +20,7 @@ const ResumeAnalyzer = () => {
                 const formData = new FormData();
                 formData.append('file', selectedFile);
 
-                const parseResponse = await fetch('http://localhost:8000/parse_resume', {
+                const parseResponse = await fetch(`${import.meta.env.VITE_AI_URL || 'http://localhost:8000'}/parse_resume`, {
                     method: 'POST',
                     body: formData,
                 });
@@ -29,7 +29,7 @@ const ResumeAnalyzer = () => {
                 const { text } = await parseResponse.json();
 
                 // 2. Analyze Resume
-                const analyzeResponse = await fetch('http://localhost:8000/analyze_resume', {
+                const analyzeResponse = await fetch(`${import.meta.env.VITE_AI_URL || 'http://localhost:8000'}/analyze_resume`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ resume_text: text, target_role: targetRole }),

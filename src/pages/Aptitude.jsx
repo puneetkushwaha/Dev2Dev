@@ -11,7 +11,7 @@ const Aptitude = () => {
     useEffect(() => {
         const fetchTopics = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/domains/topics/name/Aptitude & Reasoning');
+                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/domains/topics/name/Aptitude & Reasoning`);
                 const qt = res.data.filter(t => t.topicGroup === 'Quantitative Aptitude');
                 // Format them to match the UI expectation
                 const formatted = qt.map(t => ({

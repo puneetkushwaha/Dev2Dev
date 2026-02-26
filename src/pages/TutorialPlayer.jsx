@@ -15,7 +15,7 @@ const TutorialPlayer = () => {
         const fetchTutorial = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const res = await axios.get(`http://localhost:5000/api/tutorials/${id}`, {
+                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/tutorials/${id}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setTutorial(res.data);
@@ -45,7 +45,7 @@ const TutorialPlayer = () => {
     const handleCheckout = async () => {
         try {
             const token = localStorage.getItem('token');
-            const { data: order } = await axios.post('http://localhost:5000/api/payment/create-order',
+            const { data: order } = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payment/create-order`,
                 { type: 'tutorial', tutorialId: tutorial._id, amount: tutorial.price },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -59,7 +59,7 @@ const TutorialPlayer = () => {
                 order_id: order.id,
                 handler: async function (response) {
                     try {
-                        const verifyRes = await axios.post('http://localhost:5000/api/payment/verify-payment', {
+                        const verifyRes = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payment/verify-payment`, {
                             razorpay_order_id: response.razorpay_order_id,
                             razorpay_payment_id: response.razorpay_payment_id,
                             razorpay_signature: response.razorpay_signature,

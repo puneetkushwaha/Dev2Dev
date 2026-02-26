@@ -15,7 +15,7 @@ const InterviewPrep = () => {
         const fetchData = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const res = await axios.get('http://localhost:5000/api/users/mock-stats', {
+                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/mock-stats`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setStats(res.data || {});
@@ -87,7 +87,7 @@ const InterviewPrep = () => {
     const handleCheckout = async () => {
         try {
             const token = localStorage.getItem('token');
-            const { data: order } = await axios.post('http://localhost:5000/api/payment/create-order',
+            const { data: order } = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payment/create-order`,
                 { type: 'pro', amount: 49 }, // e.g. 49 INR for Pro
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -101,7 +101,7 @@ const InterviewPrep = () => {
                 order_id: order.id,
                 handler: async function (response) {
                     try {
-                        const verifyRes = await axios.post('http://localhost:5000/api/payment/verify-payment', {
+                        const verifyRes = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payment/verify-payment`, {
                             razorpay_order_id: response.razorpay_order_id,
                             razorpay_payment_id: response.razorpay_payment_id,
                             razorpay_signature: response.razorpay_signature,

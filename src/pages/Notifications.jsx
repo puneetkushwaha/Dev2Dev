@@ -10,7 +10,7 @@ const Notifications = () => {
     useEffect(() => {
         const fetchNotifications = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/notifications', {
+                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/notifications`, {
                     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                 });
                 setNotifications(res.data);

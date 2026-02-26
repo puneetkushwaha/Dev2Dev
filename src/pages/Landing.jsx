@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { PlayCircle, Code2, UserCheck, FileText, Search } from 'lucide-react';
+import './Landing.css';
 
 const Landing = () => {
-    const [domain, setDomain] = useState('');
-    const [roadmap, setRoadmap] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const [domain, setDomain] = React.useState('');
+    const [roadmap, setRoadmap] = React.useState(null);
+    const [loading, setLoading] = React.useState(false);
     const navigate = useNavigate();
     const isAuthenticated = !!localStorage.getItem('token');
 
@@ -15,7 +16,7 @@ const Landing = () => {
         if (domain.trim()) {
             setLoading(true);
             try {
-                const response = await fetch('http://127.0.0.1:8000/generate_roadmap', {
+                const response = await fetch(`${import.meta.env.VITE_AI_URL || 'http://127.0.0.1:8000'}/generate_roadmap`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ domain })

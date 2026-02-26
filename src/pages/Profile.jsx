@@ -36,10 +36,10 @@ const Profile = () => {
 
             try {
                 const [profileRes, domainsRes] = await Promise.all([
-                    fetch('http://localhost:5000/api/users/profile', {
+                    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/profile`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     }),
-                    fetch('http://localhost:5000/api/domains')
+                    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/domains`)
                 ]);
 
                 if (profileRes.ok && domainsRes.ok) {
@@ -94,7 +94,7 @@ const Profile = () => {
         const token = localStorage.getItem('token');
 
         try {
-            const response = await fetch('http://localhost:5000/api/users/update-profile', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/update-profile`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -134,7 +134,7 @@ const Profile = () => {
     const handleDomainChange = async (domainName) => {
         const token = localStorage.getItem('token');
         try {
-            const response = await fetch('http://localhost:5000/api/users/select-domain', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/select-domain`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,

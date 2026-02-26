@@ -49,7 +49,7 @@ const ExamEngine = () => {
 
         const fetchExams = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/users/exams', {
+                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/exams`, {
                     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                 });
                 setAvailableExams(res.data);
@@ -146,7 +146,7 @@ const ExamEngine = () => {
         const token = localStorage.getItem('token');
         if (token) {
             try {
-                const response = await axios.post('http://localhost:5000/api/users/submit-exam', {
+                const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/submit-exam`, {
                     examName: activeExam.title,
                     answers: answers
                 }, {

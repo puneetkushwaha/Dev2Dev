@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, Play, Clock, ChevronRight, Zap, Target, Search, Filter, Lock } from 'lucide-react';
 import axios from 'axios';
+import './Tutorials.css';
 
 const Tutorials = () => {
     const navigate = useNavigate();
@@ -14,7 +15,7 @@ const Tutorials = () => {
         const fetchTutorials = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const res = await axios.get('http://localhost:5000/api/tutorials', {
+                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/tutorials`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setTutorials(res.data);

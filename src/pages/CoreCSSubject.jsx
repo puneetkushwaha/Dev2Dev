@@ -34,7 +34,7 @@ const CoreCSSubject = () => {
             try {
                 const token = localStorage.getItem('token');
                 if (!token) return;
-                const res = await axios.get('http://localhost:5000/api/users/profile', {
+                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/profile`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 setCompletedTopics(res.data.completedTopics || []);
@@ -58,7 +58,7 @@ const CoreCSSubject = () => {
         const fetchProblems = async () => {
             setLoading(true);
             try {
-                const res = await axios.get('http://localhost:5000/api/domains/topics/corecs');
+                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/domains/topics/corecs`);
                 const mappedProblems = res.data
                     .filter(t => t.topicGroup)
                     .map(topic => ({

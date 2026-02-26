@@ -20,7 +20,7 @@ const Navbar = () => {
             const token = localStorage.getItem('token');
             if (token) {
                 try {
-                    const res = await axios.get('http://localhost:5000/api/notifications', {
+                    const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/notifications`, {
                         headers: { Authorization: `Bearer ${token}` }
                     });
                     setNotificationCount(res.data.length);
