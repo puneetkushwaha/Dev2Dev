@@ -39,8 +39,8 @@ const Landing = () => {
     return (
         <div className="landing-container">
             <Helmet>
-                <title>Dev2Dev | Crack LeetCode & GFG Interviews with AI</title>
-                <meta name="description" content="The ultimate platform for Dev2DevD@D pioneers. Master DSA like LeetCode and GeeksForGeeks, generate roadmaps, and optimize your resume." />
+                <title>Dev2Dev | Master Industry-Standard DSA Challenges</title>
+                <meta name="description" content="The ultimate platform for Dev2DevD@D pioneers. Master DSA challenges aligned with top industry standards like LeetCode and GeeksForGeeks." />
             </Helmet>
             {/* Minimal Brand-Aligned Navbar - Cylinder Shape */}
             <nav className="minimal-nav">
@@ -70,7 +70,7 @@ const Landing = () => {
                     <div className="hero-left">
                         <h1 className="hero-title">
                             Build Your <span className="highlight-brand">Work.</span><br />
-                            Master <span className="highlight-brand">LeetCode & GFG.</span>
+                            Master <span className="highlight-brand">Standardized DSA.</span>
                         </h1>
                         <p className="hero-subtitle">
                             Dev2Dev is an ecosystem precision-engineered for the modern tech pioneer. Prepare with AI-driven benchmarks, practice with battle-tested GFG and LeetCode environments, and architect your own career path.
@@ -108,8 +108,8 @@ const Landing = () => {
                 <section id="features" className="features-section">
                     <div className="feature-box">
                         <div className="icon-wrapper"><Code2 size={24} /></div>
-                        <h3>DSA Practice (LeetCode/GFG)</h3>
-                        <p>Aggressive practice environment with GeeksForGeeks and LeetCode style problems for optimization.</p>
+                        <h3>Standardized DSA Practice</h3>
+                        <p>Aggressive practice environment with curated, industry-standard problems for technical optimization.</p>
                     </div>
                     <div className="feature-box">
                         <div className="icon-wrapper"><UserCheck size={24} /></div>

@@ -46,7 +46,7 @@ const Pricing = () => {
             period: 'Per Year',
             description: 'Crush the elite tech firm interviews with precision practice.',
             features: [
-                'Advanced LeetCode Patterns',
+                'Advanced Standardized Patterns',
                 'Complexity Analysis',
                 'FAANG Specific Content',
                 'Performance Benchmarking'
