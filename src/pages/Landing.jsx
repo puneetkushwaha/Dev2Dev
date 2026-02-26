@@ -1,4 +1,7 @@
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { PlayCircle, Code2, UserCheck, FileText, Search } from 'lucide-react';
 
 const Landing = () => {
     const [domain, setDomain] = useState('');
