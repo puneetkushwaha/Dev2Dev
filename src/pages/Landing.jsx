@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { PlayCircle, Code2, UserCheck, FileText, Search } from 'lucide-react';
+import { PlayCircle, Code2, UserCheck, FileText, Search, Linkedin, Twitter, MessageSquare, ExternalLink } from 'lucide-react';
 import './Landing.css';
 
 const Landing = () => {
@@ -187,27 +187,27 @@ const Landing = () => {
                             <li><Link to="/pricing">Pricing Plans</Link></li>
                             <li><a href="#features">DSA Practice</a></li>
                             <li><a href="#features">Mock Interviews</a></li>
-                            <li><a href="#">ATS Engine</a></li>
+                            <li><Link to="/resume">ATS Engine</Link></li>
                         </ul>
                     </div>
 
                     <div className="footer-col">
                         <h4>Resources</h4>
                         <ul className="footer-links-list">
-                            <li><a href="#">Documentation</a></li>
-                            <li><a href="#">Protocols</a></li>
-                            <li><a href="#">Security</a></li>
-                            <li><a href="#">System Status</a></li>
+                            <li><a href="https://pportfolio-rho.vercel.app/">Personal Portfolio</a></li>
+                            <li><Link to="/onboarding">Roadmap Generator</Link></li>
+                            <li><Link to="/tutorials">Video Tutorials</Link></li>
+                            <li><Link to="/interview-prep">Interview Protocols</Link></li>
                         </ul>
                     </div>
 
                     <div className="footer-col">
-                        <h4>Community</h4>
+                        <h4>Connect</h4>
                         <ul className="footer-links-list">
-                            <li><a href="#">Discord</a></li>
-                            <li><a href="#">GitHub</a></li>
-                            <li><a href="#">LinkedIn</a></li>
+                            <li><a href="https://www.linkedin.com/in/puneettkushwaha/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+                            <li><a href="https://whatsapp.com/channel/0029VbC2eE14o7qJbehrrY1j" target="_blank" rel="noopener noreferrer">WhatsApp Channel</a></li>
                             <li><Link to="/about">About Us</Link></li>
+                            <li><a href="mailto:contact@dev2dev.online">Contact Email</a></li>
                         </ul>
                     </div>
                 </div>
@@ -215,10 +215,18 @@ const Landing = () => {
                 <div className="footer-bottom">
                     <p>© 2026 Dev2Dev Engine. Precision-engineered for Pioneers.</p>
                     <div className="footer-socials">
-                        <a href="#" className="footer-social-link">TW</a>
-                        <a href="#" className="footer-social-link">GH</a>
-                        <a href="#" className="footer-social-link">LI</a>
-                        <a href="#" className="footer-social-link">DC</a>
+                        <a href="https://www.linkedin.com/in/puneettkushwaha/" target="_blank" rel="noopener noreferrer" className="footer-social-link" title="LinkedIn">
+                            <Linkedin size={18} />
+                        </a>
+                        <a href="https://whatsapp.com/channel/0029VbC2eE14o7qJbehrrY1j" target="_blank" rel="noopener noreferrer" className="footer-social-link" title="WhatsApp Channel">
+                            <MessageSquare size={18} />
+                        </a>
+                        <a href="https://pportfolio-rho.vercel.app/" target="_blank" rel="noopener noreferrer" className="footer-social-link" title="Personal Portfolio">
+                            <ExternalLink size={18} />
+                        </a>
+                        <a href="https://x.com/" target="_blank" rel="noopener noreferrer" className="footer-social-link" title="X (Twitter)">
+                            <Twitter size={18} />
+                        </a>
                     </div>
                 </div>
             </footer>
