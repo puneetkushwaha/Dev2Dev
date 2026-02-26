@@ -113,7 +113,7 @@ const Learning = () => {
         const fetchDomainTopics = async () => {
             setTopicsLoading(true);
             try {
-                const domainsRes = await axios.get('http://localhost:5000/api/domains');
+                const domainsRes = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/domains`);
                 const domain = domainsRes.data.find(d => d.name === selectedDomain);
                 if (!domain) { setDbTopics([]); return; }
                 const topicsRes = await axios.get(
