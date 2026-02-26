@@ -98,7 +98,7 @@ const DomainSelection = () => {
         setAiLoading(true);
         try {
             const domainNames = availableDomains.map(d => d.name);
-            const res = await fetch(`${import.meta.env.VITE_AI_URL || 'http://localhost:8000'}/recommend_domain`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/recommend-domain`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

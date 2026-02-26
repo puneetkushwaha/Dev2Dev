@@ -220,7 +220,7 @@ const Learning = () => {
             }
 
             // 2. Fallback: call AI service if no stored content
-            const aiRes = await fetch(`${import.meta.env.VITE_AI_URL || 'http://localhost:8000'}/generate_lesson`, {
+            const aiRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/generate-lesson`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ domain, topic: topicTitle })
@@ -362,7 +362,7 @@ const Learning = () => {
         setChatMessages(prev => [...prev, { role: 'ai', text: '' }]);
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_AI_URL || 'http://localhost:8000'}/chat`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/ai-chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

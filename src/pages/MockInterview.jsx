@@ -226,7 +226,7 @@ const MockInterview = () => {
         formData.append('file', file);
 
         try {
-            const res = await axios.post(`${import.meta.env.VITE_AI_URL || 'http://localhost:8000'}/parse_resume`, formData);
+            const res = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/parse-resume`, formData);
             setResumeText(res.data.text);
         } catch (err) {
             setError('Failed to parse resume. Please try again.');
@@ -308,7 +308,7 @@ const MockInterview = () => {
 
         try {
             // Get AI Response from Python Backend
-            const response = await fetch(`${import.meta.env.VITE_AI_URL || 'http://localhost:8000'}/interview_chat`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/interview-chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -355,7 +355,7 @@ const MockInterview = () => {
         setStage('analysing');
         try {
             // 1. Get AI Evaluation from Python Service
-            const res = await axios.post(`${import.meta.env.VITE_AI_URL || 'http://localhost:8000'}/mock_interview_eval`, {
+            const res = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/mock-interview-eval`, {
                 domain: jobProfile,
                 role: jobProfile,
                 transcript: transcript
