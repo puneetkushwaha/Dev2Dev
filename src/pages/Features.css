@@ -1,0 +1,212 @@
+.features-container {
+    background-color: #08080A;
+    color: #FFFFFF;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+}
+
+/* Nav Reuse & Adjustment */
+.nav-brand-text {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-left: 0.8rem;
+}
+
+.features-header {
+    text-align: center;
+    padding: 6rem 1.5rem 4rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.features-header h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 4rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    letter-spacing: -2px;
+}
+
+.features-header .subtitle {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.6;
+}
+
+/* Flow Map Layout */
+.features-flow-map {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.feature-node {
+    display: flex;
+    align-items: center;
+    gap: 4rem;
+    width: 100%;
+    padding: 3rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 24px;
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.feature-node:hover {
+    transform: translateY(-5px);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.node-icon {
+    width: 100px;
+    height: 100px;
+    border: 2px solid;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.node-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    filter: blur(25px);
+    opacity: 0.15;
+    z-index: -1;
+}
+
+.node-content h2 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 800;
+}
+
+.node-content p {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.node-details {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.node-details li {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Connectors */
+.flow-connector {
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.connector-line {
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, rgba(168, 85, 247, 0.5), transparent);
+}
+
+.connector-arrow {
+    position: absolute;
+    bottom: -10px;
+    color: rgba(168, 85, 247, 0.5);
+    animation: bounceDown 2s infinite;
+}
+
+@keyframes bounceDown {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0);
+    }
+
+    40% {
+        transform: translateY(-10px);
+    }
+
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+/* Footer Section */
+.features-footer {
+    padding: 8rem 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.cta-box {
+    text-align: center;
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.05), rgba(99, 102, 241, 0.05));
+    border: 1px solid rgba(168, 85, 247, 0.1);
+    padding: 6rem 4rem;
+    border-radius: 40px;
+    max-width: 800px;
+    width: 100%;
+}
+
+.cta-icon {
+    color: var(--brand-purple);
+    margin-bottom: 2rem;
+}
+
+.cta-box h2 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    font-weight: 900;
+}
+
+.cta-box p {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.2rem;
+    margin-bottom: 3rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .feature-node {
+        flex-direction: column;
+        text-align: center;
+        gap: 2rem;
+        padding: 2rem;
+    }
+
+    .features-header h1 {
+        font-size: 2.8rem;
+    }
+
+    .node-details {
+        justify-content: center;
+    }
+}

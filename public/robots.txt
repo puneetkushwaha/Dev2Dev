@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Allow: /about
+Allow: /features
+Allow: /pricing
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /profile
+
+Sitemap: https://develevate.com/sitemap.xml

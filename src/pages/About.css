@@ -1,0 +1,301 @@
+.about-container {
+    background-color: #030305;
+    color: #FFFFFF;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+.star-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.gradient-blob {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    filter: blur(120px);
+    opacity: 0.15;
+    z-index: 0;
+    pointer-events: none;
+    border-radius: 50%;
+}
+
+.g1 {
+    background: var(--brand-purple);
+    top: -200px;
+    right: -200px;
+    animation: moveBlob 20s infinite alternate;
+}
+
+.g2 {
+    background: var(--brand-indigo);
+    bottom: -200px;
+    left: -200px;
+    animation: moveBlob 25s infinite alternate-reverse;
+}
+
+@keyframes moveBlob {
+    from {
+        transform: translate(0, 0);
+    }
+
+    to {
+        transform: translate(100px, 100px);
+    }
+}
+
+.text-gradient {
+    background: linear-gradient(90deg, var(--brand-purple), var(--brand-indigo));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Hero Section */
+.about-hero {
+    padding: 8rem 2rem 5rem;
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.hero-badge {
+    display: inline-block;
+    background: rgba(168, 85, 247, 0.1);
+    color: var(--brand-purple);
+    padding: 0.4rem 1.2rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.about-hero h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 4.5rem;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 2rem;
+    letter-spacing: -3px;
+}
+
+.hero-desc {
+    font-size: 1.3rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.6;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Core Grid */
+.about-core {
+    max-width: 1100px;
+    margin: 4rem auto;
+    padding: 0 2rem;
+}
+
+.core-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+}
+
+.core-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 3.5rem;
+    border-radius: 32px;
+    transition: transform 0.1s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    backdrop-filter: blur(20px);
+    transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transform-style: preserve-3d;
+    z-index: 1;
+}
+
+.core-card:hover {
+    border-color: rgba(168, 85, 247, 0.4);
+    box-shadow: 0 25px 50px -12px rgba(168, 85, 247, 0.2);
+}
+
+.card-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(99, 102, 241, 0.2));
+    color: var(--brand-purple);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    transform: translateZ(50px);
+}
+
+.core-card h3 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 1.2rem;
+    transform: translateZ(30px);
+}
+
+.core-card p {
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.8;
+    font-size: 1.1rem;
+    transform: translateZ(20px);
+}
+
+/* Steps Sequence */
+.how-to-use {
+    background: #0D0D0F;
+    padding: 8rem 2rem;
+    margin: 6rem 0;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 5rem;
+}
+
+.section-header h2 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 3rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+}
+
+.step-sequence {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.step-item {
+    display: flex;
+    gap: 3rem;
+    align-items: flex-start;
+}
+
+.step-num {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--brand-purple);
+    opacity: 0.4;
+    padding-top: 0.5rem;
+}
+
+.step-info h4 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: 0.8rem;
+}
+
+.step-info p {
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+/* Journey CTA */
+.start-journey {
+    padding: 6rem 2rem;
+}
+
+.journey-card {
+    background: linear-gradient(135deg, rgba(20, 20, 22, 1), rgba(10, 10, 12, 1));
+    border: 1px solid rgba(168, 85, 247, 0.15);
+    border-radius: 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 5rem;
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.journey-left h2 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 900;
+    margin-bottom: 2.5rem;
+    line-height: 1.2;
+}
+
+.journey-list {
+    list-style: none;
+    margin-bottom: 3rem;
+}
+
+.journey-list li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.list-icon {
+    color: #818cf8;
+}
+
+.btn-start-hero {
+    background: var(--brand-purple);
+    color: white;
+    padding: 1.2rem 3rem;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 1.1rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    transition: var(--transition-smooth);
+    box-shadow: 0 10px 30px rgba(168, 85, 247, 0.3);
+}
+
+.btn-start-hero:hover {
+    transform: translateY(-3px);
+    background: var(--brand-indigo);
+}
+
+.about-footer {
+    text-align: center;
+    padding: 4rem;
+    color: rgba(255, 255, 255, 0.2);
+    font-size: 0.85rem;
+}
+
+@media (max-width: 992px) {
+    .journey-card {
+        grid-template-columns: 1fr;
+        padding: 3rem;
+    }
+
+    .about-hero h1 {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .core-grid {
+        grid-template-columns: 1fr;
+    }
+}

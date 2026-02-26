@@ -1,0 +1,161 @@
+.pricing-page-container {
+    background-color: #050507;
+    color: #FFFFFF;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.pricing-hero {
+    padding: 8rem 2rem 5rem;
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.pricing-hero h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 4rem;
+    font-weight: 900;
+    margin-bottom: 2rem;
+    letter-spacing: -2px;
+}
+
+.hero-desc {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.6;
+}
+
+.pricing-grid-main {
+    max-width: 1200px;
+    margin: 0 auto 10rem;
+    padding: 0 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 3rem;
+}
+
+.pricing-card-v2 {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 4rem 3rem;
+    border-radius: 40px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(20px);
+}
+
+.pricing-card-v2:hover {
+    transform: translateY(-10px);
+    border-color: rgba(168, 85, 247, 0.3);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.pricing-card-v2.popular {
+    border: 1px solid var(--brand-purple);
+    background: linear-gradient(180deg, rgba(168, 85, 247, 0.05) 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+.popular-badge {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    background: var(--brand-purple);
+    color: white;
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.card-top h3 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.price-display {
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+.amount {
+    font-size: 4.5rem;
+    font-weight: 900;
+    font-family: 'Outfit', sans-serif;
+}
+
+.period {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 500;
+}
+
+.card-top p {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 3rem;
+}
+
+.feature-list-v2 {
+    list-style: none;
+    margin-bottom: 4rem;
+    flex-grow: 1;
+}
+
+.feature-list-v2 li {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    margin-bottom: 1.5rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.05rem;
+}
+
+.btn-tier-action {
+    padding: 1.4rem;
+    border-radius: 18px;
+    text-align: center;
+    color: white;
+    font-weight: 900;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    transition: transform 0.3s ease;
+    font-size: 1.1rem;
+}
+
+.btn-tier-action:hover {
+    transform: scale(1.02);
+}
+
+.simple-footer {
+    text-align: center;
+    padding: 6rem;
+    opacity: 0.2;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+@media (max-width: 768px) {
+    .pricing-hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .pricing-grid-main {
+        grid-template-columns: 1fr;
+    }
+}
