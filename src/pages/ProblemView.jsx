@@ -42,7 +42,36 @@ const ProblemView = () => {
                 setProblem(res.data);
                 const codingQ = res.data.questions?.find(q => q.type === 'coding') || res.data.questions?.[0];
                 if (codingQ) {
-                    setCode(codingQ.starterCode || selectedLang.boilerplate);
+                    const jsCode = codingQ.starterCode || LANGUAGES.find(l => l.id === 'javascript').boilerplate;
+
+                    if (codingQ?.starterCodes?.[selectedLang.id]) {
+                        setCode(codingQ.starterCodes[selectedLang.id]);
+                        return;
+                    }
+
+                    if (selectedLang.id === 'javascript') {
+                        setCode(jsCode);
+                        return;
+                    }
+
+                    // Smart Boilerplate Gen
+                    const funcMatch = jsCode.match(/var\s+(\w+)\s*=\s*function\s*\(([^)]*)\)/);
+                    const funcName = funcMatch ? funcMatch[1] : 'solution';
+                    const params = funcMatch ? funcMatch[2].trim() : 'input';
+
+                    let smartCode = selectedLang.boilerplate;
+
+                    if (selectedLang.id === 'python') {
+                        smartCode = `class Solution:\n    def ${funcName}(self, ${params}):\n        # Write your code here\n        pass`;
+                    } else if (selectedLang.id === 'cpp') {
+                        smartCode = `class Solution {\npublic:\n    // Update Return Type as needed\n    void ${funcName}(${params.split(',').map(p => 'auto ' + p.trim()).join(', ')}) {\n        \n    }\n};`;
+                    } else if (selectedLang.id === 'java') {
+                        smartCode = `class Solution {\n    public Object ${funcName}(${params.split(',').map(p => 'Object ' + p.trim()).join(', ')}) {\n        return null;\n    }\n}`;
+                    } else if (selectedLang.id === 'c') {
+                        smartCode = `// Update Return Type and types as needed\nvoid ${funcName}(${params.split(',').map(p => 'void* ' + p.trim()).join(', ')}) {\n    \n}`;
+                    }
+
+                    setCode(smartCode);
                 }
             } catch (err) {
                 console.error("Error fetching problem:", err);
@@ -57,15 +86,41 @@ const ProblemView = () => {
         setSelectedLang(lang);
         setShowLangMenu(false);
 
-        // Priority: Problem-specific starterCode -> Problem-specific starterCodes[lang] -> Generic boilerplate
         const codingQ = problem.questions?.find(q => q.type === 'coding') || problem.questions?.[0];
+        const jsCode = codingQ?.starterCode || LANGUAGES.find(l => l.id === 'javascript').boilerplate;
+
+        // Try to get problem-specific starter code from database
         if (codingQ?.starterCodes?.[lang.id]) {
             setCode(codingQ.starterCodes[lang.id]);
-        } else if (lang.id === 'javascript' && codingQ?.starterCode) {
-            setCode(codingQ.starterCode);
-        } else {
-            setCode(lang.boilerplate);
+            return;
         }
+
+        // Logic for JavaScript (Original/Seeded)
+        if (lang.id === 'javascript') {
+            setCode(jsCode);
+            return;
+        }
+
+        // --- Smart Boilerplate Generation Logic ---
+        // Try to extract function name and params from JS code
+        // Pattern: var someFunc = function(a, b) { ... }
+        const funcMatch = jsCode.match(/var\s+(\w+)\s*=\s*function\s*\(([^)]*)\)/);
+        const funcName = funcMatch ? funcMatch[1] : 'solution';
+        const params = funcMatch ? funcMatch[2].trim() : 'input';
+
+        let smartCode = lang.boilerplate;
+
+        if (lang.id === 'python') {
+            smartCode = `class Solution:\n    def ${funcName}(self, ${params}):\n        # Write your code here\n        pass`;
+        } else if (lang.id === 'cpp') {
+            smartCode = `class Solution {\npublic:\n    // Update Return Type as needed\n    void ${funcName}(${params.split(',').map(p => 'auto ' + p.trim()).join(', ')}) {\n        \n    }\n};`;
+        } else if (lang.id === 'java') {
+            smartCode = `class Solution {\n    public Object ${funcName}(${params.split(',').map(p => 'Object ' + p.trim()).join(', ')}) {\n        return null;\n    }\n}`;
+        } else if (lang.id === 'c') {
+            smartCode = `// Update Return Type and types as needed\nvoid ${funcName}(${params.split(',').map(p => 'void* ' + p.trim()).join(', ')}) {\n    \n}`;
+        }
+
+        setCode(smartCode);
     };
 
     if (loading) return (
