@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { UploadCloud, FileText, CheckCircle, AlertTriangle } from 'lucide-react';
+import './ResumeAnalyzer.css';
 
 const ResumeAnalyzer = () => {
     const [file, setFile] = useState(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [result, setResult] = useState(null);
-
     const [targetRole, setTargetRole] = useState('Software Engineer');
 
     const handleUpload = async (e) => {
@@ -16,7 +16,6 @@ const ResumeAnalyzer = () => {
             setResult(null);
 
             try {
-                // 1. Parse Resume
                 const formData = new FormData();
                 formData.append('file', selectedFile);
 
@@ -28,7 +27,6 @@ const ResumeAnalyzer = () => {
                 if (!parseResponse.ok) throw new Error('Failed to parse resume');
                 const { text } = await parseResponse.json();
 
-                // 2. Analyze Resume
                 const analyzeResponse = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/analyze-resume`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -37,11 +35,10 @@ const ResumeAnalyzer = () => {
 
                 if (!analyzeResponse.ok) throw new Error('Failed to analyze resume');
                 const analysisResult = await analyzeResponse.json();
-
                 setResult(analysisResult);
             } catch (error) {
                 console.error("Analysis Error:", error);
-                alert("Bhai, analysis fail ho gaya. Make sure background server (python main.py) chal raha hai.");
+                alert("Analysis failed. Please try again.");
             } finally {
                 setIsAnalyzing(false);
             }
@@ -49,7 +46,7 @@ const ResumeAnalyzer = () => {
     };
 
     return (
-        <div className="container animate-fade-in" style={{ padding: '2rem 1.5rem', maxWidth: '800px' }}>
+        <div className="resume-analyzer-container animate-fade-in">
             <h1 style={{ marginBottom: '1rem', textAlign: 'center' }}>AI Resume Analyzer</h1>
             <p className="text-muted" style={{ textAlign: 'center', marginBottom: '3rem' }}>
                 Upload your resume to get instant feedback from Dev2Dev AI, identify skill gaps, and generate customized interview questions.
@@ -80,7 +77,7 @@ const ResumeAnalyzer = () => {
                         </p>
                     </div>
 
-                    <div className="card glass-panel flex-center" style={{ flexDirection: 'column', height: '300px', border: '2px dashed var(--border-color)', background: 'rgba(99, 102, 241, 0.05)' }}>
+                    <div className="card glass-panel flex-center" style={{ flexDirection: 'column', height: '300px', border: '2px dashed var(--border-color)', background: 'rgba(99, 102, 241, 0.05)', textAlign: 'center' }}>
                         <UploadCloud size={64} color="var(--accent-primary)" style={{ marginBottom: '1rem' }} />
                         <h3 style={{ marginBottom: '0.5rem' }}>Drag & Drop your Resume</h3>
                         <p className="text-muted" style={{ marginBottom: '1.5rem' }}>PDF, DOCX formats supported</p>
@@ -93,7 +90,7 @@ const ResumeAnalyzer = () => {
             )}
 
             {isAnalyzing && (
-                <div className="card glass-panel flex-center" style={{ flexDirection: 'column', height: '300px' }}>
+                <div className="card glass-panel flex-center" style={{ flexDirection: 'column', height: '300px', textAlign: 'center' }}>
                     <div style={{ width: '48px', height: '48px', border: '4px solid rgba(99, 102, 241, 0.2)', borderTopColor: 'var(--accent-primary)', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: '1.5rem' }} />
                     <h3>Dev2Dev AI is Analyzing your Resume...</h3>
                     <p className="text-muted">Evaluating keywords, format, and experience.</p>
@@ -101,17 +98,17 @@ const ResumeAnalyzer = () => {
             )}
 
             {result && (
-                <div className="card glass-panel">
-                    <div className="flex-between" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '1.5rem', marginBottom: '1.5rem' }}>
-                        <div className="flex-center" style={{ gap: '1rem' }}>
+                <div className="card glass-panel analysis-results-card">
+                    <div className="analysis-header">
+                        <div className="analysis-header-left">
                             <FileText size={32} color="var(--accent-primary)" />
                             <div>
-                                <h3>{file?.name}</h3>
+                                <h3 style={{ margin: 0 }}>{file?.name}</h3>
                                 <span className="text-muted">Analysis Complete</span>
                             </div>
                         </div>
-                        <div style={{ textAlign: 'right' }}>
-                            <div style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--success)' }}>{result.score}/100</div>
+                        <div className="analysis-score-container">
+                            <div className="analysis-score">{result.score}/100</div>
                             <span className="text-muted">ATS Compatibility</span>
                         </div>
                     </div>

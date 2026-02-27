@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mic, MicOff, Video, VideoOff, Square, FileText, CheckCircle, UploadCloud, User, Briefcase, Loader2, Play, Volume2, ArrowRight, AlertCircle, RefreshCw, Cpu, AlertTriangle, BookOpen, Zap, Lock, Trophy } from 'lucide-react';
 import axios from 'axios';
+import './MockInterview.css';
 
 const Waveform = ({ active, color }) => (
     <div style={{ display: 'flex', alignItems: 'center', gap: '3px', height: '30px' }}>
@@ -410,8 +411,8 @@ const MockInterview = () => {
     // ── Setup Stage UI ──
     if (stage === 'setup') {
         return (
-            <div className="container animate-fade-in" style={{ padding: '3rem 1.5rem', maxWidth: '1200px', margin: '0 auto' }}>
-                <div style={{ marginBottom: '3.5rem', borderLeft: '4px solid var(--accent-primary)', paddingLeft: '1.5rem' }}>
+            <div className="interview-container animate-fade-in">
+                <div className="setup-header">
                     <h1 style={{
                         fontSize: '2.5rem',
                         fontWeight: 850,
@@ -577,11 +578,11 @@ const MockInterview = () => {
     // ── Interviewing Stage UI ──
     if (stage === 'interviewing') {
         return (
-            <div className="container animate-fade-in" style={{ padding: '2rem 1.5rem', height: 'calc(100vh - 100px)', display: 'flex', gap: '2rem' }}>
+            <div className="interview-container interviewing-layout animate-fade-in">
 
                 {/* Visualizer & Camera Section */}
-                <div style={{ flex: '2', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                    <div className="glass-panel" style={{ flex: 1, position: 'relative', overflow: 'hidden', background: '#09090e', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <div className="video-section">
+                    <div className="video-feed-container">
 
                         {isCameraOn ? (
                             <div style={{ width: '100%', height: '100%', position: 'relative' }}>
@@ -633,17 +634,7 @@ const MockInterview = () => {
                     </div>
 
                     {/* Control Bar - Glassmorphic */}
-                    <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '1.25rem 2rem',
-                        background: 'rgba(15, 15, 25, 0.7)',
-                        backdropFilter: 'blur(20px)',
-                        borderRadius: '24px',
-                        border: '1px solid rgba(255,255,255,0.08)',
-                        boxShadow: '0 20px 50px rgba(0,0,0,0.3)'
-                    }}>
+                    <div className="control-bar">
                         <div style={{ display: 'flex', gap: '1.25rem' }}>
                             <button
                                 className={`mic-btn ${isRecording ? 'recording' : ''}`}
@@ -707,7 +698,7 @@ const MockInterview = () => {
                 </div>
 
                 {/* AI & Transcript Sidebar */}
-                <div style={{ flex: '1.2', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                <div className="transcript-sidebar">
 
                     {/* AI Profile Card */}
                     <div className="card glass-panel" style={{ padding: '1.5rem', background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1))', border: '1px solid rgba(255,255,255,0.1)' }}>
@@ -806,7 +797,7 @@ const MockInterview = () => {
                     position: 'relative',
                     overflow: 'hidden'
                 }}>
-                    <div className="flex-between" style={{ position: 'relative', zIndex: 2 }}>
+                    <div className="results-header-flex">
                         <div style={{ textAlign: 'left' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
                                 <div style={{ background: 'rgba(129, 140, 248, 0.1)', color: '#818cf8', padding: '0.5rem 1rem', borderRadius: '50px', fontSize: '0.75rem', fontWeight: 800, border: '1px solid rgba(129, 140, 248, 0.2)' }}>
@@ -833,7 +824,7 @@ const MockInterview = () => {
                 </div>
 
                 {/* Score Dashboard */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+                <div className="results-grid">
                     <StatRing value={analysis.score} label="Overall Match" color="var(--accent-primary)" icon={CheckCircle} />
                     <StatRing value={analysis.technical} label="Technical Depth" color="#818cf8" icon={Briefcase} />
                     <StatRing value={analysis.communication} label="Communication" color="#c084fc" icon={Volume2} />
@@ -858,7 +849,7 @@ const MockInterview = () => {
                     </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '2rem', marginBottom: '3rem' }}>
+                <div className="results-detail-grid">
                     <div className="card glass-panel" style={{ padding: '2.5rem', background: 'rgba(255,255,255,0.01)', position: 'relative' }}>
                         <div style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', opacity: 0.1 }}>
                             <Zap size={60} />

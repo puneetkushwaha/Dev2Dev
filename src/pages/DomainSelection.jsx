@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Brain, Sparkles, Clock, Target, ArrowRight, Loader2, Code2, Database, Shield, Cloud, Smartphone, Cpu } from 'lucide-react';
+import './DomainSelection.css';
 
 // Helper to map domain names to specific icons and gradient colors
 const getDomainStyling = (name) => {
@@ -142,7 +143,7 @@ const DomainSelection = () => {
                 <div style={styles.bgPattern}></div>
             </div>
 
-            <div style={{ maxWidth: '1400px', margin: '0 auto', position: 'relative', zIndex: 10, animation: 'slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1)' }}>
+            <div className="domain-selection-container">
 
                 {/* Hero Header */}
                 <div style={{ textAlign: 'center', marginBottom: '5rem', marginTop: '2rem' }}>
@@ -183,10 +184,10 @@ const DomainSelection = () => {
                     </p>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(350px, 400px) 1fr', gap: '4rem', alignItems: 'start' }}>
+                <div className="domain-selection-layout">
 
                     {/* Sidebar: Premium AI Box */}
-                    <div style={{
+                    <div className="domain-sidebar" style={{
                         position: 'sticky',
                         top: '2rem',
                         padding: '3px',
@@ -285,7 +286,7 @@ const DomainSelection = () => {
                             </span>
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2.5rem' }}>
+                        <div className="domain-cards-grid">
                             {Array.isArray(domains) && domains.map((domain) => {
                                 const style = getDomainStyling(domain.name);
 

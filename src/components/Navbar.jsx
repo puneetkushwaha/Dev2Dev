@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Search, Bell, User, LogOut, Code2, BookOpen, UserCircle, Settings, FileText, BarChart2, Briefcase, PlusCircle, MonitorPlay, ChevronDown } from 'lucide-react';
+import { Search, Bell, User, LogOut, Code2, BookOpen, UserCircle, Settings, FileText, BarChart2, Briefcase, PlusCircle, MonitorPlay, ChevronDown, Menu, X } from 'lucide-react';
 import axios from 'axios';
 
 const Navbar = () => {
@@ -11,6 +11,7 @@ const Navbar = () => {
     const [scrolled, setScrolled] = useState(false);
     const [showAptitudeDropdown, setShowAptitudeDropdown] = useState(false);
     const [notificationCount, setNotificationCount] = useState(0);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     // Add refs for dropdown closing logic
     const aptitudeRef = useRef(null);
@@ -48,6 +49,11 @@ const Navbar = () => {
         };
     }, []);
 
+    // Close mobile menu on route change
+    useEffect(() => {
+        setMobileMenuOpen(false);
+    }, [location.pathname]);
+
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('userRole');
@@ -60,103 +66,88 @@ const Navbar = () => {
     return (
         <div style={{ position: 'sticky', top: 0, zIndex: 1000, width: '100%', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
             {/* Main Navbar */}
-            <nav style={{
-                padding: '0 3rem',
-                height: '56px',
-                background: 'rgba(18, 18, 18, 0.95)',
-                backdropFilter: 'blur(12px)',
-                borderBottom: '1px solid rgba(255,255,255,0.05)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between'
-            }}>
+            <nav className="navbar-main">
                 {/* Left Section: Logo + Search */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
+                <div className="nav-left">
+                    <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                        {mobileMenuOpen ? <X size={24} color="#fff" /> : <Menu size={24} color="#fff" />}
+                    </button>
+
                     <Link to="/dashboard" className="flex-center" style={{ textDecoration: 'none', color: '#fff', gap: '0.75rem', minWidth: 'fit-content' }}>
                         <img src="/logo.png" alt="Dev2Dev" style={{ height: '28px', filter: 'brightness(1.1) drop-shadow(0 0 10px rgba(99,102,241,0.3))' }} />
+                        <span className="logo-text hide-mobile">Dev2Dev</span>
                     </Link>
 
-                    <div style={{ position: 'relative', width: '250px', display: 'flex', alignItems: 'center' }}>
+                    <div className="nav-search-container hide-mobile">
                         <input
                             type="text"
                             placeholder="Search"
-                            style={{
-                                width: '100%',
-                                background: 'rgba(255,255,255,0.03)',
-                                border: '1px solid rgba(255,255,255,0.1)',
-                                borderRadius: '50px',
-                                padding: '0.45rem 1rem 0.45rem 2.8rem',
-                                color: '#fff',
-                                fontSize: '0.9rem',
-                                outline: 'none',
-                                transition: '0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-                            }}
                             className="nav-search-input"
                         />
-                        <Search size={18} style={{ position: 'absolute', left: '12px', color: '#fff' }} />
+                        <Search size={18} className="search-icon" />
                     </div>
                 </div>
 
-                {/* Center Section: Links */}
-                <div className="flex-center nav-links-container" style={{ gap: '2rem', flex: 1.5, justifyContent: 'center' }}>
-                    <div className="nav-item-wrapper">
-                        <Link to="/exams" className={`gfg-nav-link ${currentPath === '/exams' ? 'active' : ''}`}>
-                            Practice
-                        </Link>
-                    </div>
-                    <div className="nav-item-wrapper">
-                        <Link to="/learning" className={`gfg-nav-link ${currentPath === '/learning' ? 'active' : ''}`}>
-                            Courses
-                        </Link>
-                    </div>
-                    <div className="nav-item-wrapper">
-                        <Link to="/tutorials" className={`gfg-nav-link ${currentPath === '/tutorials' ? 'active' : ''}`}>
-                            Tutorials
-                        </Link>
-                    </div>
-                    <Link to="/interview" className={`gfg-nav-link ${currentPath === '/interview' ? 'active' : ''}`}>Mock Interviews</Link>
-                    <Link to="/resume" className={`gfg-nav-link ${currentPath === '/resume' ? 'active' : ''}`}>Resume Analyzer</Link>
+                {/* Center Section: Links (Desktop) */}
+                <div className="nav-center hide-mobile">
+                    <Link to="/exams" className={`gfg-nav-link ${currentPath === '/exams' ? 'active' : ''}`}>Practice</Link>
+                    <Link to="/learning" className={`gfg-nav-link ${currentPath === '/learning' ? 'active' : ''}`}>Courses</Link>
+                    <Link to="/tutorials" className={`gfg-nav-link ${currentPath === '/tutorials' ? 'active' : ''}`}>Tutorials</Link>
+                    <Link to="/interview" className={`gfg-nav-link ${currentPath === '/interview' ? 'active' : ''}`}>Interviews</Link>
+                    <Link to="/resume" className={`gfg-nav-link ${currentPath === '/resume' ? 'active' : ''}`}>Resume</Link>
                 </div>
 
                 {/* Right Section: Actions */}
-                <div className="flex-center" style={{ gap: '1.5rem', flex: 1, justifyContent: 'flex-end' }}>
-                    <Link to="/notifications" style={{ position: 'relative', cursor: 'pointer', opacity: 0.8, display: 'flex', alignItems: 'center' }}>
+                <div className="nav-right">
+                    <Link to="/notifications" className="nav-action-icon">
                         <Bell size={20} color="#fff" />
                         {notificationCount > 0 && (
-                            <span style={{
-                                position: 'absolute',
-                                top: '-6px',
-                                right: '-8px',
-                                background: '#ef4444',
-                                color: 'white',
-                                fontSize: '0.65rem',
-                                fontWeight: 'bold',
-                                borderRadius: '50px',
-                                padding: '1px 5px',
-                                minWidth: '16px',
-                                textAlign: 'center',
-                                boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
-                            }}>
+                            <span className="notification-badge">
                                 {notificationCount > 99 ? '99+' : notificationCount}
                             </span>
                         )}
                     </Link>
 
-                    <div style={{ width: '1px', height: '24px', background: 'rgba(255,255,255,0.1)' }}></div>
+                    <div className="action-divider hide-mobile"></div>
 
-                    {userRole === 'admin' && <Link to="/admin" className="admin-pill" style={{ textDecoration: 'none' }}>Admin</Link>}
+                    {userRole === 'admin' && <Link to="/admin" className="admin-pill hide-mobile">Admin</Link>}
 
                     <Link to="/profile" className={`nav-profile-circle ${currentPath === '/profile' ? 'active' : ''}`}>
                         <User size={20} color="#fff" />
                     </Link>
-                    <button onClick={handleLogout} className="nav-logout-btn" title="Logout">
+                    <button onClick={handleLogout} className="nav-logout-btn hide-mobile" title="Logout">
                         <LogOut size={20} color="#ef4444" />
                     </button>
                 </div>
             </nav>
 
-            {/* Sub-Navbar (Domain Categories) - Sleeker look */}
-            <div className="sub-nav-categories">
+            {/* Mobile Menu Overlay */}
+            {mobileMenuOpen && (
+                <div className="mobile-menu-overlay animate-fade-in">
+                    <div className="mobile-menu-content">
+                        <div className="mobile-search">
+                            <input type="text" placeholder="Search problems..." className="mobile-search-input" />
+                            <Search size={18} className="mobile-search-icon" />
+                        </div>
+                        <div className="mobile-links">
+                            <Link to="/dashboard">Dashboard</Link>
+                            <Link to="/exams">Practice Problems</Link>
+                            <Link to="/learning">Learning Courses</Link>
+                            <Link to="/tutorials">Video Tutorials</Link>
+                            <Link to="/interview">Mock Interviews</Link>
+                            <Link to="/resume">Resume Analyzer</Link>
+                            <Link to="/profile">My Profile</Link>
+                            {userRole === 'admin' && <Link to="/admin">Admin Panel</Link>}
+                            <button onClick={handleLogout} className="mobile-logout-btn">
+                                <LogOut size={18} /> Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Sub-Navbar (Domain Categories) */}
+            <div className="sub-nav-categories scroll-x">
                 {['DSA', 'Interview Prep', 'OOPS', 'Operating Systems', 'DBMS', 'Computer Networks', 'Aptitude'].map(item => (
                     item === 'Aptitude' ? (
                         <div
@@ -172,36 +163,9 @@ const Navbar = () => {
                             {/* Dropdown Menu */}
                             {showAptitudeDropdown && (
                                 <div className="aptitude-dropdown nav-animate-fade-in">
-                                    <div
-                                        className="aptitude-dropdown-item"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setShowAptitudeDropdown(false);
-                                            navigate('/aptitude');
-                                        }}
-                                    >
-                                        Quantitative Aptitude
-                                    </div>
-                                    <div
-                                        className="aptitude-dropdown-item"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setShowAptitudeDropdown(false);
-                                            navigate('/logical-reasoning');
-                                        }}
-                                    >
-                                        Logical Reasoning
-                                    </div>
-                                    <div
-                                        className="aptitude-dropdown-item"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setShowAptitudeDropdown(false);
-                                            navigate('/verbal-ability');
-                                        }}
-                                    >
-                                        Verbal Ability
-                                    </div>
+                                    <div className="aptitude-dropdown-item" onClick={(e) => { e.stopPropagation(); setShowAptitudeDropdown(false); navigate('/aptitude'); }}>Quantitative Aptitude</div>
+                                    <div className="aptitude-dropdown-item" onClick={(e) => { e.stopPropagation(); setShowAptitudeDropdown(false); navigate('/logical-reasoning'); }}>Logical Reasoning</div>
+                                    <div className="aptitude-dropdown-item" onClick={(e) => { e.stopPropagation(); setShowAptitudeDropdown(false); navigate('/verbal-ability'); }}>Verbal Ability</div>
                                 </div>
                             )}
                         </div>
@@ -210,21 +174,8 @@ const Navbar = () => {
                             key={item}
                             className="sub-nav-item"
                             onClick={() => {
-                                if (item === 'DSA') {
-                                    navigate('/problems');
-                                } else if (item === 'Interview Prep') {
-                                    navigate('/interview-prep');
-                                } else if (item === 'OOPS') {
-                                    navigate('/oops');
-                                } else if (item === 'Operating Systems') {
-                                    navigate('/os-tutorial');
-                                } else if (item === 'DBMS') {
-                                    navigate('/dbms-tutorial');
-                                } else if (item === 'Computer Networks') {
-                                    navigate('/cn-tutorial');
-                                } else {
-                                    navigate('/learning');
-                                }
+                                const routes = { 'DSA': '/problems', 'Interview Prep': '/interview-prep', 'OOPS': '/oops', 'Operating Systems': '/os-tutorial', 'DBMS': '/dbms-tutorial', 'Computer Networks': '/cn-tutorial' };
+                                navigate(routes[item] || '/learning');
                             }}
                         >
                             {item}
@@ -234,147 +185,136 @@ const Navbar = () => {
             </div>
 
             <style>{`
-                .nav-search-input:focus {
-                    background: rgba(255,255,255,0.07) !important;
-                    border-color: #6366f1 !important;
-                    box-shadow: 0 0 15px rgba(99,102,241,0.2);
-                    width: 320px !important;
-                }
-                .gfg-nav-link {
-                    text-decoration: none;
-                    color: #fff;
-                    font-size: 1rem;
-                    font-weight: 600;
-                    transition: all 0.3s ease;
+                .navbar-main {
+                    padding: 0 1.5rem;
+                    height: 56px;
+                    background: rgba(18, 18, 18, 0.98);
+                    backdrop-filter: blur(12px);
+                    border-bottom: 1px solid rgba(255,255,255,0.05);
                     display: flex;
                     align-items: center;
-                    gap: 0.4rem;
-                    padding: 0.5rem 0;
+                    justify-content: space-between;
                 }
-                .gfg-nav-link:hover {
-                    color: #fff;
-                }
-                .gfg-nav-link .chevron {
-                    opacity: 0.3;
-                    transition: 0.3s;
-                }
-                .gfg-nav-link:hover .chevron {
-                    opacity: 1;
-                    transform: translateY(2px);
-                }
-                .gfg-nav-link.active {
-                    color: #fff;
-                    text-shadow: 0 0 10px rgba(99,102,241,0.5);
-                }
-                .admin-pill {
-                    background: rgba(99,102,241,0.1);
-                    color: #6366f1;
-                    padding: 0.4rem 1rem;
-                    border-radius: 20px;
-                    text-decoration: none;
-                    font-weight: 700;
-                    font-size: 0.85rem;
-                    border: 1px solid rgba(99,102,241,0.2);
-                    transition: 0.3s;
-                }
-                .admin-pill:hover {
-                    background: #6366f1;
-                    color: #fff;
-                }
-                .nav-profile-circle {
-                    width: 38px;
-                    height: 38px;
-                    border-radius: 50%;
-                    background: rgba(255,255,255,0.05);
+                .nav-left, .nav-center, .nav-right {
                     display: flex;
                     align-items: center;
-                    justify-content: center;
-                    border: 1px solid rgba(255,255,255,0.1);
-                    transition: 0.3s;
-                    text-decoration: none;
+                    gap: 1.5rem;
+                    flex: 1;
                 }
-                .nav-profile-circle:hover {
-                    border-color: #6366f1;
-                    background: rgba(99,102,241,0.1);
-                    transform: translateY(-2px);
-                }
-                .nav-logout-btn {
-                    background: transparent;
+                .nav-left { flex: 1.2; }
+                .nav-center { flex: 2; justify-content: center; }
+                .nav-right { flex: 1.2; justify-content: flex-end; }
+
+                .mobile-menu-toggle {
+                    display: none;
+                    background: none;
                     border: none;
                     cursor: pointer;
+                    padding: 4px;
+                }
+
+                .nav-search-container {
+                    position: relative;
+                    width: 200px;
+                    transition: all 0.3s ease;
+                }
+                .nav-search-input {
+                    width: 100%;
+                    background: rgba(255,255,255,0.03);
+                    border: 1px solid rgba(255,255,255,0.1);
+                    border-radius: 50px;
+                    padding: 0.4rem 1rem 0.4rem 2.5rem;
+                    color: #fff;
+                    font-size: 0.85rem;
+                    outline: none;
+                }
+                .nav-search-container:focus-within { width: 280px; }
+                .search-icon { position: absolute; left: 10px; color: rgba(255,255,255,0.4); }
+
+                .gfg-nav-link {
+                    text-decoration: none;
+                    color: rgba(255,255,255,0.7);
+                    font-size: 0.9rem;
+                    font-weight: 500;
+                    padding: 0.5rem 0;
+                    position: relative;
+                }
+                .gfg-nav-link.active { color: #818cf8; }
+                .gfg-nav-link::after {
+                    content: '';
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 0;
+                    height: 2px;
+                    background: #818cf8;
+                    transition: width 0.3s;
+                }
+                .gfg-nav-link:hover::after, .gfg-nav-link.active::after { width: 100%; }
+
+                .mobile-menu-overlay {
+                    position: fixed;
+                    top: 56px;
+                    left: 0;
+                    width: 100%;
+                    height: calc(100vh - 56px);
+                    background: rgba(10, 10, 15, 0.98);
+                    z-index: 999;
+                    padding: 1.5rem;
+                }
+                .mobile-links { display: flex; flexDirection: column; gap: 1rem; margin-top: 2rem; }
+                .mobile-links a {
+                    color: #fff;
+                    text-decoration: none;
+                    font-size: 1.25rem;
+                    font-weight: 600;
+                    padding: 0.75rem;
+                    background: rgba(255,255,255,0.03);
+                    border-radius: 12px;
+                }
+                .mobile-logout-btn {
+                    margin-top: 1rem;
+                    color: #ef4444;
+                    background: rgba(239, 68, 68, 0.1);
+                    border: none;
+                    padding: 1rem;
+                    border-radius: 12px;
+                    font-weight: 700;
                     display: flex;
                     align-items: center;
-                    padding: 8px;
-                    border-radius: 50%;
-                    transition: 0.3s;
+                    gap: 0.5rem;
+                    justify-content: center;
                 }
-                .nav-logout-btn:hover {
-                    background: rgba(239, 68, 68, 0.1);
-                    transform: scale(1.1);
+
+                @media (max-width: 1024px) {
+                    .nav-center, .nav-search-container { display: none; }
+                    .mobile-menu-toggle { display: block; }
                 }
+
+                @media (max-width: 768px) {
+                    .navbar-main { padding: 0 1rem; }
+                    .nav-right { gap: 1rem; }
+                    .sub-nav-categories { gap: 1.5rem; justify-content: flex-start; padding: 0 1rem; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+                }
+
+                .scroll-x::-webkit-scrollbar { display: none; }
+                .scroll-x { scrollbar-width: none; }
+
                 .sub-nav-categories {
                     height: 45px;
-                    background: #181818;
+                    background: #000;
                     border-bottom: 1px solid rgba(255,255,255,0.05);
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    gap: 2.5rem;
-                    gap: 2.5rem;
-                    overflow: visible; /* Changed from overflow-x: auto so dropdown can pop out */
-                    scrollbar-width: none;
+                    gap: 2rem;
                 }
-                .sub-nav-categories::-webkit-scrollbar { display: none; }
-                .sub-nav-item {
-                    position: relative;
-                    color: rgba(255,255,255,0.7);
-                    font-size: 0.85rem;
-                    font-weight: 600;
-                    cursor: pointer;
-                    white-space: nowrap;
-                    transition: all 0.3s ease;
-                }
-                .sub-nav-item:hover {
-                    color: #fff;
-                    transform: translateY(-1px);
-                    text-shadow: 0 0 10px rgba(255,255,255,0.3);
-                }
+                .sub-nav-item { color: rgba(255,255,255,0.6); font-size: 0.8rem; font-weight: 600; cursor: pointer; white-space: nowrap; }
+                .sub-nav-item:hover { color: #fff; }
 
-                /* Aptitude Dropdown Custom CSS */
-                .aptitude-dropdown {
-                    position: absolute;
-                    top: 100%;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    margin-top: 10px;
-                    width: 220px;
-                    background: #1e1e1e;
-                    border: 1px solid rgba(255,255,255,0.1);
-                    border-radius: 12px;
-                    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-                    padding: 0.5rem 0;
-                    z-index: 1000;
-                }
-                .aptitude-dropdown-item {
-                    padding: 0.75rem 1.25rem;
-                    color: rgba(255,255,255,0.8);
-                    font-size: 0.9rem;
-                    cursor: pointer;
-                    transition: 0.2s ease;
-                    text-align: left;
-                    font-weight: 500;
-                }
-                .aptitude-dropdown-item:hover {
-                    background: rgba(255,255,255,0.05);
-                    color: #fff;
-                }
-                @keyframes navFadeIn {
-                    from { opacity: 0; transform: translate(-50%, -10px); }
-                    to { opacity: 1; transform: translate(-50%, 0); }
-                }
-                .nav-animate-fade-in {
-                    animation: navFadeIn 0.2s ease-out forwards;
-                }
+                .aptitude-dropdown { position: absolute; top: 100%; left: 0; background: #1e1e1e; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; width: 180px; z-index: 1001; }
+                .aptitude-dropdown-item { padding: 0.8rem 1rem; color: #fff; font-size: 0.85rem; }
+                .aptitude-dropdown-item:hover { background: rgba(255,255,255,0.05); }
             `}</style>
         </div>
     );

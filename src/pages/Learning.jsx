@@ -11,6 +11,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { domainDetails, defaultDomain } from '../data/domainData';
 import axios from 'axios';
+import './Learning.css';
 
 const Learning = () => {
     // --- State Management ---
@@ -454,9 +455,9 @@ const Learning = () => {
     // --- Sub-Renderers ---
 
     const renderProWorkspace = () => (
-        <main style={{ flex: 1, display: 'flex', overflow: 'hidden', padding: '0.5rem', gap: '0.5rem', background: '#1a1a1a' }}>
+        <main className="learning-workspace">
             {/* Left Pane: Content (Description, Editorial, etc.) */}
-            <div style={{ width: '45%', display: 'flex', flexDirection: 'column', background: '#282828', borderRadius: '8px', overflow: 'hidden' }}>
+            <div className="pane-left">
                 <div style={{ background: '#333', padding: '0 1rem', display: 'flex', gap: '1rem', height: '40px', alignItems: 'center' }}>
                     {[
                         { id: 'description', label: 'Description', icon: <FileText size={14} /> },
@@ -558,9 +559,9 @@ const Learning = () => {
             </div>
 
             {/* Right Pane: Editor & Console */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div className="pane-right">
                 {/* Editor Section */}
-                <div style={{ flex: 1, background: '#282828', borderRadius: '8px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                <div className="editor-section">
                     <div style={{ background: '#333', height: '40px', display: 'flex', alignItems: 'center', padding: '0 1rem', justifyContent: 'space-between' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#818cf8', fontSize: '0.85rem', fontWeight: 600 }}>
                             <Code size={14} /> JavaScript <ChevronDown size={14} />
@@ -622,7 +623,7 @@ const Learning = () => {
 
                 {/* Console Section */}
                 {showConsole && (
-                    <div style={{ height: '240px', background: '#282828', borderRadius: '8px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                    <div className="console-section">
                         <div style={{ background: '#333', padding: '0 1rem', display: 'flex', gap: '1rem', height: '40px', alignItems: 'center' }}>
                             <div
                                 onClick={() => setProBottomTab('testcase')}

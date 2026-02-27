@@ -50,6 +50,19 @@ body {
     transition: var(--transition-smooth);
 }
 
+@media (max-width: 768px) {
+    .minimal-nav {
+        padding: 0.5rem 1rem;
+        margin: 1rem;
+        top: 1rem;
+        border-radius: 30px;
+    }
+
+    .nav-center {
+        display: none !important;
+    }
+}
+
 .nav-left img {
     height: 32px;
     /* Scaled down logo */
@@ -143,6 +156,7 @@ body {
 .hero-actions {
     display: flex;
     gap: 1.2rem;
+    flex-wrap: wrap;
 }
 
 .btn-brand-primary {
@@ -192,7 +206,8 @@ body {
     background: #0D0D0F;
     border: 1px solid var(--border-glass);
     border-radius: 12px;
-    width: 480px;
+    width: 100%;
+    max-width: 480px;
     height: 300px;
     box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(168, 85, 247, 0.1);
     position: relative;
@@ -200,6 +215,19 @@ body {
     transform: rotateX(10deg) rotateY(-15deg);
     transition: var(--transition-smooth);
     will-change: transform;
+}
+
+@media (max-width: 768px) {
+    .landing-terminal {
+        transform: none !important;
+        height: auto;
+        min-height: 200px;
+    }
+
+    .terminal-body {
+        padding: 1rem;
+        font-size: 0.8rem;
+    }
 }
 
 .landing-terminal:hover {
@@ -360,6 +388,19 @@ body {
     padding: 0.5rem;
     border-radius: 14px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+    .search-input-group {
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 1rem;
+    }
+
+    .btn-architect {
+        width: 100%;
+    }
 }
 
 .search-input-group input {

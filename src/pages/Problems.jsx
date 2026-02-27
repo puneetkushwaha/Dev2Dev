@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Filter, Book, Zap, Clock, CheckCircle2, Trophy, Lock, ArrowLeftRight, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Tag, Building2, HelpCircle } from 'lucide-react';
 import axios from 'axios';
+import './Problems.css';
 
 const Problems = () => {
     const [problems, setProblems] = useState([]);
@@ -125,18 +126,9 @@ const Problems = () => {
     });
 
     return (
-        <div className="problems-container" style={{ display: 'flex', minHeight: 'calc(100vh - 56px)', background: '#0a0a0a', color: '#fff', fontFamily: 'Inter, sans-serif' }}>
+        <div className="problems-container">
             {/* Sidebar */}
-            <aside style={{
-                width: '260px',
-                borderRight: '1px solid rgba(255,255,255,0.08)',
-                padding: '2rem 1.25rem',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.5rem',
-                background: 'rgba(255,255,255,0.01)',
-                backdropFilter: 'blur(10px)'
-            }}>
+            <aside className="problems-sidebar">
                 <div style={{ padding: '0 1rem', marginBottom: '1.5rem', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Navigation</div>
                 {[
                     { icon: <Book size={18} />, label: 'Library', active: true },
@@ -186,20 +178,13 @@ const Problems = () => {
             </aside>
 
             {/* Main Content Area */}
-            <div style={{ flex: 1, display: 'flex', justifyContent: 'center', overflowY: 'auto' }}>
-                <main style={{
-                    flex: 1,
-                    maxWidth: '1200px',
-                    padding: '3rem 2rem',
-                    width: '100%',
-                    display: 'flex',
-                    flexDirection: 'column'
-                }}>
+            <div className="problems-main-area">
+                <main className="problems-content">
                     {/* Header Toolbar */}
                     <header style={{ marginBottom: '3rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+                        <div className="header-toolbar-top" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
                             <h1 style={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.02em' }}>Problem Set</h1>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', padding: '0.75rem 1.25rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                            <div className="points-solved-container" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', padding: '0.75rem 1.25rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
                                 <div style={{ textAlign: 'center' }}>
                                     <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', fontWeight: 600, marginBottom: '0.2rem' }}>Solved</div>
                                     <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#818cf8' }}>
@@ -423,8 +408,8 @@ const Problems = () => {
                     </div>
 
                     {/* Problem Table */}
-                    <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)', overflow: 'hidden' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                    <div className="problem-table-container">
+                        <table className="problem-table">
                             <thead>
                                 <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.3)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                     <th style={{ padding: '1.25rem 2rem', fontWeight: 600, width: '60px' }}>#</th>

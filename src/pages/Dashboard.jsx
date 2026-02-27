@@ -135,7 +135,7 @@ const Dashboard = () => {
                             <button onClick={() => navigate('/onboarding')} style={{ background: 'transparent', border: 'none', color: 'var(--gfg-brand)', fontWeight: 'bold', cursor: 'pointer' }}>Explore All <ChevronRight size={16} /></button>
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2.5rem' }}>
+                        <div className="dashboard-grid">
                             {domains.slice(0, 4).map(domain => (
                                 <div key={domain._id} className="course-card" onClick={() => navigate(`/domain/${domain.name}`)}>
                                     <div className="course-img">

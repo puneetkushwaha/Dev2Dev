@@ -1,0 +1,85 @@
+/* Problems.css - Responsive Data Grid & Sidebar */
+
+.problems-container {
+    display: flex;
+    min-height: calc(100vh - 56px);
+    background: #0a0a0a;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+}
+
+.problems-sidebar {
+    width: 260px;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 2rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.01);
+    backdrop-filter: blur(10px);
+    flex-shrink: 0;
+}
+
+.problems-main-area {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    overflow-y: auto;
+}
+
+.problems-content {
+    flex: 1;
+    max-width: 1200px;
+    padding: 3rem 2rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.problem-table-container {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    overflow-x: auto;
+    /* Enable horizontal scroll for table on mobile */
+}
+
+.problem-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    min-width: 600px;
+    /* Ensure table doesn't get too squashed */
+}
+
+@media (max-width: 1024px) {
+    .problems-sidebar {
+        display: none;
+        /* Hide sidebar on tablet/mobile to focus on content */
+    }
+
+    .problems-content {
+        padding: 2rem 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .problems-content {
+        padding: 1.5rem 1rem;
+    }
+
+    .problems-content h1 {
+        font-size: 1.5rem !important;
+    }
+
+    .header-toolbar-top {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1.5rem;
+    }
+
+    .points-solved-container {
+        width: 100%;
+        justify-content: space-between;
+    }
+}

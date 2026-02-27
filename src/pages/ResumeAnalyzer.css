@@ -1,0 +1,54 @@
+.resume-analyzer-container {
+    padding: 2rem 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.analysis-results-card {
+    padding: 2rem;
+}
+
+.analysis-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.analysis-header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.analysis-score-container {
+    text-align: right;
+}
+
+.analysis-score {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--success);
+}
+
+@media (max-width: 600px) {
+    .analysis-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
+
+    .analysis-score-container {
+        text-align: left;
+    }
+
+    .resume-analyzer-container h1 {
+        font-size: 1.8rem;
+    }
+
+    .resume-analyzer-container .card {
+        padding: 1.5rem !important;
+    }
+}
