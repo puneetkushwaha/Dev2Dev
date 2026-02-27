@@ -622,9 +622,9 @@ const ProblemView = () => {
                             ))}
                         </div>
 
-                        <div style={{ flex: 1, overflowY: 'auto', padding: '1.25rem', fontFamily: '"Fira Code", monospace' }}>
+                        <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem 1.25rem', fontFamily: '"Fira Code", monospace' }}>
                             {activeBottomTab === 'Testcase' && (
-                                <div style={{ color: 'rgba(255,255,255,0.7)', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                                <div style={{ color: 'rgba(255,255,255,0.7)', height: '100%', display: 'flex', flexDirection: 'column', paddingTop: '0.5rem' }}>
                                     {q?.testCases?.length > 0 ? (
                                         <>
                                             {/* Case Toggles */}
