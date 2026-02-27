@@ -9,20 +9,22 @@
 
 .loader-content {
     position: relative;
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .loader-logo {
-    width: 50px;
-    z-index: 2;
+    width: 55px;
+    z-index: 10;
     animation: pulse-logo 2s infinite ease-in-out;
+    filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.6));
 }
 
+/* Outer glowing ring */
 .loader-spinner {
     position: absolute;
     top: 0;
@@ -32,47 +34,98 @@
     border-radius: 50%;
     border: 3px solid transparent;
     border-top-color: #3b82f6;
-    /* Blue */
-    border-right-color: #8b5cf6;
-    /* Purple */
-    animation: spin-loader 1.5s linear infinite;
+    border-bottom-color: #8b5cf6;
+    animation: spin-loader-outer 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
     z-index: 1;
+    filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.4));
 }
 
-.loader-text {
-    font-size: 1.2rem;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+/* Inner counter-rotating ring */
+.loader-content::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    border-radius: 50%;
+    border: 2px dashed rgba(139, 92, 246, 0.5);
+    animation: spin-loader-inner 2.5s linear infinite;
+    z-index: 2;
+}
+
+/* Base glowing background for the logo */
+.loader-content::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, rgba(0, 0, 0, 0) 70%);
+    border-radius: 50%;
+    z-index: 0;
     animation: pulse-logo 2s infinite ease-in-out;
 }
 
-@keyframes spin-loader {
+.loader-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine-text 3s linear infinite;
+    opacity: 0.9;
+}
+
+@keyframes spin-loader-outer {
     0% {
-        transform: rotate(0deg);
+        transform: rotate(0deg) scale(1);
+    }
+
+    50% {
+        transform: rotate(180deg) scale(1.05);
     }
 
     100% {
+        transform: rotate(360deg) scale(1);
+    }
+}
+
+@keyframes spin-loader-inner {
+    0% {
         transform: rotate(360deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
     }
 }
 
 @keyframes pulse-logo {
     0% {
         transform: scale(0.95);
-        opacity: 0.8;
+        opacity: 0.9;
     }
 
     50% {
-        transform: scale(1.05);
+        transform: scale(1.08);
         opacity: 1;
     }
 
     100% {
         transform: scale(0.95);
-        opacity: 0.8;
+        opacity: 0.9;
+    }
+}
+
+@keyframes shine-text {
+    to {
+        background-position: 200% center;
     }
 }
