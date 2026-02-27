@@ -14,8 +14,8 @@ const LANGUAGES = [
     { id: 'javascript', name: 'JavaScript', icon: 'JS', boilerplate: '/**\n * @param {any} input\n * @return {any}\n */\nvar solution = function(input) {\n     \n       \n    };' },
     { id: 'python', name: 'Python3', icon: 'PY', boilerplate: 'class Solution:\n    def solve(self, input):\n        \n        pass' },
     { id: 'java', name: 'Java', icon: 'JV', boilerplate: 'class Solution {\n    public Object solve(Object input) {\n         \n           \n        }\n}' },
-    { id: 'cpp', name: 'C++', icon: 'C++', boilerplate: '#include <iostream>\n#include <vector>\n#include <string>\n\nusing namespace std;\n\nclass Solution {\npublic:\n    void solve(auto input) {\n         \n           \n    }\n};' },
-    { id: 'c', name: 'C', icon: 'C', boilerplate: '#include <stdio.h>\n#include <stdlib.h>\n\nvoid solve(void* input) {\n     \n       \n    }' }
+    { id: 'cpp', name: 'C++', icon: 'C++', boilerplate: '#include <iostream>\n#include <vector>\n#include <string>\n\nusing namespace std;\n\nclass Solution {\npublic:\n    void solve() {\n         \n           \n    }\n};' },
+    { id: 'c', name: 'C', icon: 'C', boilerplate: '#include <stdio.h>\n#include <stdlib.h>\n#include <stdbool.h>\n\nvoid solve() {\n     \n       \n    }' }
 ];
 
 const MockAssessment = () => {
