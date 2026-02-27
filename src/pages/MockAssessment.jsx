@@ -444,19 +444,46 @@ const MockAssessment = () => {
                     <div style={{ height: '35%', background: '#fff', borderTop: '1px solid #e0e0e0', display: 'flex', flexDirection: 'column' }}>
 
                         <div style={{ display: 'flex', background: '#fafafa', borderBottom: '1px solid #e0e0e0', padding: '0 8px', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <div style={{ display: 'flex' }}>
-                                {['Testcase', 'Test Result'].map(tab => (
-                                    <button key={tab} onClick={() => setActiveBottomTab(tab)}
-                                        style={{
-                                            padding: '0.6rem 1rem', background: activeBottomTab === tab ? '#fff' : 'transparent',
-                                            color: activeBottomTab === tab ? '#333' : '#888', border: 'none',
-                                            borderTop: '2px solid transparent',
-                                            borderBottom: activeBottomTab === tab ? '2px solid #818cf8' : 'none',
-                                            fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer'
-                                        }}>
-                                        {tab}
-                                    </button>
-                                ))}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <div style={{ display: 'flex' }}>
+                                    {['Testcase', 'Test Result'].map(tab => (
+                                        <button key={tab} onClick={() => setActiveBottomTab(tab)}
+                                            style={{
+                                                padding: '0.6rem 1rem', background: activeBottomTab === tab ? '#fff' : 'transparent',
+                                                color: activeBottomTab === tab ? '#333' : '#888', border: 'none',
+                                                borderTop: '2px solid transparent',
+                                                borderBottom: activeBottomTab === tab ? '2px solid #818cf8' : 'none',
+                                                fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer'
+                                            }}>
+                                            {tab}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {activeBottomTab === 'Testcase' && currentQ?.testCases?.length > 0 && (
+                                    <div style={{ display: 'flex', gap: '4px', paddingLeft: '12px', borderLeft: '1px solid #eee', marginLeft: '4px' }}>
+                                        {currentQ.testCases.map((_, idx) => (
+                                            <button
+                                                key={idx}
+                                                onClick={() => setActiveTestCaseTab(idx)}
+                                                style={{
+                                                    padding: '2px 10px',
+                                                    background: activeTestCaseTab === idx ? '#eff6ff' : 'transparent',
+                                                    color: activeTestCaseTab === idx ? '#818cf8' : '#6b7280',
+                                                    border: '1px solid',
+                                                    borderColor: activeTestCaseTab === idx ? '#818cf8' : 'transparent',
+                                                    borderRadius: '4px',
+                                                    fontSize: '0.75rem',
+                                                    fontWeight: 600,
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.2s'
+                                                }}
+                                            >
+                                                Case {idx + 1}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', paddingRight: '0.5rem' }}>
                                 <span style={{ fontSize: '0.85rem', color: '#888' }}>Console</span>
@@ -469,35 +496,13 @@ const MockAssessment = () => {
                                 <div style={{ color: '#444', height: '100%', display: 'flex', flexDirection: 'column' }}>
                                     {currentQ?.testCases?.length > 0 ? (
                                         <div style={{ marginBottom: '1.5rem' }}>
-                                            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-                                                {currentQ.testCases.map((_, idx) => (
-                                                    <button
-                                                        key={idx}
-                                                        onClick={() => setActiveTestCaseTab(idx)}
-                                                        style={{
-                                                            padding: '0.35rem 0.9rem',
-                                                            background: activeTestCaseTab === idx ? '#eff6ff' : 'transparent',
-                                                            color: activeTestCaseTab === idx ? '#818cf8' : '#888',
-                                                            border: '1px solid',
-                                                            borderColor: activeTestCaseTab === idx ? '#818cf8' : 'transparent',
-                                                            borderRadius: '6px',
-                                                            fontSize: '0.8rem',
-                                                            fontWeight: 600,
-                                                            cursor: 'pointer',
-                                                            transition: 'all 0.2s'
-                                                        }}
-                                                    >
-                                                        Case {idx + 1}
-                                                    </button>
-                                                ))}
-                                            </div>
                                             <div style={{ fontSize: '0.85rem' }}>
-                                                <div style={{ color: '#888', marginBottom: '0.4rem', fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase' }}>Input</div>
-                                                <div style={{ background: '#f8f9fa', padding: '0.8rem', borderRadius: '8px', border: '1px solid #e5e7eb', marginBottom: '1rem', color: '#1a1a1a' }}>
+                                                <div style={{ color: '#888', marginBottom: '0.6rem', fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Input</div>
+                                                <div style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '8px', border: '1px solid #e5e7eb', marginBottom: '1.5rem', color: '#1a1a1a', fontFamily: 'inherit' }}>
                                                     {currentQ.testCases[activeTestCaseTab]?.input || 'No input provided'}
                                                 </div>
-                                                <div style={{ color: '#888', marginBottom: '0.4rem', fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase' }}>Expected Output</div>
-                                                <div style={{ background: '#f8f9fa', padding: '0.8rem', borderRadius: '8px', border: '1px solid #e5e7eb', color: '#1a1a1a' }}>
+                                                <div style={{ color: '#888', marginBottom: '0.6rem', fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Expected Output</div>
+                                                <div style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '8px', border: '1px solid #e5e7eb', color: '#1a1a1a', fontFamily: 'inherit' }}>
                                                     {currentQ.testCases[activeTestCaseTab]?.expected || 'No expected output'}
                                                 </div>
                                             </div>
