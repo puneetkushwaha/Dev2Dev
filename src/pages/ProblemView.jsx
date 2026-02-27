@@ -56,9 +56,16 @@ const ProblemView = () => {
     const handleLangChange = (lang) => {
         setSelectedLang(lang);
         setShowLangMenu(false);
-        // If we have a problem and it has starter code for the specific language, we should use it.
-        // For now, we use boilerplate if not explicitly provided.
-        setCode(lang.boilerplate);
+
+        // Priority: Problem-specific starterCode -> Problem-specific starterCodes[lang] -> Generic boilerplate
+        const codingQ = problem.questions?.find(q => q.type === 'coding') || problem.questions?.[0];
+        if (codingQ?.starterCodes?.[lang.id]) {
+            setCode(codingQ.starterCodes[lang.id]);
+        } else if (lang.id === 'javascript' && codingQ?.starterCode) {
+            setCode(codingQ.starterCode);
+        } else {
+            setCode(lang.boilerplate);
+        }
     };
 
     if (loading) return (
