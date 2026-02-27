@@ -34,15 +34,45 @@ const ProblemView = () => {
     const [showHints, setShowHints] = useState(false);
     const [showTags, setShowTags] = useState(false);
 
+    const getCodingQuestion = () => {
+        if (!problem) return null;
+
+        // If it's a Topic
+        if (problem.content) {
+            return {
+                ...problem.content,
+                title: problem.title,
+                isTopic: true,
+                _id: problem._id
+            };
+        }
+
+        // If it's an Exam
+        const codingQ = problem.questions?.find(q => q.type === 'coding') || problem.questions?.[0];
+        return codingQ ? { ...codingQ, isExam: true } : null;
+    };
+
+    const q = getCodingQuestion();
+
     useEffect(() => {
         const fetchProblem = async () => {
             try {
                 const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/problems/${id}`, {
                     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                 });
-                setProblem(res.data);
+
+                const data = res.data;
+                setProblem(data);
                 setActiveTestCaseTab(0);
-                const codingQ = res.data.questions?.find(q => q.type === 'coding') || res.data.questions?.[0];
+
+                // Normalize for initial code load
+                let codingQ;
+                if (data.content) {
+                    codingQ = data.content;
+                } else {
+                    codingQ = data.questions?.find(q => q.type === 'coding') || data.questions?.[0];
+                }
+
                 if (codingQ) {
                     const jsCode = codingQ.starterCode || LANGUAGES.find(l => l.id === 'javascript').boilerplate;
 
@@ -90,7 +120,13 @@ const ProblemView = () => {
         setSelectedLang(lang);
         setShowLangMenu(false);
 
-        const codingQ = problem.questions?.find(q => q.type === 'coding') || problem.questions?.[0];
+        let codingQ;
+        if (problem.content) {
+            codingQ = problem.content;
+        } else {
+            codingQ = problem.questions?.find(q => q.type === 'coding') || problem.questions?.[0];
+        }
+
         const jsCode = codingQ?.starterCode || LANGUAGES.find(l => l.id === 'javascript').boilerplate;
 
         // 1. Try to get problem-specific starter code from database
@@ -106,8 +142,6 @@ const ProblemView = () => {
         }
 
         // --- 3. Smart Boilerplate Generation Logic (Fallback) ---
-        // Try to extract function name and params from JS code
-        // Pattern: var someFunc = function(a, b) { ... }
         const funcMatch = jsCode.match(/var\s+(\w+)\s*=\s*function\s*\(([^)]*)\)/);
         const funcName = funcMatch ? funcMatch[1] : 'solution';
         const params = funcMatch ? funcMatch[2].trim() : 'input';
@@ -134,9 +168,6 @@ const ProblemView = () => {
     );
 
     if (!problem) return <div style={{ color: '#fff', textAlign: 'center', padding: '4rem' }}>Problem not found.</div>;
-
-    const codingQIndex = problem.questions?.findIndex(q => q.type === 'coding');
-    const q = codingQIndex !== -1 ? problem.questions[codingQIndex] : problem.questions[0];
 
     const handleSubmit = async (isRun = false) => {
         if (isRun) setRunning(true);
@@ -599,17 +630,18 @@ const ProblemView = () => {
                                                         key={idx}
                                                         onClick={() => setActiveTestCaseTab(idx)}
                                                         style={{
-                                                            padding: '0.5rem 1rem',
-                                                            background: activeTestCaseTab === idx ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.03)',
+                                                            padding: '0.6rem 1.25rem',
+                                                            background: activeTestCaseTab === idx ? '#373737' : 'rgba(255,255,255,0.03)',
                                                             color: activeTestCaseTab === idx ? '#fff' : 'rgba(255,255,255,0.4)',
                                                             border: '1px solid',
-                                                            borderColor: activeTestCaseTab === idx ? 'rgba(255,255,255,0.2)' : 'transparent',
-                                                            borderRadius: '8px',
-                                                            fontSize: '0.8rem',
+                                                            borderColor: activeTestCaseTab === idx ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)',
+                                                            borderRadius: '10px',
+                                                            fontSize: '0.85rem',
                                                             fontWeight: 600,
                                                             cursor: 'pointer',
                                                             whiteSpace: 'nowrap',
-                                                            transition: '0.2s'
+                                                            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                                                            boxShadow: activeTestCaseTab === idx ? '0 4px 12px rgba(0,0,0,0.2)' : 'none'
                                                         }}
                                                     >
                                                         Case {idx + 1}
