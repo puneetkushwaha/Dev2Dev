@@ -121,23 +121,34 @@ const Navbar = () => {
                 </div>
             </nav>
 
-            {/* Mobile Menu Overlay */}
             {mobileMenuOpen && (
-                <div className="mobile-menu-overlay animate-fade-in">
+                <div className="mobile-menu-overlay">
                     <div className="mobile-menu-content">
+                        <div className="mobile-menu-header">
+                            <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <img src="/logo.png" alt="Dev2Dev" style={{ height: '24px' }} />
+                                <span style={{ color: '#fff', fontWeight: 800, fontSize: '1.2rem', letterSpacing: '1px' }}>DEV</span>
+                            </Link>
+                            <button
+                                onClick={() => setMobileMenuOpen(false)}
+                                style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', padding: '0.5rem', color: '#fff', cursor: 'pointer' }}
+                            >
+                                <X size={24} />
+                            </button>
+                        </div>
+
                         <div className="mobile-search">
                             <input type="text" placeholder="Search problems..." className="mobile-search-input" />
                             <Search size={18} className="mobile-search-icon" />
                         </div>
                         <div className="mobile-links">
-                            <Link to="/dashboard">Dashboard</Link>
-                            <Link to="/exams">Practice Problems</Link>
-                            <Link to="/learning">Learning Courses</Link>
-                            <Link to="/tutorials">Video Tutorials</Link>
-                            <Link to="/interview">Mock Interviews</Link>
-                            <Link to="/resume">Resume Analyzer</Link>
-                            <Link to="/profile">My Profile</Link>
-                            {userRole === 'admin' && <Link to="/admin">Admin Panel</Link>}
+                            <Link to="/dashboard"><span>Dashboard</span> <MonitorPlay size={18} opacity={0.5} /></Link>
+                            <Link to="/exams"><span>Practice Problems</span> <Code2 size={18} opacity={0.5} /></Link>
+                            <Link to="/learning"><span>Learning Courses</span> <BookOpen size={18} opacity={0.5} /></Link>
+                            <Link to="/interview"><span>Mock Interviews</span> <Briefcase size={18} opacity={0.5} /></Link>
+                            <Link to="/resume"><span>Resume Analyzer</span> <FileText size={18} opacity={0.5} /></Link>
+                            <Link to="/profile"><span>My Profile</span> <UserCircle size={18} opacity={0.5} /></Link>
+                            {userRole === 'admin' && <Link to="/admin"><span>Admin Panel</span> <Settings size={18} opacity={0.5} /></Link>}
                             <button onClick={handleLogout} className="mobile-logout-btn">
                                 <LogOut size={18} /> Logout
                             </button>
@@ -254,36 +265,99 @@ const Navbar = () => {
 
                 .mobile-menu-overlay {
                     position: fixed;
-                    top: 56px;
+                    top: 0;
                     left: 0;
                     width: 100%;
-                    height: calc(100vh - 56px);
-                    background: rgba(10, 10, 15, 0.98);
-                    z-index: 999;
-                    padding: 1.5rem;
+                    height: 100vh;
+                    background: rgba(10, 10, 15, 0.95);
+                    backdrop-filter: blur(20px);
+                    z-index: 2000;
+                    padding: 2rem;
+                    display: flex;
+                    flex-direction: column;
+                    animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
                 }
-                .mobile-links { display: flex; flexDirection: column; gap: 1rem; margin-top: 2rem; }
-                .mobile-links a {
-                    color: #fff;
-                    text-decoration: none;
-                    font-size: 1.25rem;
-                    font-weight: 600;
-                    padding: 0.75rem;
-                    background: rgba(255,255,255,0.03);
+                
+                .mobile-menu-content {
+                    width: 100%;
+                    max-width: 500px;
+                    margin: 0 auto;
+                }
+
+                .mobile-menu-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 3rem;
+                }
+
+                .mobile-search {
+                    position: relative;
+                    margin-bottom: 2rem;
+                }
+                .mobile-search-input {
+                    width: 100%;
+                    background: rgba(255,255,255,0.05);
+                    border: 1px solid rgba(255,255,255,0.1);
                     border-radius: 12px;
+                    padding: 1rem 1rem 1rem 3rem;
+                    color: #fff;
+                    font-size: 1rem;
+                    outline: none;
+                }
+                .mobile-search-icon {
+                    position: absolute;
+                    left: 1rem;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    color: rgba(255,255,255,0.4);
+                }
+
+                .mobile-links { 
+                    display: flex; 
+                    flex-direction: column; 
+                    gap: 0.75rem; 
+                }
+                .mobile-links a {
+                    color: rgba(255,255,255,0.8);
+                    text-decoration: none;
+                    font-size: 1.1rem;
+                    font-weight: 500;
+                    padding: 1.2rem;
+                    background: rgba(255,255,255,0.03);
+                    border: 1px solid rgba(255,255,255,0.05);
+                    border-radius: 16px;
+                    transition: all 0.2s ease;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                }
+                .mobile-links a:active {
+                    background: rgba(99, 102, 241, 0.1);
+                    border-color: rgba(99, 102, 241, 0.3);
+                    color: #818cf8;
+                    transform: scale(0.98);
                 }
                 .mobile-logout-btn {
-                    margin-top: 1rem;
+                    margin-top: 2rem;
                     color: #ef4444;
-                    background: rgba(239, 68, 68, 0.1);
-                    border: none;
-                    padding: 1rem;
-                    border-radius: 12px;
+                    background: rgba(239, 68, 68, 0.08);
+                    border: 1px solid rgba(239, 68, 68, 0.2);
+                    padding: 1.2rem;
+                    border-radius: 16px;
                     font-weight: 700;
                     display: flex;
                     align-items: center;
-                    gap: 0.5rem;
+                    gap: 0.75rem;
                     justify-content: center;
+                    font-size: 1rem;
+                    width: 100%;
+                    cursor: pointer;
+                }
+
+                @keyframes slideDown {
+                    from { transform: translateY(-20px); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
                 }
 
                 @media (max-width: 1024px) {
