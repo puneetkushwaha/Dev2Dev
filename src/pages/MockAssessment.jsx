@@ -12,10 +12,10 @@ import Loader from '../components/Loader';
 
 const LANGUAGES = [
     { id: 'javascript', name: 'JavaScript', icon: 'JS', boilerplate: '/**\n * @param {any} input\n * @return {any}\n */\nvar solution = function(input) {\n     \n       \n    };' },
-    { id: 'python', name: 'Python3', icon: 'PY', boilerplate: 'class Solution:\n    def solve(self, input: any) -> any:\n        \n        pass' },
+    { id: 'python', name: 'Python3', icon: 'PY', boilerplate: 'class Solution:\n    def solve(self, input):\n        \n        pass' },
     { id: 'java', name: 'Java', icon: 'JV', boilerplate: 'class Solution {\n    public Object solve(Object input) {\n         \n           \n        }\n}' },
-    { id: 'cpp', name: 'C++', icon: 'C++', boilerplate: 'void solve() {\n     \n       \n    }' },
-    { id: 'c', name: 'C', icon: 'C', boilerplate: 'void solve() {\n     \n       \n    }' }
+    { id: 'cpp', name: 'C++', icon: 'C++', boilerplate: '#include <iostream>\n#include <vector>\n#include <string>\n\nusing namespace std;\n\nclass Solution {\npublic:\n    void solve(auto input) {\n         \n           \n    }\n};' },
+    { id: 'c', name: 'C', icon: 'C', boilerplate: '#include <stdio.h>\n#include <stdlib.h>\n\nvoid solve(void* input) {\n     \n       \n    }' }
 ];
 
 const MockAssessment = () => {
@@ -34,6 +34,7 @@ const MockAssessment = () => {
     const [running, setRunning] = useState(false);
     const [results, setResults] = useState({});
     const [activeBottomTab, setActiveBottomTab] = useState('Testcase');
+    const [activeTestCaseTab, setActiveTestCaseTab] = useState(0);
 
     // Timer state (1 hour = 3600 seconds)
     const [timeLeft, setTimeLeft] = useState(3600);
@@ -60,7 +61,9 @@ const MockAssessment = () => {
                             id: q.id || `dynamic_${idx}`,
                             title: q.title,
                             description: q.description,
-                            starterCode: q.starterCode || LANGUAGES[0].boilerplate
+                            starterCode: q.starterCode || LANGUAGES[0].boilerplate,
+                            starterCodes: q.starterCodes || {},
+                            testCases: q.testCases || []
                         }));
                         setQuestions(formatted);
 
@@ -94,6 +97,7 @@ const MockAssessment = () => {
                     navigate('/interview-prep');
                 }
             }
+            setActiveTestCaseTab(0);
             setLoading(false);
         };
 
@@ -122,11 +126,29 @@ const MockAssessment = () => {
         setSelectedLang(lang);
         setShowLangMenu(false);
         const currentQ = questions[activeQIndex];
-        // Note: For a real app, we'd map language to specific starter codes. 
-        // Using generic boilerplate for now when language changes, unless it matches the initial JS code
+
+        // 1. Check if question has language-specific starter code from DB
+        if (currentQ?.starterCodes && currentQ.starterCodes[lang.id]) {
+            setAnswers(prev => ({
+                ...prev,
+                [activeQIndex]: currentQ.starterCodes[lang.id]
+            }));
+            return;
+        }
+
+        // 2. Special case for JavaScript (fallback to starterCode if no starterCodes object)
+        if (lang.id === 'javascript' && currentQ?.starterCode) {
+            setAnswers(prev => ({
+                ...prev,
+                [activeQIndex]: currentQ.starterCode
+            }));
+            return;
+        }
+
+        // 3. Fallback: Generic Boilerplate
         setAnswers(prev => ({
             ...prev,
-            [activeQIndex]: currentQ && lang.id === 'javascript' ? currentQ.starterCode : lang.boilerplate
+            [activeQIndex]: lang.boilerplate
         }));
     };
 
@@ -256,7 +278,7 @@ const MockAssessment = () => {
                         {questions.map((q, idx) => (
                             <button
                                 key={q.id}
-                                onClick={() => setActiveQIndex(idx)}
+                                onClick={() => { setActiveQIndex(idx); setActiveTestCaseTab(0); }}
                                 style={{
                                     border: 'none',
                                     background: activeQIndex === idx ? '#fff' : 'transparent',
@@ -444,23 +466,47 @@ const MockAssessment = () => {
 
                         <div style={{ flex: 1, overflowY: 'auto', padding: '1.25rem', fontFamily: '"Fira Code", monospace' }}>
                             {activeBottomTab === 'Testcase' && (
-                                <div style={{ color: '#444' }}>
-                                    <div style={{ marginBottom: '1.5rem' }}>
-                                        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-                                            <button style={{ padding: '0.3rem 0.8rem', background: '#f3f4f6', border: 'none', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600, color: '#333' }}>Case 1</button>
-                                            <button style={{ padding: '0.3rem 0.8rem', background: 'transparent', border: 'none', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600, color: '#888' }}>Case 2</button>
-                                        </div>
-                                        <div style={{ fontSize: '0.85rem' }}>
-                                            <div style={{ color: '#888', marginBottom: '0.4rem', fontSize: '0.75rem', fontWeight: 'bold' }}>Input</div>
-                                            <div style={{ background: '#f8f9fa', padding: '0.8rem', borderRadius: '8px', border: '1px solid #e5e7eb', marginBottom: '1rem' }}>
-                                                {currentQ?.id === 'q1' ? 'bits = [1,0,0]' : 'Standard Input...'}
+                                <div style={{ color: '#444', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                                    {currentQ?.testCases?.length > 0 ? (
+                                        <div style={{ marginBottom: '1.5rem' }}>
+                                            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+                                                {currentQ.testCases.map((_, idx) => (
+                                                    <button
+                                                        key={idx}
+                                                        onClick={() => setActiveTestCaseTab(idx)}
+                                                        style={{
+                                                            padding: '0.35rem 0.9rem',
+                                                            background: activeTestCaseTab === idx ? '#eff6ff' : 'transparent',
+                                                            color: activeTestCaseTab === idx ? '#818cf8' : '#888',
+                                                            border: '1px solid',
+                                                            borderColor: activeTestCaseTab === idx ? '#818cf8' : 'transparent',
+                                                            borderRadius: '6px',
+                                                            fontSize: '0.8rem',
+                                                            fontWeight: 600,
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.2s'
+                                                        }}
+                                                    >
+                                                        Case {idx + 1}
+                                                    </button>
+                                                ))}
                                             </div>
-                                            <div style={{ color: '#888', marginBottom: '0.4rem', fontSize: '0.75rem', fontWeight: 'bold' }}>Expected Output</div>
-                                            <div style={{ background: '#f8f9fa', padding: '0.8rem', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
-                                                {currentQ?.id === 'q1' ? 'true' : 'Output expected...'}
+                                            <div style={{ fontSize: '0.85rem' }}>
+                                                <div style={{ color: '#888', marginBottom: '0.4rem', fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase' }}>Input</div>
+                                                <div style={{ background: '#f8f9fa', padding: '0.8rem', borderRadius: '8px', border: '1px solid #e5e7eb', marginBottom: '1rem', color: '#1a1a1a' }}>
+                                                    {currentQ.testCases[activeTestCaseTab]?.input || 'No input provided'}
+                                                </div>
+                                                <div style={{ color: '#888', marginBottom: '0.4rem', fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase' }}>Expected Output</div>
+                                                <div style={{ background: '#f8f9fa', padding: '0.8rem', borderRadius: '8px', border: '1px solid #e5e7eb', color: '#1a1a1a' }}>
+                                                    {currentQ.testCases[activeTestCaseTab]?.expected || 'No expected output'}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    ) : (
+                                        <div style={{ color: '#888', textAlign: 'center', marginTop: '2rem' }}>
+                                            No sample test cases available for this question.
+                                        </div>
+                                    )}
                                 </div>
                             )}
 
