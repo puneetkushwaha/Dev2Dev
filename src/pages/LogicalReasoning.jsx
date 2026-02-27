@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ChevronDown, Target, Clock, Activity, DivideCircle, Percent, FlaskConical, Hash, Calculator, Scale, BookOpen, CircleDollarSign, Info, User, Code2, Loader2 } from 'lucide-react';
+import Loader from '../components/Loader';
 
 const LogicalReasoning = () => {
     const [logicalReasoningData, setLogicalReasoningData] = useState([]);
@@ -74,12 +75,7 @@ const LogicalReasoning = () => {
     };
 
     if (loading) {
-        return (
-            <div className="flex h-screen items-center justify-center bg-[#09090e] text-white">
-                <Loader2 size={32} className="animate-spin text-purple-500" />
-                <span className="ml-3 font-semibold">Loading Logical Reasoning Topics...</span>
-            </div>
-        );
+        return <Loader text="Loading Logical Reasoning Topics..." />;
     }
 
     return (

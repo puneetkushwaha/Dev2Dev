@@ -8,6 +8,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import axios from 'axios';
 import { mockQuestions } from '../data/mockQuestions';
+import Loader from '../components/Loader';
 
 const LANGUAGES = [
     { id: 'javascript', name: 'JavaScript', icon: 'JS', boilerplate: '/**\n * @param {any} input\n * @return {any}\n */\nvar solution = function(input) {\n    \n};' },
@@ -216,7 +217,7 @@ const MockAssessment = () => {
         return `${m}:${s < 10 ? '0' : ''}${s} remaining`;
     };
 
-    if (questions.length === 0) return <div style={{ background: '#0a0a0a', color: '#fff', height: '100vh' }}>Loading...</div>;
+    if (questions.length === 0) return <Loader text="Loading Assessment..." />;
 
     const currentQ = questions[activeQIndex];
     const currentResult = results[activeQIndex];

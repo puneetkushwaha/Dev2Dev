@@ -13,6 +13,7 @@ import ProfileStats from '../components/profile/ProfileStats';
 import ActivityHeatmap from '../components/profile/ActivityHeatmap';
 import LanguageStats from '../components/profile/LanguageStats';
 import SkillBreakdown from '../components/profile/SkillBreakdown';
+import Loader from '../components/Loader';
 
 const Profile = () => {
     const [userData, setUserData] = useState(null);
@@ -154,12 +155,7 @@ const Profile = () => {
     };
 
     if (loading) {
-        return (
-            <div style={{ height: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
-                <Loader2 size={48} className="animate-spin" style={{ color: 'var(--brand-purple)' }} />
-                <p style={{ opacity: 0.5 }}>Loading elite profile...</p>
-            </div>
-        );
+        return <Loader text="Loading elite profile..." />;
     }
 
     if (!userData) return null;

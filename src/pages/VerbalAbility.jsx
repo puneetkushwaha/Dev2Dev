@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Target, BookOpen, Code2, Calculator, Info, Scale, Activity, Hash, User, Loader2 } from 'lucide-react';
+import Loader from '../components/Loader';
 
 const VerbalAbility = () => {
     const [verbalAbilityData, setVerbalAbilityData] = useState([]);
@@ -72,12 +73,7 @@ const VerbalAbility = () => {
     };
 
     if (loading) {
-        return (
-            <div className="flex h-screen items-center justify-center bg-[#09090e] text-white">
-                <Loader2 size={32} className="animate-spin text-rose-500" />
-                <span className="ml-3 font-semibold">Loading Verbal Ability Topics...</span>
-            </div>
-        );
+        return <Loader text="Loading Verbal Ability Topics..." />;
     }
 
     return (

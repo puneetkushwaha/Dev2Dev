@@ -11,6 +11,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { domainDetails, defaultDomain } from '../data/domainData';
 import axios from 'axios';
+import Loader from '../components/Loader';
 import './Learning.css';
 
 const Learning = () => {
@@ -443,7 +444,7 @@ const Learning = () => {
     };
 
     if (loading) {
-        return <div className="flex-center" style={{ height: '80vh' }}><Loader2 size={40} className="animate-spin text-muted" /></div>;
+        return <Loader text="Loading Curriculum..." />;
     }
 
     const details = domainDetails[selectedDomain] || defaultDomain;

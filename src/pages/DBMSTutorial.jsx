@@ -3,6 +3,7 @@ import axios from 'axios';
 import { ChevronDown, Database, BookOpen, TerminalSquare, Info, Target, Loader2, Sparkles } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import Loader from '../components/Loader';
 import './Tutorials.css';
 
 const DBMSTutorial = () => {
@@ -105,12 +106,7 @@ const DBMSTutorial = () => {
     };
 
     if (loading) {
-        return (
-            <div className="flex h-screen items-center justify-center bg-[#09090e] text-white">
-                <Loader2 size={32} className="animate-spin text-emerald-500" />
-                <span className="ml-3 font-semibold">Loading DBMS Tutorial...</span>
-            </div>
-        );
+        return <Loader text="Loading DBMS Tutorial..." />;
     }
 
     const qas = parseQAs(topic?.content?.explanation);

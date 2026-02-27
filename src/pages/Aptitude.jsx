@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ChevronDown, Target, Clock, Activity, DivideCircle, Percent, FlaskConical, Hash, Calculator, Scale, BookOpen, CircleDollarSign, Info, Loader2 } from 'lucide-react';
+import Loader from '../components/Loader';
 
 const Aptitude = () => {
     const [aptitudeData, setAptitudeData] = useState([]);
@@ -78,12 +79,7 @@ const Aptitude = () => {
     };
 
     if (loading) {
-        return (
-            <div className="flex h-screen items-center justify-center bg-[#09090e] text-white">
-                <Loader2 size={32} className="animate-spin text-indigo-500" />
-                <span className="ml-3 font-semibold">Loading Aptitude Topics...</span>
-            </div>
-        );
+        return <Loader text="Loading Aptitude Topics..." />;
     }
 
     return (

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Bell, Info, AlertCircle, CheckCircle, AlertTriangle } from 'lucide-react';
+import Loader from '../components/Loader';
 import './Notifications.css';
 
 const Notifications = () => {
@@ -34,7 +35,7 @@ const Notifications = () => {
     };
 
     if (loading) {
-        return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', color: '#fff' }}>Loading notifications...</div>;
+        return <Loader text="Loading notifications..." />;
     }
 
     return (
