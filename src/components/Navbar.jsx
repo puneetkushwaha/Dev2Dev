@@ -73,9 +73,8 @@ const Navbar = () => {
                         {mobileMenuOpen ? <X size={24} color="#fff" /> : <Menu size={24} color="#fff" />}
                     </button>
 
-                    <Link to="/dashboard" className="flex-center" style={{ textDecoration: 'none', color: '#fff', gap: '0.75rem', minWidth: 'fit-content' }}>
-                        <img src="/logo.png" alt="Dev2Dev" style={{ height: '28px', filter: 'brightness(1.1) drop-shadow(0 0 10px rgba(99,102,241,0.3))' }} />
-                        <span className="logo-text hide-mobile">Dev2Dev</span>
+                    <Link to="/dashboard" className="flex-center" style={{ textDecoration: 'none', color: '#fff', minWidth: 'fit-content' }}>
+                        <img src="/logo.png" alt="Dev2Dev" style={{ height: '32px', filter: 'brightness(1.1) drop-shadow(0 0 10px rgba(99,102,241,0.3))' }} />
                     </Link>
 
                     <div className="nav-search-container hide-mobile">
@@ -112,7 +111,7 @@ const Navbar = () => {
 
                     {userRole === 'admin' && <Link to="/admin" className="admin-pill hide-mobile">Admin</Link>}
 
-                    <Link to="/profile" className={`nav-profile-circle ${currentPath === '/profile' ? 'active' : ''}`}>
+                    <Link to="/profile" className={`nav-profile-circle ${currentPath === '/profile' ? 'active' : ''}`} title="Profile">
                         <User size={20} color="#fff" />
                     </Link>
                     <button onClick={handleLogout} className="nav-logout-btn hide-mobile" title="Logout">
@@ -215,6 +214,96 @@ const Navbar = () => {
                 .nav-left { flex: 1.2; }
                 .nav-center { flex: 2; justify-content: center; }
                 .nav-right { flex: 1.2; justify-content: flex-end; }
+
+                .nav-action-icon {
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 8px;
+                    border-radius: 10px;
+                    transition: all 0.2s ease;
+                    text-decoration: none;
+                }
+                .nav-action-icon:hover {
+                    background: rgba(255, 255, 255, 0.05);
+                }
+
+                .notification-badge {
+                    position: absolute;
+                    top: 2px;
+                    right: 2px;
+                    background: var(--danger, #ef4444);
+                    color: white;
+                    font-size: 10px;
+                    font-weight: 800;
+                    min-width: 16px;
+                    height: 16px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border: 2px solid #121212;
+                    padding: 0 2px;
+                }
+
+                .admin-pill {
+                    background: rgba(129, 140, 248, 0.1);
+                    border: 1px solid rgba(129, 140, 248, 0.3);
+                    color: #818cf8;
+                    padding: 4px 12px;
+                    border-radius: 20px;
+                    font-size: 0.8rem;
+                    font-weight: 600;
+                    text-decoration: none;
+                    transition: all 0.2s ease;
+                }
+                .admin-pill:hover {
+                    background: rgba(129, 140, 248, 0.2);
+                    box-shadow: 0 0 15px rgba(129, 140, 248, 0.2);
+                }
+
+                .nav-profile-circle {
+                    width: 38px;
+                    height: 38px;
+                    border-radius: 50%;
+                    background: rgba(255, 255, 255, 0.03);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.2s ease;
+                    text-decoration: none;
+                }
+                .nav-profile-circle:hover, .nav-profile-circle.active {
+                    background: rgba(99, 102, 241, 0.1);
+                    border-color: #818cf8;
+                    box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+                }
+
+                .nav-logout-btn {
+                    background: rgba(239, 68, 68, 0.05);
+                    border: 1px solid rgba(239, 68, 68, 0.1);
+                    padding: 8px;
+                    border-radius: 10px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.2s ease;
+                }
+                .nav-logout-btn:hover {
+                    background: rgba(239, 68, 68, 0.1);
+                    border-color: rgba(239, 68, 68, 0.3);
+                    transform: translateY(-1px);
+                }
+
+                .action-divider {
+                    width: 1px;
+                    height: 20px;
+                    background: rgba(255, 255, 255, 0.1);
+                    margin: 0 0.5rem;
+                }
 
                 .mobile-menu-toggle {
                     display: none;
