@@ -44,17 +44,19 @@ const ProblemView = () => {
                 if (codingQ) {
                     const jsCode = codingQ.starterCode || LANGUAGES.find(l => l.id === 'javascript').boilerplate;
 
+                    // 1. Check if problem has language-specific starter code in DB
                     if (codingQ?.starterCodes?.[selectedLang.id]) {
                         setCode(codingQ.starterCodes[selectedLang.id]);
                         return;
                     }
 
+                    // 2. Special case for JavaScript (fallback to starterCode if no starterCodes object)
                     if (selectedLang.id === 'javascript') {
                         setCode(jsCode);
                         return;
                     }
 
-                    // Smart Boilerplate Gen
+                    // 3. Fallback: Smart Boilerplate Gen
                     const funcMatch = jsCode.match(/var\s+(\w+)\s*=\s*function\s*\(([^)]*)\)/);
                     const funcName = funcMatch ? funcMatch[1] : 'solution';
                     const params = funcMatch ? funcMatch[2].trim() : 'input';
@@ -89,19 +91,19 @@ const ProblemView = () => {
         const codingQ = problem.questions?.find(q => q.type === 'coding') || problem.questions?.[0];
         const jsCode = codingQ?.starterCode || LANGUAGES.find(l => l.id === 'javascript').boilerplate;
 
-        // Try to get problem-specific starter code from database
+        // 1. Try to get problem-specific starter code from database
         if (codingQ?.starterCodes?.[lang.id]) {
             setCode(codingQ.starterCodes[lang.id]);
             return;
         }
 
-        // Logic for JavaScript (Original/Seeded)
+        // 2. Logic for JavaScript (Original/Seeded)
         if (lang.id === 'javascript') {
             setCode(jsCode);
             return;
         }
 
-        // --- Smart Boilerplate Generation Logic ---
+        // --- 3. Smart Boilerplate Generation Logic (Fallback) ---
         // Try to extract function name and params from JS code
         // Pattern: var someFunc = function(a, b) { ... }
         const funcMatch = jsCode.match(/var\s+(\w+)\s*=\s*function\s*\(([^)]*)\)/);
