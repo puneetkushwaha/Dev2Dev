@@ -20,11 +20,11 @@ const DomainOverview = () => {
         const fetchTopics = async () => {
             setTopicsLoading(true);
             try {
-                const domainsRes = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/domains`);
+                const domainsRes = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains`);
                 const domain = domainsRes.data.find(d => d.name === decodedName);
                 if (!domain) { setDbTopics([]); return; }
                 const topicsRes = await axios.get(
-                    `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/domains/topics/by-domain/${domain._id}`
+                    `${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains/topics/by-domain/${domain._id}`
                 );
                 setDbTopics(topicsRes.data || []);
             } catch (err) {
@@ -41,7 +41,7 @@ const DomainOverview = () => {
         setLoading(true);
         const token = localStorage.getItem('token');
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/select-domain`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/select-domain`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

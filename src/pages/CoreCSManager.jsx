@@ -199,7 +199,7 @@ const CoreCSManager = ({ coreCSTopics, onTopicsRefresh }) => {
     const getCoreCSdomainId = async () => {
         const existing = coreCSTopics[0];
         if (existing?.domainId) return existing.domainId;
-        const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/domains`, authConfig());
+        const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/domains`, authConfig());
         const d = res.data.find(d => d.name === 'Core Computer Science' || d.name === 'CoreCS');
         if (!d) throw new Error('Core Computer Science domain not found.\nRun: node seedCoreCS.js');
         return d._id;
@@ -219,7 +219,7 @@ const CoreCSManager = ({ coreCSTopics, onTopicsRefresh }) => {
         if (!selectedTopic) return;
         try {
             const domainId = await getCoreCSdomainId();
-            const res = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/topics`, {
+            const res = await axios.post(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/topics`, {
                 domainId,
                 isCoreCS: true,
                 subject: activeSubject,
@@ -238,14 +238,14 @@ const CoreCSManager = ({ coreCSTopics, onTopicsRefresh }) => {
 
     const saveProblem = async (data) => {
         try {
-            await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/topics/${data._id}`, data, authConfig());
+            await axios.put(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/topics/${data._id}`, data, authConfig());
             await onTopicsRefresh();
         } catch (err) { alert(err.response?.data?.message || err.message); }
     };
 
     const deleteProblem = async (id) => {
         if (!window.confirm('Delete this problem?')) return;
-        await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/topics/${id}`, authConfig());
+        await axios.delete(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/topics/${id}`, authConfig());
         setSelectedProbId(null);
         await onTopicsRefresh();
     };
@@ -254,7 +254,7 @@ const CoreCSManager = ({ coreCSTopics, onTopicsRefresh }) => {
         const probs = subjTopics.filter(t => t.topicGroup === topicName);
         if (!window.confirm(`Delete topic "${topicName}" and its ${probs.length} problem(s)?`)) return;
         for (const p of probs) {
-            await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/topics/${p._id}`, authConfig());
+            await axios.delete(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/topics/${p._id}`, authConfig());
         }
         setSelectedTopic(null);
         await onTopicsRefresh();

@@ -15,7 +15,7 @@ const OSTutorial = () => {
     useEffect(() => {
         const fetchTopics = async () => {
             try {
-                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/domains/topics/corecs?subject=OS&lessonType=theory`);
+                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains/topics/corecs?subject=OS&lessonType=theory`);
                 if (res.data && res.data.length > 0) {
                     setTopic(res.data[0]);
                 }

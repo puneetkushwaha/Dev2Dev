@@ -64,11 +64,11 @@ const DomainSelection = () => {
             if (!token) return navigate('/login');
 
             try {
-                const domRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/domains`);
+                const domRes = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains`);
                 const domData = await domRes.json();
                 setDomains(Array.isArray(domData) ? domData.filter(d => d.name !== 'Core Computer Science' && d.name !== 'CoreCS') : []);
 
-                const userRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/profile`, {
+                const userRes = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/profile`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const userData = await userRes.json();
@@ -98,7 +98,7 @@ const DomainSelection = () => {
         setAiLoading(true);
         try {
             const domainNames = availableDomains.map(d => d.name);
-            const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/recommend-domain`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/recommend-domain`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -112,7 +112,7 @@ const DomainSelection = () => {
             setRecommendation(data);
 
             // Save recommendation to backend for future caching
-            await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/save-recommendation`, {
+            await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/save-recommendation`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

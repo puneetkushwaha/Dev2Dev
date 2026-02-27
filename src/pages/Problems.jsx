@@ -72,10 +72,10 @@ const Problems = () => {
             try {
                 const token = localStorage.getItem('token');
                 const [problemsRes, profileRes] = await Promise.all([
-                    axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/problems`, {
+                    axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/problems`, {
                         headers: { Authorization: `Bearer ${token}` }
                     }),
-                    axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/profile`, {
+                    axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/profile`, {
                         headers: { Authorization: `Bearer ${token}` }
                     })
                 ]);

@@ -11,7 +11,7 @@ const LogicalReasoning = () => {
     useEffect(() => {
         const fetchTopics = async () => {
             try {
-                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/domains/topics/name/Aptitude & Reasoning`);
+                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains/topics/name/Aptitude & Reasoning`);
                 const qt = res.data.filter(t => t.topicGroup === 'Logical Reasoning');
                 const formatted = qt.map(t => ({
                     id: t._id,

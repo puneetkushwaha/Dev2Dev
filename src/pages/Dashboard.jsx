@@ -44,14 +44,14 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const profileRes = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/profile`, {
+                const profileRes = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/profile`, {
                     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                 });
                 setUserData(profileRes.data);
 
                 const [domainsRes, tutorialsRes] = await Promise.all([
-                    axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/domains`),
-                    axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/tutorials`, {
+                    axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains`),
+                    axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/tutorials`, {
                         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                     })
                 ]);

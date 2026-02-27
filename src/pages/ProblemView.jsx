@@ -36,7 +36,7 @@ const ProblemView = () => {
     useEffect(() => {
         const fetchProblem = async () => {
             try {
-                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/problems/${id}`, {
+                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/problems/${id}`, {
                     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                 });
                 setProblem(res.data);
@@ -80,14 +80,14 @@ const ProblemView = () => {
         setResult(null);
 
         try {
-            console.log(`🚀 Sending submission to: ${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/submit-exam`);
+            console.log(`🚀 Sending submission to: ${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/submit-exam`);
             console.log(`📦 Payload:`, {
                 examName: problem.title,
                 language: selectedLang.id,
                 isRun
             });
 
-            const res = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/submit-exam`, {
+            const res = await axios.post(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/submit-exam`, {
                 examName: problem.title,
                 language: selectedLang.id,
                 answers: { [codingQIndex !== -1 ? codingQIndex : 0]: code },

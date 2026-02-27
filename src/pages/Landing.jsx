@@ -16,7 +16,7 @@ const Landing = () => {
         if (domain.trim()) {
             setLoading(true);
             try {
-                const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/generate-roadmap`, {
+                const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/generate-roadmap`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ domain })

@@ -20,7 +20,7 @@ const AITeacherWidget = () => {
 
         try {
             // Connect to Python AI microservice
-            const res = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/ai-chat`, { message: userMsg, domain: 'Software Engineering' });
+            const res = await axios.post(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/ai-chat`, { message: userMsg, domain: 'Software Engineering' });
             setMessages(prev => [...prev, { role: 'ai', text: res.data.reply }]);
         } catch (error) {
             setMessages(prev => [...prev, { role: 'ai', text: 'Sorry, I am having trouble connecting to the Dev2Dev AI service.' }]);

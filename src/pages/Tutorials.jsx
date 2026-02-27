@@ -15,7 +15,7 @@ const Tutorials = () => {
         const fetchTutorials = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/tutorials`, {
+                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/tutorials`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setTutorials(res.data);
