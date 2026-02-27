@@ -634,18 +634,19 @@ const ProblemView = () => {
                                                         key={idx}
                                                         onClick={() => setActiveTestCaseTab(idx)}
                                                         style={{
-                                                            padding: '0.6rem 1.25rem',
-                                                            background: activeTestCaseTab === idx ? 'rgba(99, 102, 241, 0.25)' : 'rgba(255, 255, 255, 0.05)',
-                                                            color: activeTestCaseTab === idx ? '#a5b4fc' : 'rgba(255,255,255,0.4)',
+                                                            padding: '0.7rem 1.5rem',
+                                                            background: activeTestCaseTab === idx ? '#312e81' : 'rgba(255, 255, 255, 0.08)',
+                                                            color: activeTestCaseTab === idx ? '#e0e7ff' : 'rgba(255,255,255,0.5)',
                                                             border: '1px solid',
-                                                            borderColor: activeTestCaseTab === idx ? '#6366f1' : 'rgba(255,255,255,0.1)',
+                                                            borderColor: activeTestCaseTab === idx ? '#6366f1' : 'rgba(255,255,255,0.2)',
                                                             borderRadius: '12px',
-                                                            fontSize: '0.85rem',
+                                                            fontSize: '0.9rem',
                                                             fontWeight: 600,
                                                             cursor: 'pointer',
                                                             whiteSpace: 'nowrap',
                                                             transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                                                            boxShadow: activeTestCaseTab === idx ? '0 0 20px rgba(99, 102, 241, 0.2)' : 'none'
+                                                            boxShadow: activeTestCaseTab === idx ? '0 0 20px rgba(99, 102, 241, 0.3)' : 'none',
+                                                            transform: activeTestCaseTab === idx ? 'translateY(-1px)' : 'none'
                                                         }}
                                                     >
                                                         Case {idx + 1}
