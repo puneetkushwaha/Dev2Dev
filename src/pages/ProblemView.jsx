@@ -29,6 +29,7 @@ const ProblemView = () => {
     const [result, setResult] = useState(null);
     const [activeLeftTab, setActiveLeftTab] = useState('Description');
     const [activeBottomTab, setActiveBottomTab] = useState('Testcase');
+    const [activeTestCaseTab, setActiveTestCaseTab] = useState(0);
     const [showLangMenu, setShowLangMenu] = useState(false);
     const [showHints, setShowHints] = useState(false);
     const [showTags, setShowTags] = useState(false);
@@ -40,6 +41,7 @@ const ProblemView = () => {
                     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                 });
                 setProblem(res.data);
+                setActiveTestCaseTab(0);
                 const codingQ = res.data.questions?.find(q => q.type === 'coding') || res.data.questions?.[0];
                 if (codingQ) {
                     const jsCode = codingQ.starterCode || LANGUAGES.find(l => l.id === 'javascript').boilerplate;
@@ -587,19 +589,64 @@ const ProblemView = () => {
 
                         <div style={{ flex: 1, overflowY: 'auto', padding: '1.25rem', fontFamily: '"Fira Code", monospace' }}>
                             {activeBottomTab === 'Testcase' && (
-                                <div style={{ color: 'rgba(255,255,255,0.7)' }}>
+                                <div style={{ color: 'rgba(255,255,255,0.7)', height: '100%', display: 'flex', flexDirection: 'column' }}>
                                     {q?.testCases?.length > 0 ? (
-                                        q.testCases.map((tc, idx) => (
-                                            <div key={idx} style={{ marginBottom: '1.5rem' }}>
-                                                <div style={{ color: '#fff', fontSize: '0.85rem', marginBottom: '0.5rem', fontWeight: 600 }}>Case {idx + 1}</div>
-                                                <div style={{ background: '#262626', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', fontSize: '0.9rem' }}>
-                                                    <div style={{ color: 'rgba(255,255,255,0.4)', marginBottom: '0.4rem', fontSize: '0.75rem', textTransform: 'uppercase' }}>Input</div>
-                                                    <div>{tc.input}</div>
-                                                </div>
+                                        <>
+                                            {/* Case Toggles */}
+                                            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', overflowX: 'auto', paddingBottom: '4px' }}>
+                                                {q.testCases.map((_, idx) => (
+                                                    <button
+                                                        key={idx}
+                                                        onClick={() => setActiveTestCaseTab(idx)}
+                                                        style={{
+                                                            padding: '0.5rem 1rem',
+                                                            background: activeTestCaseTab === idx ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.03)',
+                                                            color: activeTestCaseTab === idx ? '#fff' : 'rgba(255,255,255,0.4)',
+                                                            border: '1px solid',
+                                                            borderColor: activeTestCaseTab === idx ? 'rgba(255,255,255,0.2)' : 'transparent',
+                                                            borderRadius: '8px',
+                                                            fontSize: '0.8rem',
+                                                            fontWeight: 600,
+                                                            cursor: 'pointer',
+                                                            whiteSpace: 'nowrap',
+                                                            transition: '0.2s'
+                                                        }}
+                                                    >
+                                                        Case {idx + 1}
+                                                    </button>
+                                                ))}
                                             </div>
-                                        ))
+
+                                            {/* Active Case Details */}
+                                            <div style={{ animation: 'fadeIn 0.2s ease-out' }}>
+                                                <div style={{ marginBottom: '1.25rem' }}>
+                                                    <div style={{ color: 'rgba(255,255,255,0.4)', marginBottom: '0.6rem', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.5px' }}>Input</div>
+                                                    <div style={{ background: '#262626', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', fontSize: '0.9rem', color: '#e2e2e2' }}>
+                                                        {q.testCases[activeTestCaseTab]?.input || 'N/A'}
+                                                    </div>
+                                                </div>
+
+                                                {q.testCases[activeTestCaseTab]?.expected && (
+                                                    <div>
+                                                        <div style={{ color: 'rgba(255,255,255,0.4)', marginBottom: '0.6rem', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.5px' }}>Expected Output</div>
+                                                        <div style={{ background: '#262626', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', fontSize: '0.9rem', color: '#818cf8', fontWeight: 500 }}>
+                                                            {q.testCases[activeTestCaseTab].expected}
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {q.testCases[activeTestCaseTab]?.description && (
+                                                    <div style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'rgba(255,255,255,0.3)', fontStyle: 'italic' }}>
+                                                        Note: {q.testCases[activeTestCaseTab].description}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </>
                                     ) : (
-                                        <div style={{ color: 'rgba(255,255,255,0.3)', textAlign: 'center', marginTop: '2rem' }}>No testcases configured for this problem.</div>
+                                        <div style={{ color: 'rgba(255,255,255,0.2)', textAlign: 'center', marginTop: '3rem' }}>
+                                            <Terminal size={40} style={{ margin: '0 auto 1rem', opacity: 0.1 }} />
+                                            <p>No testcases configured for this problem.</p>
+                                        </div>
                                     )}
                                 </div>
                             )}
@@ -644,6 +691,11 @@ const ProblemView = () => {
                                                 </div>
                                                 <div style={{ fontSize: '0.95rem', lineHeight: 1.6, color: 'rgba(255,255,255,0.85)' }}>
                                                     {result.detailedAnalysis?.codingResults?.[0]?.aiFeedback || "Evaluation completed successfully. Review your logic and complexity."}
+                                                    {result.detailedAnalysis?.codingResults?.[0]?.error && (
+                                                        <div style={{ display: 'none' }}>
+                                                            {console.error("AI Evaluation Error:", result.detailedAnalysis.codingResults[0].error)}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
