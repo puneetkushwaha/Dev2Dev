@@ -18,7 +18,7 @@
 }
 
 .loader-logo {
-    width: 55px;
+    width: 75px;
     z-index: 10;
     animation: pulse-logo 2s infinite ease-in-out;
     filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.6));
