@@ -127,10 +127,14 @@ const ProblemView = () => {
             codingQ = problem.questions?.find(q => q.type === 'coding') || problem.questions?.[0];
         }
 
+        console.log("Language change to:", lang.id, "CodingQ available:", !!codingQ);
+        if (codingQ) console.log("StarterCodes present:", Object.keys(codingQ.starterCodes || {}).length > 0);
+
         const jsCode = codingQ?.starterCode || LANGUAGES.find(l => l.id === 'javascript').boilerplate;
 
         // 1. Try to get problem-specific starter code from database
-        if (codingQ?.starterCodes?.[lang.id]) {
+        if (codingQ?.starterCodes && codingQ.starterCodes[lang.id]) {
+            console.log("Loading starter code from DB for:", lang.id);
             setCode(codingQ.starterCodes[lang.id]);
             return;
         }
@@ -624,24 +628,24 @@ const ProblemView = () => {
                                     {q?.testCases?.length > 0 ? (
                                         <>
                                             {/* Case Toggles */}
-                                            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', overflowX: 'auto', paddingBottom: '4px' }}>
+                                            <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', overflowX: 'auto', paddingBottom: '8px' }}>
                                                 {q.testCases.map((_, idx) => (
                                                     <button
                                                         key={idx}
                                                         onClick={() => setActiveTestCaseTab(idx)}
                                                         style={{
                                                             padding: '0.6rem 1.25rem',
-                                                            background: activeTestCaseTab === idx ? '#373737' : 'rgba(255,255,255,0.03)',
-                                                            color: activeTestCaseTab === idx ? '#fff' : 'rgba(255,255,255,0.4)',
+                                                            background: activeTestCaseTab === idx ? 'rgba(99, 102, 241, 0.25)' : 'rgba(255, 255, 255, 0.05)',
+                                                            color: activeTestCaseTab === idx ? '#a5b4fc' : 'rgba(255,255,255,0.4)',
                                                             border: '1px solid',
-                                                            borderColor: activeTestCaseTab === idx ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)',
-                                                            borderRadius: '10px',
+                                                            borderColor: activeTestCaseTab === idx ? '#6366f1' : 'rgba(255,255,255,0.1)',
+                                                            borderRadius: '12px',
                                                             fontSize: '0.85rem',
                                                             fontWeight: 600,
                                                             cursor: 'pointer',
                                                             whiteSpace: 'nowrap',
                                                             transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                                                            boxShadow: activeTestCaseTab === idx ? '0 4px 12px rgba(0,0,0,0.2)' : 'none'
+                                                            boxShadow: activeTestCaseTab === idx ? '0 0 20px rgba(99, 102, 241, 0.2)' : 'none'
                                                         }}
                                                     >
                                                         Case {idx + 1}
