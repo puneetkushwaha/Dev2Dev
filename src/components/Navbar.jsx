@@ -329,7 +329,13 @@ const Navbar = () => {
                     outline: none;
                 }
                 .nav-search-container:focus-within { width: 280px; }
-                .search-icon { position: absolute; left: 10px; color: rgba(255,255,255,0.4); }
+                .search-icon { 
+                    position: absolute; 
+                    left: 12px; 
+                    top: 50%;
+                    transform: translateY(-50%);
+                    color: rgba(255,255,255,0.4); 
+                }
 
                 .gfg-nav-link {
                     text-decoration: none;
