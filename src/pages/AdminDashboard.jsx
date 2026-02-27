@@ -693,6 +693,134 @@ const UserDetailModal = ({ user, onClose }) => {
 };
 
 // ──────────────────────────────────────────
+// Sub-component: InterviewDetailModal
+// ──────────────────────────────────────────
+const InterviewDetailModal = ({ interview, onClose }) => {
+    if (!interview) return null;
+
+    const StatBox = ({ label, value, color }) => (
+        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '16px', textAlign: 'center' }}>
+            <div style={{ fontSize: '0.7rem', opacity: 0.5, textTransform: 'uppercase', marginBottom: '0.5rem' }}>{label}</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: color }}>{value}%</div>
+        </div>
+    );
+
+    return (
+        <div style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000,
+            background: 'rgba(0,0,0,0.85)', padding: '2rem', display: 'flex', justifyContent: 'center', alignItems: 'center',
+            backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)'
+        }} className="animate-fade-in" onClick={onClose}>
+            <div style={{
+                background: '#0F172A', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)',
+                width: '100%', maxWidth: '900px', maxHeight: '90vh', display: 'flex', flexDirection: 'column',
+                boxShadow: '0 50px 100px rgba(0,0,0,0.8)', overflow: 'hidden'
+            }} onClick={e => e.stopPropagation()}>
+
+                {/* Header */}
+                <div style={{ padding: '1.5rem 2rem', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(99,102,241,0.05)' }}>
+                    <div>
+                        <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>Interview Report</h2>
+                        <p style={{ margin: 0, fontSize: '0.9rem', opacity: 0.6 }}>{interview.candidateName} • {interview.role}</p>
+                    </div>
+                    <button className="icon-only" onClick={onClose} style={{ background: 'rgba(255,255,255,0.05)' }}><XCircle size={20} /></button>
+                </div>
+
+                {/* Body */}
+                <div style={{ flex: 1, overflowY: 'auto', padding: '2rem', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+
+                    {/* Scores */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem' }}>
+                        <StatBox label="Overall Score" value={interview.score} color="#fff" />
+                        <StatBox label="Technical" value={interview.technicalScore} color="#818cf8" />
+                        <StatBox label="Communication" value={interview.communicationScore} color="#c084fc" />
+                        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '16px', textAlign: 'center' }}>
+                            <div style={{ fontSize: '0.7rem', opacity: 0.5, textTransform: 'uppercase', marginBottom: '0.5rem' }}>Hire Status</div>
+                            <div style={{
+                                fontSize: '1.2rem',
+                                fontWeight: 800,
+                                color: interview.hireProbability === 'High' ? '#818cf8' : interview.hireProbability === 'Medium' ? '#fbbf24' : '#ef4444'
+                            }}>
+                                {interview.hireProbability}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Feedback */}
+                    <div className="glass-section">
+                        <h3 style={{ fontSize: '0.9rem', opacity: 0.5, textTransform: 'uppercase', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <Brain size={16} /> AI Feedback
+                        </h3>
+                        <p style={{ lineHeight: 1.6, fontSize: '1rem', color: 'rgba(255,255,255,0.9)' }}>{interview.feedback}</p>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+                        {/* Improvements */}
+                        <div className="glass-section">
+                            <h3 style={{ fontSize: '0.9rem', opacity: 0.5, textTransform: 'uppercase', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <Zap size={16} /> Key Improvements
+                            </h3>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                {interview.improvements?.map((imp, i) => (
+                                    <div key={i} style={{ padding: '0.75rem 1rem', background: 'rgba(239, 68, 68, 0.05)', borderRadius: '10px', border: '1px solid rgba(239, 68, 68, 0.1)', fontSize: '0.9rem' }}>
+                                        {imp}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        {/* Study Plan */}
+                        <div className="glass-section">
+                            <h3 style={{ fontSize: '0.9rem', opacity: 0.5, textTransform: 'uppercase', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <BookOpen size={16} /> Accelerated Study Plan
+                            </h3>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                {interview.studyPlan?.map((plan, i) => (
+                                    <span key={i} style={{ background: 'rgba(129, 140, 248, 0.1)', color: '#818cf8', padding: '0.4rem 0.8rem', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600 }}>{plan}</span>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Transcript */}
+                    <div className="glass-section">
+                        <h3 style={{ fontSize: '0.9rem', opacity: 0.5, textTransform: 'uppercase', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <RefreshCcw size={16} /> Conversation Transcript
+                        </h3>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            {interview.transcript?.map((msg, i) => (
+                                <div key={i} style={{
+                                    padding: '1.25rem',
+                                    borderRadius: '16px',
+                                    background: msg.role === 'interviewer' ? 'rgba(255,255,255,0.02)' : 'rgba(99, 102, 241, 0.08)',
+                                    border: '1px solid rgba(255,255,255,0.05)',
+                                    borderLeft: msg.role === 'interviewer' ? '4px solid rgba(255,255,255,0.1)' : '4px solid #818cf8',
+                                    marginLeft: msg.role === 'interviewer' ? '0' : '2rem',
+                                    maxWidth: '90%'
+                                }}>
+                                    <div style={{
+                                        fontSize: '0.7rem',
+                                        fontWeight: 800,
+                                        textTransform: 'uppercase',
+                                        opacity: 0.4,
+                                        marginBottom: '0.5rem',
+                                        color: msg.role === 'interviewer' ? 'inherit' : '#818cf8'
+                                    }}>
+                                        {msg.role === 'interviewer' ? 'Dev2Dev AI' : 'Candidate'}
+                                    </div>
+                                    <div style={{ fontSize: '0.95rem', lineHeight: 1.6, color: 'rgba(255,255,255,0.9)' }}>{msg.text}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    );
+};
+
+
+// ──────────────────────────────────────────
 // Sub-component: TutorialEditorModal
 // ──────────────────────────────────────────
 const TutorialEditorModal = ({ tutorial, onSave, onClose }) => {

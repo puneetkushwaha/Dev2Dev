@@ -11,11 +11,11 @@ import { mockQuestions } from '../data/mockQuestions';
 import Loader from '../components/Loader';
 
 const LANGUAGES = [
-    { id: 'javascript', name: 'JavaScript', icon: 'JS', boilerplate: '/**\n * @param {any} input\n * @return {any}\n */\nvar solution = function(input) {\n    \n};' },
-    { id: 'python', name: 'Python3', icon: 'PY', boilerplate: 'class Solution:\n    def solve(self, input: any) -> any:\n        pass' },
-    { id: 'java', name: 'Java', icon: 'JV', boilerplate: 'class Solution {\n    public Object solve(Object input) {\n        return null;\n    }\n}' },
-    { id: 'cpp', name: 'C++', icon: 'C++', boilerplate: 'class Solution {\npublic:\n    void solve() {\n        \n    }\n};' },
-    { id: 'c', name: 'C', icon: 'C', boilerplate: 'void solve() {\n    \n}' }
+    { id: 'javascript', name: 'JavaScript', icon: 'JS', boilerplate: '/**\n * @param {any} input\n * @return {any}\n */\nvar solution = function(input) {\n     \n       \n    };' },
+    { id: 'python', name: 'Python3', icon: 'PY', boilerplate: 'class Solution:\n    def solve(self, input: any) -> any:\n        \n        pass' },
+    { id: 'java', name: 'Java', icon: 'JV', boilerplate: 'class Solution {\n    public Object solve(Object input) {\n         \n           \n        }\n}' },
+    { id: 'cpp', name: 'C++', icon: 'C++', boilerplate: 'void solve() {\n     \n       \n    }' },
+    { id: 'c', name: 'C', icon: 'C', boilerplate: 'void solve() {\n     \n       \n    }' }
 ];
 
 const MockAssessment = () => {
