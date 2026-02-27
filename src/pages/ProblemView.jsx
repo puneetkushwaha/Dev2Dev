@@ -601,25 +601,52 @@ const ProblemView = () => {
 
                     {/* Bottom Console Panel */}
                     <div style={{ height: '35%', background: '#1a1a1a', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                        <div style={{ display: 'flex', background: '#262626', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '2px 8px', flexShrink: 0 }}>
-                            {['Testcase', 'Test Result'].map(tab => (
-                                <button
-                                    key={tab}
-                                    onClick={() => setActiveBottomTab(tab)}
-                                    style={{
-                                        padding: '0.6rem 1rem',
-                                        background: activeBottomTab === tab ? '#1a1a1a' : 'transparent',
-                                        color: activeBottomTab === tab ? '#818cf8' : 'rgba(255,255,255,0.4)',
-                                        border: 'none',
-                                        fontSize: '0.78rem',
-                                        fontWeight: 600,
-                                        cursor: 'pointer',
-                                        transition: '0.2s'
-                                    }}
-                                >
-                                    {tab}
-                                </button>
-                            ))}
+                        <div style={{ display: 'flex', background: '#262626', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '2px 8px', flexShrink: 0, justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div style={{ display: 'flex' }}>
+                                {['Testcase', 'Test Result'].map(tab => (
+                                    <button
+                                        key={tab}
+                                        onClick={() => setActiveBottomTab(tab)}
+                                        style={{
+                                            padding: '0.6rem 1rem',
+                                            background: activeBottomTab === tab ? '#1a1a1a' : 'transparent',
+                                            color: activeBottomTab === tab ? '#818cf8' : 'rgba(255,255,255,0.4)',
+                                            border: 'none',
+                                            fontSize: '0.78rem',
+                                            fontWeight: 600,
+                                            cursor: 'pointer',
+                                            transition: '0.2s'
+                                        }}
+                                    >
+                                        {tab}
+                                    </button>
+                                ))}
+                            </div>
+
+                            {activeBottomTab === 'Testcase' && q?.testCases?.length > 0 && (
+                                <div style={{ display: 'flex', gap: '0.4rem', paddingRight: '12px' }}>
+                                    {q.testCases.map((_, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => setActiveTestCaseTab(idx)}
+                                            style={{
+                                                padding: '0.35rem 0.9rem',
+                                                background: activeTestCaseTab === idx ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255, 255, 255, 0.03)',
+                                                color: activeTestCaseTab === idx ? '#818cf8' : 'rgba(255,255,255,0.4)',
+                                                border: '1px solid',
+                                                borderColor: activeTestCaseTab === idx ? '#6366f1' : 'transparent',
+                                                borderRadius: '6px',
+                                                fontSize: '0.75rem',
+                                                fontWeight: 600,
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            Case {idx + 1}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem 1.25rem', fontFamily: '"Fira Code", monospace' }}>
@@ -627,35 +654,8 @@ const ProblemView = () => {
                                 <div style={{ color: 'rgba(255,255,255,0.7)', height: '100%', display: 'flex', flexDirection: 'column', paddingTop: '0.5rem' }}>
                                     {q?.testCases?.length > 0 ? (
                                         <>
-                                            {/* Case Toggles */}
-                                            <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', overflowX: 'auto', paddingBottom: '8px' }}>
-                                                {q.testCases.map((_, idx) => (
-                                                    <button
-                                                        key={idx}
-                                                        onClick={() => setActiveTestCaseTab(idx)}
-                                                        style={{
-                                                            padding: '0.7rem 1.5rem',
-                                                            background: activeTestCaseTab === idx ? '#312e81' : 'rgba(255, 255, 255, 0.08)',
-                                                            color: activeTestCaseTab === idx ? '#e0e7ff' : 'rgba(255,255,255,0.5)',
-                                                            border: '1px solid',
-                                                            borderColor: activeTestCaseTab === idx ? '#6366f1' : 'rgba(255,255,255,0.2)',
-                                                            borderRadius: '12px',
-                                                            fontSize: '0.9rem',
-                                                            fontWeight: 600,
-                                                            cursor: 'pointer',
-                                                            whiteSpace: 'nowrap',
-                                                            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                                                            boxShadow: activeTestCaseTab === idx ? '0 0 20px rgba(99, 102, 241, 0.3)' : 'none',
-                                                            transform: activeTestCaseTab === idx ? 'translateY(-1px)' : 'none'
-                                                        }}
-                                                    >
-                                                        Case {idx + 1}
-                                                    </button>
-                                                ))}
-                                            </div>
-
                                             {/* Active Case Details */}
-                                            <div style={{ animation: 'fadeIn 0.2s ease-out' }}>
+                                            <div style={{ animation: 'fadeIn 0.2s ease-out', marginTop: '0.5rem' }}>
                                                 <div style={{ marginBottom: '1.25rem' }}>
                                                     <div style={{ color: 'rgba(255,255,255,0.4)', marginBottom: '0.6rem', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.5px' }}>Input</div>
                                                     <div style={{ background: '#262626', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', fontSize: '0.9rem', color: '#e2e2e2' }}>
