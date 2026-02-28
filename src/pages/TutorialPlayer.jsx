@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Play, CheckCircle, Clock, ChevronLeft, Lock, BookOpen, Share2, Award, Zap, Loader2 } from 'lucide-react';
 import axios from 'axios';
+import Loader from '../components/Loader';
 
 const TutorialPlayer = () => {
     const { id } = useParams();
@@ -99,11 +100,7 @@ const TutorialPlayer = () => {
         }
     };
 
-    if (loading) return (
-        <div style={{ minHeight: '100vh', background: '#0a0a0a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Loader2 className="animate-spin" size={40} color="#6366f1" />
-        </div>
-    );
+    if (loading) return <Loader text="Loading tutorial content..." />;
 
     if (!tutorial) return (
         <div style={{ minHeight: '100vh', background: '#0a0a0a', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>

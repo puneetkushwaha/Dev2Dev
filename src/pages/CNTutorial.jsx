@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { ChevronDown, Network, BookOpen, TerminalSquare, Info, Target, Loader2, Sparkles } from 'lucide-react';
+import { ChevronDown, Target, Clock, Activity, MessageSquare, BookOpen, Search, Star, Languages, Info, FileText, Loader2, Sparkles, Network, TerminalSquare } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Loader from '../components/Loader';
@@ -59,7 +59,7 @@ const CNTutorial = () => {
     const QA = ({ q, a, code, lang = 'bash' }) => {
         const [isOpen, setIsOpen] = useState(false);
         return (
-            <div className={`tp-qa-card ${isOpen ? 'open' : ''}`} onClick={() => setIsOpen(!isOpen)} style={{ cursor: 'pointer' }}>
+            <div className={`tp - qa - card ${isOpen ? 'open' : ''} `} onClick={() => setIsOpen(!isOpen)} style={{ cursor: 'pointer' }}>
                 <div className="tp-qa-header">
                     <h3>{q}</h3>
                     <div className="tp-qa-toggle">
@@ -96,7 +96,7 @@ const CNTutorial = () => {
             const rest = lines.slice(1).join('\n');
             let a = rest;
             let code = null;
-            const codeMatch = rest.match(/```(\w*)\n([\s\S]*?)```/);
+            const codeMatch = rest.match(/```(\w *) \n([\s\S] *?)```/);
             if (codeMatch) {
                 a = rest.replace(codeMatch[0], '').trim();
                 code = codeMatch[2].trim();
@@ -106,7 +106,7 @@ const CNTutorial = () => {
     };
 
     if (loading) {
-        return <Loader text="Loading CN Tutorial..." />;
+        return <Loader text="Synchronizing Network Protocols..." />;
     }
 
     const qas = parseQAs(topic?.content?.explanation);
@@ -130,13 +130,13 @@ const CNTutorial = () => {
                     <span className="tp-sidebar-label">Contents</span>
                     <nav className="tp-nav">
                         <button
-                            className={`tp-nav-item ${activeSection === 'tutorial' ? 'active' : ''}`}
+                            className={`tp - nav - item ${activeSection === 'tutorial' ? 'active' : ''} `}
                             onClick={() => scrollTo('tutorial')}
                         >
                             Full Tutorial
                         </button>
                         <button
-                            className={`tp-nav-item ${activeSection === 'mcqs' ? 'active' : ''}`}
+                            className={`tp - nav - item ${activeSection === 'mcqs' ? 'active' : ''} `}
                             onClick={() => scrollTo('mcqs')}
                         >
                             Practice MCQs

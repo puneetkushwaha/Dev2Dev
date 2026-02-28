@@ -8,6 +8,7 @@ import {
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import Loader from '../components/Loader';
 
 const LANGUAGES = [
     { id: 'javascript', name: 'JavaScript', icon: 'JS', boilerplate: '/**\n * @param {any} input\n * @return {any}\n */\nvar solution = function(input) {\n     \n       \n    };' },
@@ -165,11 +166,7 @@ const ProblemView = () => {
         setCode(smartCode);
     };
 
-    if (loading) return (
-        <div style={{ height: 'calc(100vh - 56px)', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0a0a' }}>
-            <Loader2 className="animate-spin" size={40} color="#6366f1" />
-        </div>
-    );
+    if (loading) return <Loader text="Synapsing Challenge Architectures..." />;
 
     if (!problem) return <div style={{ color: '#fff', textAlign: 'center', padding: '4rem' }}>Problem not found.</div>;
 

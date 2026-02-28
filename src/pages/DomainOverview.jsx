@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, BookOpen, Briefcase, DollarSign, Activity, CheckCircle, ShieldCheck, Cpu, Code2, Cloud, Database, Smartphone, Loader2, ChevronRight } from 'lucide-react';
+import { ArrowLeft, BookOpen, Briefcase, DollarSign, Activity, CheckCircle, ShieldCheck, Cpu, Code2, Cloud, Database, Smartphone, ChevronRight } from 'lucide-react';
 import axios from 'axios';
+import Loader from '../components/Loader';
 import { domainDetails, defaultDomain } from '../data/domainData';
 
 const DomainOverview = () => {
@@ -20,11 +21,11 @@ const DomainOverview = () => {
         const fetchTopics = async () => {
             setTopicsLoading(true);
             try {
-                const domainsRes = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains`);
+                const domainsRes = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'} /api/domains`);
                 const domain = domainsRes.data.find(d => d.name === decodedName);
                 if (!domain) { setDbTopics([]); return; }
                 const topicsRes = await axios.get(
-                    `${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains/topics/by-domain/${domain._id}`
+                    `${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'} /api/domains / topics / by - domain / ${domain._id} `
                 );
                 setDbTopics(topicsRes.data || []);
             } catch (err) {
@@ -41,11 +42,11 @@ const DomainOverview = () => {
         setLoading(true);
         const token = localStorage.getItem('token');
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/select-domain`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'} /api/users / select - domain`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token} `
                 },
                 body: JSON.stringify({ domainName: decodedName })
             });
@@ -78,7 +79,7 @@ const DomainOverview = () => {
             <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: -1, overflow: 'hidden' }}>
                 <div style={{
                     position: 'absolute', top: '-10%', left: '50%', transform: 'translateX(-50%)', width: '80vw', height: '60vw',
-                    background: `radial-gradient(circle, ${details.color}15 0%, rgba(0,0,0,0) 70%)`,
+                    background: `radial - gradient(circle, ${details.color}15 0 %, rgba(0, 0, 0, 0) 70 %)`,
                     filter: 'blur(80px)'
                 }}></div>
                 <div style={{
@@ -110,8 +111,8 @@ const DomainOverview = () => {
                         background: 'rgba(0,0,0,0.4)',
                         padding: '1.5rem',
                         borderRadius: '24px',
-                        border: `1px solid ${details.color}40`,
-                        boxShadow: `0 0 40px ${details.color}20`
+                        border: `1px solid ${details.color} 40`,
+                        boxShadow: `0 0 40px ${details.color} 20`
                     }}>
                         {details.icon}
                     </div>
@@ -155,7 +156,7 @@ const DomainOverview = () => {
                                                 </div>
                                             </div>
                                             <button
-                                                onClick={() => navigate(`/learning?topic=${encodeURIComponent(topic.title)}`, { state: { domain: decodedName, topic: topic } })}
+                                                onClick={() => navigate(`/ learning ? topic = ${encodeURIComponent(topic.title)} `, { state: { domain: decodedName, topic: topic } })}
                                                 style={{ background: 'transparent', border: 'none', color: details.color, cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}
                                             >
                                                 Start <ChevronRight size={14} />
@@ -196,8 +197,8 @@ const DomainOverview = () => {
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.8rem' }}>
                                 {details.roles.map((role, idx) => (
                                     <span key={idx} style={{
-                                        background: `rgba(255,255,255,0.05)`,
-                                        border: `1px solid rgba(255,255,255,0.1)`,
+                                        background: `rgba(255, 255, 255, 0.05)`,
+                                        border: `1px solid rgba(255, 255, 255, 0.1)`,
                                         padding: '0.6rem 1rem',
                                         borderRadius: '30px',
                                         fontSize: '0.95rem',
@@ -213,7 +214,7 @@ const DomainOverview = () => {
                             background: details.gradient,
                             borderRadius: '24px',
                             padding: '3rem 2rem',
-                            border: `1px solid ${details.color}40`,
+                            border: `1px solid ${details.color} 40`,
                             textAlign: 'center',
                             display: 'flex',
                             flexDirection: 'column',
@@ -246,13 +247,13 @@ const DomainOverview = () => {
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     gap: '0.5rem',
-                                    boxShadow: `0 10px 30px ${details.color}40`,
+                                    boxShadow: `0 10px 30px ${details.color} 40`,
                                     transition: 'transform 0.2s'
                                 }}
                                 onMouseEnter={(e) => { if (!loading) e.currentTarget.style.transform = 'translateY(-3px)' }}
                                 onMouseLeave={(e) => { if (!loading) e.currentTarget.style.transform = 'translateY(0)' }}
                             >
-                                {loading ? <Loader2 size={24} className="animate-spin" /> : "Continue & Start Learning"}
+                                {loading ? <Loader inline={true} /> : "Continue & Start Learning"}
                             </button>
                         </div>
                     </div>
@@ -261,11 +262,11 @@ const DomainOverview = () => {
             </div>
 
             <style jsx="true">{`
-                @keyframes fadeIn {
+@keyframes fadeIn {
                     from { opacity: 0; transform: translateY(20px); }
                     to { opacity: 1; transform: translateY(0); }
-                }
-            `}</style>
+}
+`}</style>
         </div>
     );
 };

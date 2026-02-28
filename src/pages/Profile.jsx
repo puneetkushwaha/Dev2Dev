@@ -7,13 +7,13 @@ import {
     Building2, Hash, School, Globe, ShieldAlert,
     Info, Code, FileText, Download, Github, Linkedin, Twitter, Youtube, Instagram, HelpCircle
 } from 'lucide-react';
+import GlobalLoader from '../components/Loader';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import ProfileStats from '../components/profile/ProfileStats';
 import ActivityHeatmap from '../components/profile/ActivityHeatmap';
 import LanguageStats from '../components/profile/LanguageStats';
 import SkillBreakdown from '../components/profile/SkillBreakdown';
-import Loader from '../components/Loader';
 
 const Profile = () => {
     const [userData, setUserData] = useState(null);
@@ -95,10 +95,10 @@ const Profile = () => {
         const token = localStorage.getItem('token');
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/update-profile`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'} /api/users / update - profile`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${token} `,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
@@ -135,10 +135,10 @@ const Profile = () => {
     const handleDomainChange = async (domainName) => {
         const token = localStorage.getItem('token');
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/select-domain`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'} /api/users / select - domain`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${token} `,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ domainName })
@@ -146,7 +146,7 @@ const Profile = () => {
             if (response.ok) {
                 setUserData(prev => ({ ...prev, selectedDomain: domainName }));
                 setIsChangingDomain(false);
-                setMessage({ type: 'success', text: `Track switched to ${domainName}` });
+                setMessage({ type: 'success', text: `Track switched to ${domainName} ` });
                 setTimeout(() => setMessage(null), 3000);
             }
         } catch (err) {
@@ -155,7 +155,7 @@ const Profile = () => {
     };
 
     if (loading) {
-        return <Loader text="Loading elite profile..." />;
+        return <GlobalLoader text="Loading elite profile..." />;
     }
 
     if (!userData) return null;
@@ -176,7 +176,7 @@ const Profile = () => {
                         position: 'fixed', top: '2rem', right: '2rem', zIndex: 2000,
                         padding: '1rem 2rem', borderRadius: '16px', backdropFilter: 'blur(10px)',
                         background: message.type === 'success' ? 'rgba(129, 140, 248,0.1)' : 'rgba(239,68,68,0.1)',
-                        border: `1px solid ${message.type === 'success' ? 'rgba(129, 140, 248,0.2)' : 'rgba(239,68,68,0.2)'}`,
+                        border: `1px solid ${message.type === 'success' ? 'rgba(129, 140, 248,0.2)' : 'rgba(239,68,68,0.2)'} `,
                         color: message.type === 'success' ? '#818cf8' : '#ef4444',
                         fontWeight: 700, boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
                         animation: 'slideIn 0.3s ease-out'
@@ -203,7 +203,7 @@ const Profile = () => {
                                 <UserIcon size={64} color="#fff" />
                             </div>
                             <h1 style={{ fontSize: '1.8rem', fontWeight: 900, color: '#fff', margin: '0 0 0.2rem 0' }}>{userData.name}</h1>
-                            <p style={{ opacity: 0.4, fontSize: '0.95rem', margin: 0 }}>{userData.username || `@${userData.name.toLowerCase().replace(/\s/g, '')}`}</p>
+                            <p style={{ opacity: 0.4, fontSize: '0.95rem', margin: 0 }}>{userData.username || `@${userData.name.toLowerCase().replace(/\s/g, '')} `}</p>
                         </div>
 
                         {/* Bio & Location Info */}
@@ -395,8 +395,8 @@ const Profile = () => {
                         </div>
 
                         <div style={{ marginTop: '3rem', display: 'flex', gap: '1.5rem' }}>
-                            <button onClick={handleSave} disabled={saveLoading} style={{ flex: 1, padding: '1.2rem', borderRadius: '20px', background: 'var(--brand-purple)', color: '#fff', fontWeight: 800, border: 'none', cursor: 'pointer' }}>
-                                {saveLoading ? <Loader2 className="animate-spin" /> : 'Save Profiles'}
+                            <button onClick={handleSave} disabled={saveLoading} style={{ flex: 1, padding: '1.2rem', borderRadius: '20px', background: 'linear-gradient(135deg, #6366f1, #a855f7)', color: '#fff', fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                {saveLoading ? <GlobalLoader text="Updating profile parameters..." /> : 'Save Profiles'}
                             </button>
                             <button onClick={() => setIsEditing(false)} style={{ flex: 1, padding: '1.2rem', borderRadius: '20px', background: 'rgba(255,255,255,0.05)', color: '#fff', fontWeight: 700, border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer' }}>Cancel</button>
                         </div>

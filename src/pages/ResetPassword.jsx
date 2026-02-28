@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Lock, Loader2, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
+import Loader from '../components/Loader';
 import './Auth.css';
 
 const ResetPassword = () => {
@@ -114,7 +115,7 @@ const ResetPassword = () => {
                         </div>
 
                         <button type="submit" className="auth-btn-primary" disabled={loading}>
-                            {loading ? <Loader2 size={24} className="animate-spin" /> : <>Update Vault <ArrowRight size={20} /></>}
+                            {loading ? <Loader text="Updating security parameters..." /> : <>Update Vault <ArrowRight size={20} /></>}
                         </button>
                     </form>
                 </div>

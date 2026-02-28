@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Loader from '../components/Loader';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
     Activity, AlertCircle, ArrowLeft, BookOpen, Bot, Brain, Briefcase,
@@ -11,7 +12,6 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { domainDetails, defaultDomain } from '../data/domainData';
 import axios from 'axios';
-import Loader from '../components/Loader';
 import './Learning.css';
 
 const Learning = () => {
@@ -976,10 +976,7 @@ const Learning = () => {
                             </div>
                             <div style={{ flex: 1, overflowY: 'auto', padding: '2rem' }}>
                                 {lessonLoading ? (
-                                    <div className="flex-center" style={{ height: '100%', flexDirection: 'column', gap: '1.5rem' }}>
-                                        <Cpu size={40} className="animate-spin" color={details.color} />
-                                        <p style={{ color: 'rgba(255,255,255,0.4)', fontWeight: 600 }}>Assembling dynamic learning module...</p>
-                                    </div>
+                                    <Loader text="Analyzing lesson content..." />
                                 ) : (
                                     <>
                                         {activeTab === 'theory' && renderTheory()}
@@ -1056,10 +1053,7 @@ const Learning = () => {
                                 </h2>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
                                     {topicsLoading ? (
-                                        <div style={{ padding: '2rem', textAlign: 'center', opacity: 0.4 }}>
-                                            <Loader2 size={24} className="animate-spin" style={{ margin: '0 auto' }} />
-                                            <p style={{ marginTop: '1rem', fontSize: '0.9rem' }}>Loading curriculum...</p>
-                                        </div>
+                                        <Loader text="Loading curriculum..." />
                                     ) : dbTopics.length > 0 ? (
                                         (() => {
                                             let categories = [];

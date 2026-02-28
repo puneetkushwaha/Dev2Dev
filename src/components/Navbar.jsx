@@ -162,20 +162,29 @@ const Navbar = () => {
                     item === 'Aptitude' ? (
                         <div
                             key={item}
-                            className="sub-nav-item relative"
+                            className="sub-nav-item"
                             ref={aptitudeRef}
                             onClick={() => setShowAptitudeDropdown(!showAptitudeDropdown)}
-                            style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+                            style={{ display: 'flex', alignItems: 'center', gap: '4px', position: 'relative' }}
                         >
                             {item}
                             <ChevronDown size={14} className={`transition-transform duration-200 ${showAptitudeDropdown ? 'rotate-180' : ''}`} />
 
                             {/* Dropdown Menu */}
                             {showAptitudeDropdown && (
-                                <div className="aptitude-dropdown nav-animate-fade-in">
-                                    <div className="aptitude-dropdown-item" onClick={(e) => { e.stopPropagation(); setShowAptitudeDropdown(false); navigate('/aptitude'); }}>Quantitative Aptitude</div>
-                                    <div className="aptitude-dropdown-item" onClick={(e) => { e.stopPropagation(); setShowAptitudeDropdown(false); navigate('/logical-reasoning'); }}>Logical Reasoning</div>
-                                    <div className="aptitude-dropdown-item" onClick={(e) => { e.stopPropagation(); setShowAptitudeDropdown(false); navigate('/verbal-ability'); }}>Verbal Ability</div>
+                                <div className="aptitude-dropdown elite-glass-dropdown">
+                                    <div className="aptitude-dropdown-item" onClick={(e) => { e.stopPropagation(); setShowAptitudeDropdown(false); navigate('/aptitude'); }}>
+                                        <div className="dropdown-circle"></div>
+                                        Quantitative Aptitude
+                                    </div>
+                                    <div className="aptitude-dropdown-item" onClick={(e) => { e.stopPropagation(); setShowAptitudeDropdown(false); navigate('/logical-reasoning'); }}>
+                                        <div className="dropdown-circle"></div>
+                                        Logical Reasoning
+                                    </div>
+                                    <div className="aptitude-dropdown-item" onClick={(e) => { e.stopPropagation(); setShowAptitudeDropdown(false); navigate('/verbal-ability'); }}>
+                                        <div className="dropdown-circle"></div>
+                                        Verbal Ability
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -481,9 +490,51 @@ const Navbar = () => {
                 .sub-nav-item { color: rgba(255,255,255,0.6); font-size: 0.8rem; font-weight: 600; cursor: pointer; white-space: nowrap; }
                 .sub-nav-item:hover { color: #fff; }
 
-                .aptitude-dropdown { position: absolute; top: 100%; left: 0; background: #1e1e1e; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; width: 180px; z-index: 1001; }
-                .aptitude-dropdown-item { padding: 0.8rem 1rem; color: #fff; font-size: 0.85rem; }
-                .aptitude-dropdown-item:hover { background: rgba(255,255,255,0.05); }
+                .aptitude-dropdown { 
+                    position: absolute; 
+                    top: calc(100% + 10px); 
+                    left: 0; 
+                    background: rgba(18, 18, 18, 0.95); 
+                    backdrop-filter: blur(20px);
+                    border: 1px solid rgba(255,255,255,0.1); 
+                    border-radius: 16px; 
+                    width: 220px; 
+                    z-index: 1001; 
+                    padding: 0.5rem;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(99,102,241,0.1);
+                    animation: elite-dropdown-slide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+                }
+                .aptitude-dropdown-item { 
+                    padding: 0.75rem 1rem; 
+                    color: rgba(255,255,255,0.7); 
+                    font-size: 0.85rem; 
+                    cursor: pointer;
+                    border-radius: 10px;
+                    transition: all 0.2s ease;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+                .aptitude-dropdown-item:hover { 
+                    background: rgba(255,255,255,0.05); 
+                    color: #fff;
+                    transform: translateX(5px);
+                }
+                .dropdown-circle {
+                    width: 6px;
+                    height: 6px;
+                    border-radius: 50%;
+                    background: #818cf8;
+                    opacity: 0.5;
+                }
+                .aptitude-dropdown-item:hover .dropdown-circle {
+                    opacity: 1;
+                    box-shadow: 0 0 8px #818cf8;
+                }
+                @keyframes elite-dropdown-slide {
+                    from { transform: translateY(10px); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
+                }
             `}</style>
         </div>
     );

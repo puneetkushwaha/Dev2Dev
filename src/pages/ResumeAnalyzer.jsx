@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { UploadCloud, FileText, CheckCircle, AlertTriangle } from 'lucide-react';
+import Loader from '../components/Loader';
 import './ResumeAnalyzer.css';
 
 const ResumeAnalyzer = () => {
@@ -90,11 +91,7 @@ const ResumeAnalyzer = () => {
             )}
 
             {isAnalyzing && (
-                <div className="card glass-panel flex-center" style={{ flexDirection: 'column', height: '300px', textAlign: 'center' }}>
-                    <div style={{ width: '48px', height: '48px', border: '4px solid rgba(99, 102, 241, 0.2)', borderTopColor: 'var(--accent-primary)', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: '1.5rem' }} />
-                    <h3>Dev2Dev AI is Analyzing your Resume...</h3>
-                    <p className="text-muted">Evaluating keywords, format, and experience.</p>
-                </div>
+                <Loader text="Dev2Dev AI is Analyzing your Resume..." />
             )}
 
             {result && (

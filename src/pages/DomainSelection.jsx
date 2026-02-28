@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Brain, Sparkles, Clock, Target, ArrowRight, Loader2, Code2, Database, Shield, Cloud, Smartphone, Cpu } from 'lucide-react';
+import Loader from '../components/Loader';
+import { Brain, Sparkles, Clock, Target, ArrowRight, Code2, Database, Shield, Cloud, Smartphone, Cpu } from 'lucide-react';
 import './DomainSelection.css';
 
 // Helper to map domain names to specific icons and gradient colors
@@ -133,7 +134,9 @@ const DomainSelection = () => {
         navigate(`/domain/${encodeURIComponent(domainName)}`);
     };
 
-    if (loading) return <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#0B0F19' }}><Loader2 className="animate-spin" size={48} color="#818CF8" /></div>;
+    if (loading) {
+        return <Loader text="Loading domains and user profile..." />;
+    }
 
     return (
         <div style={styles.pageBg}>
@@ -226,10 +229,7 @@ const DomainSelection = () => {
 
                             <div style={{ position: 'relative', zIndex: 2 }}>
                                 {aiLoading ? (
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', padding: '3rem 0' }}>
-                                        <Loader2 size={40} className="animate-spin" color="#818CF8" />
-                                        <p style={{ color: 'rgba(255,255,255,0.7)', textAlign: 'center', fontSize: '1rem', lineHeight: 1.6 }}>Scanning global tech trends<br />and matching with your skills...</p>
-                                    </div>
+                                    <Loader text="Scanning global tech trends and matching with your skills..." />
                                 ) : recommendation ? (
                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', animation: 'fadeIn 0.5s ease-out' }}>
                                         <div style={{

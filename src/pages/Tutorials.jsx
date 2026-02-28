@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Play, Clock, ChevronRight, Zap, Target, Search, Filter, Lock } from 'lucide-react';
 import axios from 'axios';
-import './Tutorials.css';
+import { Search, Play, Lock, ChevronRight } from 'lucide-react';
+import Loader from '../components/Loader';
 
 const Tutorials = () => {
     const navigate = useNavigate();
@@ -43,11 +43,7 @@ const Tutorials = () => {
         t.category.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    if (loading) return (
-        <div style={{ minHeight: '100vh', background: '#0a0a0a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div className="loader"></div>
-        </div>
-    );
+    if (loading) return <Loader text="Unlocking Premium Knowledge..." />;
 
     return (
         <div style={{ minHeight: '100vh', background: '#0a0a0a', color: '#fff', padding: '2rem 3rem' }}>

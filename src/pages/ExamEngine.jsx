@@ -5,6 +5,7 @@ import axios from 'axios';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import { mockQuestions } from '../data/mockQuestions';
+import Loader from '../components/Loader';
 
 const ExamEngine = () => {
     const [searchParams] = useSearchParams();
@@ -311,9 +312,7 @@ const ExamEngine = () => {
                 </div>
 
                 {loadingExams ? (
-                    <div className="flex-center" style={{ height: '400px' }}>
-                        <div className="animate-spin"><Loader2 size={40} color="var(--primary)" /></div>
-                    </div>
+                    <Loader text="Fetching certification exams..." />
                 ) : availableExams.length === 0 ? (
                     <div style={{ padding: '100px', textAlign: 'center', border: '1px dashed rgba(255,255,255,0.05)', borderRadius: '32px', color: 'rgba(255,255,255,0.3)' }}>
                         <Brain size={48} style={{ marginBottom: '1rem', opacity: 0.2 }} />

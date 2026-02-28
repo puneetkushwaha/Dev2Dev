@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Filter, Book, Zap, Clock, CheckCircle2, Trophy, Lock, ArrowLeftRight, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Tag, Building2, HelpCircle } from 'lucide-react';
 import axios from 'axios';
+import Loader from '../components/Loader';
 import './Problems.css';
 
 const Problems = () => {
@@ -124,6 +125,8 @@ const Problems = () => {
 
         return matchesSearch && matchesCategory && matchesDifficulty && matchesStatus;
     });
+
+    if (loading) return <Loader text="Architecting Your Challenge Library..." />;
 
     return (
         <div className="problems-container">
@@ -420,11 +423,7 @@ const Problems = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {loading ? (
-                                    [1, 2, 3, 4, 5].map(i => (
-                                        <tr key={i}><td colSpan="5" style={{ padding: '2rem', textAlign: 'center' }}><div className="shimmer" style={{ height: '20px', width: '80%', background: 'rgba(255,255,255,0.03)', borderRadius: '4px', margin: '0 auto' }} /></td></tr>
-                                    ))
-                                ) : filteredProblems.length === 0 ? (
+                                {filteredProblems.length === 0 ? (
                                     <tr><td colSpan="5" style={{ padding: '6rem', textAlign: 'center', color: 'rgba(255,255,255,0.2)' }}>
                                         <Book size={48} style={{ marginBottom: '1rem', opacity: 0.5 }} />
                                         <div style={{ fontSize: '1.1rem', fontWeight: 600 }}>No problems found</div>

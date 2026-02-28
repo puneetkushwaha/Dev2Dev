@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, Mail, Lock, BookOpen, Briefcase, Loader2, ArrowRight, CheckCircle, Sparkles } from 'lucide-react';
+import Loader from '../components/Loader';
 import { GoogleLogin } from '@react-oauth/google';
 import './Auth.css';
 
@@ -168,7 +169,7 @@ const Register = () => {
                         </div>
 
                         <button type="submit" className="auth-btn-primary" style={{ height: '54px' }} disabled={loading}>
-                            {loading ? <Loader2 size={24} className="animate-spin" /> : <>Initialize Genesis <ArrowRight size={18} /></>}
+                            {loading ? <Loader inline={true} text="Initializing..." /> : <>Initialize Journey <ArrowRight size={20} /></>}
                         </button>
                     </form>
 

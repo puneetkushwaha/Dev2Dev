@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Loader2, ArrowLeft, Send, ShieldCheck, Lock, Sparkles } from 'lucide-react';
+import { Mail, Loader2, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
+import Loader from '../components/Loader';
 import './Auth.css';
 
 const ForgotPassword = () => {
@@ -95,8 +96,8 @@ const ForgotPassword = () => {
                             </div>
                         </div>
 
-                        <button type="submit" className="auth-submit-btn" disabled={loading}>
-                            {loading ? <Loader2 size={24} className="animate-spin" /> : <>Dispatch Link <Send size={20} /></>}
+                        <button type="submit" className="auth-btn-primary" disabled={loading}>
+                            {loading ? <Loader text="Sending recovery link..." /> : <>Send Key Upgrade <ArrowRight size={20} /></>}
                         </button>
                     </form>
 

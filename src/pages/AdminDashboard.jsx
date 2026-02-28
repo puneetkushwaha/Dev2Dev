@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import Loader from '../components/Loader';
 import CoreCSManager from './CoreCSManager';
 import {
     Plus, Edit, Trash2, ChevronRight, ChevronDown,
@@ -1550,7 +1551,7 @@ const AdminDashboard = () => {
             </aside>
             <main className="pro-main">
                 {loading ? (
-                    <div className="loader-view"><Loader2 className="spin" size={32} /> Loading...</div>
+                    <Loader text="Accessing Administrative Control Center..." />
                 ) : (
                     <>
                         {activeTab === 'overview' && renderOverview()}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Loader2, ArrowRight, Sparkles, Target, Zap, ShieldCheck } from 'lucide-react';
+import Loader from '../components/Loader';
 import { GoogleLogin } from '@react-oauth/google';
 import './Auth.css';
 
@@ -139,7 +140,7 @@ const Login = () => {
                         </div>
 
                         <button type="submit" className="auth-btn-primary" disabled={loading}>
-                            {loading ? <Loader2 size={24} className="animate-spin" /> : <>Enter Protocol <ArrowRight size={18} /></>}
+                            {loading ? <Loader inline={true} text="Verifying..." /> : <>Access Ecosystem <ArrowRight size={20} /></>}
                         </button>
                     </form>
 

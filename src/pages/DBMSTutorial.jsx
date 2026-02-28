@@ -106,7 +106,7 @@ const DBMSTutorial = () => {
     };
 
     if (loading) {
-        return <Loader text="Loading DBMS Tutorial..." />;
+        return <Loader text="Allocating System Resources..." />;
     }
 
     const qas = parseQAs(topic?.content?.explanation);

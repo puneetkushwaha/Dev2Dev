@@ -5,6 +5,7 @@ import {
     ChevronRight, BookOpen, Clock, BarChart, ArrowRight,
     Search, RotateCcw, ArrowLeft, Circle, CheckCircle2
 } from 'lucide-react';
+import Loader from '../components/Loader';
 import axios from 'axios';
 
 const subjects = [
@@ -157,9 +158,7 @@ const CoreCSSubject = () => {
 
                 <main className="glass-panel" style={{ borderRadius: '32px', padding: '2.5rem', minHeight: '600px', border: `1px solid ${subject.color}20` }}>
                     {loading ? (
-                        <div className="flex-center" style={{ height: '400px' }}>
-                            <div className="animate-spin"><RotateCcw size={40} color={subject.color} /></div>
-                        </div>
+                        <Loader text={`Initializing ${subject.name} Environment...`} />
                     ) : !selectedTopic ? (
                         <div className="animate-fade-in">
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>

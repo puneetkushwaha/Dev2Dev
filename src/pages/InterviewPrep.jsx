@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Target, MonitorPlay, ChevronRight, Activity, Users, FileText, Code2, Briefcase, Loader2, Lock, Sparkles, Trophy, Star, Search, LogIn, Clock, Zap, ArrowRight } from 'lucide-react';
+import Loader from '../components/Loader';
 
 const InterviewPrep = () => {
     const navigate = useNavigate();
@@ -140,14 +141,7 @@ const InterviewPrep = () => {
     };
 
     if (loading) {
-        return (
-            <div className="flex-center" style={{ height: '100vh', background: '#020205' }}>
-                <div className="loader-container">
-                    <Loader2 size={48} className="animate-spin" style={{ color: 'var(--accent-primary)' }} />
-                    <div className="pulse-circle"></div>
-                </div>
-            </div>
-        );
+        return <Loader text="Initializing your career path..." />;
     }
 
     return (

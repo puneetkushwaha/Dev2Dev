@@ -1,14 +1,27 @@
 import React from 'react';
 import './Loader.css';
 
-const Loader = ({ text = "Loading..." }) => {
-    return (
-        <div className="global-loader-container">
-            <div className="loader-content">
-                <img src="/logo.png" alt="DevElevate" className="loader-logo" />
-                <div className="loader-spinner"></div>
+const Loader = ({ text = "", inline = false }) => {
+    if (inline) {
+        return (
+            <div className="elite-loader-inline">
+                <div className="elite-spinner-mini"></div>
+                {text && <span>{text}</span>}
             </div>
-            {text && <p className="loader-text">{text}</p>}
+        );
+    }
+
+    return (
+        <div className="elite-loader-container">
+            <div className="elite-glass-backdrop"></div>
+            <div className="elite-logo-platform">
+                <div className="elite-aura"></div>
+                <div className="elite-logo-wrapper">
+                    <img src="/logo.png" alt="DevElevate" className="elite-logo" />
+                    <div className="elite-shimmer"></div>
+                </div>
+            </div>
+            {text && <p className="elite-loader-text">{text}</p>}
         </div>
     );
 };
