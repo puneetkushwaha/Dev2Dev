@@ -90,7 +90,7 @@ const OSTutorial = () => {
 
     const parseQAs = (explanation) => {
         if (!explanation) return [];
-        return explanation.split('### ').filter(Boolean).map(block => {
+        return explanation.split('### ').filter(block => block.trim().length > 0).map(block => {
             const lines = block.trim().split('\n');
             const q = lines[0];
             const rest = lines.slice(1).join('\n');

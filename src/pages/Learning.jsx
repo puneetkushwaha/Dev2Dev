@@ -215,7 +215,7 @@ const Learning = () => {
                 // If there's at least some content, use DB data
                 if (content.theory || content.description) {
                     setLessonContent(content);
-                    setUserCode(content.solution_stub);
+                    setUserCode(content.solution_stub || `function solution() {\n  // Write your code here\n}`);
                     setLessonLoading(false);
                     return;
                 }
@@ -300,7 +300,8 @@ const Learning = () => {
                     const fullCode = `(function() { 
                         ${cleanUserCode}; 
                         try {
-                            const actual = ${cleanInput};
+                            // Use eval for the input itself to handle any labeled or complex expressions
+                            const actual = eval(${JSON.stringify(cleanInput)});
                             const expectedValue = ${cleanExpected};
                             
                             const actualStr = JSON.stringify(actual);

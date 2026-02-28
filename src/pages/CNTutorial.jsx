@@ -59,7 +59,7 @@ const CNTutorial = () => {
     const QA = ({ q, a, code, lang = 'bash' }) => {
         const [isOpen, setIsOpen] = useState(false);
         return (
-            <div className={`tp - qa - card ${isOpen ? 'open' : ''} `} onClick={() => setIsOpen(!isOpen)} style={{ cursor: 'pointer' }}>
+            <div className={`tp-qa-card ${isOpen ? 'open' : ''}`} onClick={() => setIsOpen(!isOpen)} style={{ cursor: 'pointer' }}>
                 <div className="tp-qa-header">
                     <h3>{q}</h3>
                     <div className="tp-qa-toggle">
@@ -96,7 +96,7 @@ const CNTutorial = () => {
             const rest = lines.slice(1).join('\n');
             let a = rest;
             let code = null;
-            const codeMatch = rest.match(/```(\w *) \n([\s\S] *?)```/);
+            const codeMatch = rest.match(/```(\w*)\n([\s\S]*?)```/);
             if (codeMatch) {
                 a = rest.replace(codeMatch[0], '').trim();
                 code = codeMatch[2].trim();
@@ -130,13 +130,13 @@ const CNTutorial = () => {
                     <span className="tp-sidebar-label">Contents</span>
                     <nav className="tp-nav">
                         <button
-                            className={`tp - nav - item ${activeSection === 'tutorial' ? 'active' : ''} `}
+                            className={`tp-nav-item ${activeSection === 'tutorial' ? 'active' : ''}`}
                             onClick={() => scrollTo('tutorial')}
                         >
                             Full Tutorial
                         </button>
                         <button
-                            className={`tp - nav - item ${activeSection === 'mcqs' ? 'active' : ''} `}
+                            className={`tp-nav-item ${activeSection === 'mcqs' ? 'active' : ''}`}
                             onClick={() => scrollTo('mcqs')}
                         >
                             Practice MCQs

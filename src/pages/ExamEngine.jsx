@@ -23,6 +23,9 @@ const ExamEngine = () => {
     const [submitting, setSubmitting] = useState(false);
     const [result, setResult] = useState(null);
     const [skipsRemaining, setSkipsRemaining] = useState(5);
+    const [timeLeft, setTimeLeft] = useState(0);
+    const [isRunning, setIsRunning] = useState(false);
+    const [codingOutput, setCodingOutput] = useState({});
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -71,6 +74,54 @@ const ExamEngine = () => {
         setSkipsRemaining(5);
         setExamStarted(true);
         setResult(null);
+        setTimeLeft((examObj.durationMinutes || 30) * 60);
+        setIsRunning(true);
+        setCodingOutput({});
+    };
+
+    useEffect(() => {
+        let timer;
+        if (isRunning && timeLeft > 0) {
+            timer = setInterval(() => {
+                setTimeLeft(prev => prev - 1);
+            }, 1000);
+        } else if (timeLeft === 0 && isRunning) {
+            handleSubmitExam();
+        }
+        return () => clearInterval(timer);
+    }, [isRunning, timeLeft]);
+
+    const formatTime = (seconds) => {
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = seconds % 60;
+        return `${h > 0 ? h + ':' : ''}${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
+    };
+
+    const handleRunCode = () => {
+        const code = answers[currentQuestion];
+        if (!code) return alert("Pehle code likho!");
+
+        // Mock execution for demo/exam purposes
+        setCodingOutput(prev => ({
+            ...prev,
+            [currentQuestion]: {
+                status: 'Running...',
+                output: 'Analyzing code structure...',
+                success: true
+            }
+        }));
+
+        setTimeout(() => {
+            setCodingOutput(prev => ({
+                ...prev,
+                [currentQuestion]: {
+                    status: 'Success',
+                    output: 'Code logic seems correct. Will be evaluated by AI upon submission.',
+                    success: true
+                }
+            }));
+        }, 1500);
     };
 
     const handleAnswerChange = (val) => {
@@ -518,7 +569,7 @@ const ExamEngine = () => {
                         <Brain size={18} color="#A5B4FC" />
                         <span style={{ color: '#A5B4FC', marginRight: '1rem' }}>Skips: {skipsRemaining}</span>
                         <Timer size={20} />
-                        <span>{activeExam.durationMinutes ? `${activeExam.durationMinutes}:00` : '29:59'}</span>
+                        <span>{formatTime(timeLeft)}</span>
                     </div>
                 </div>
 
@@ -573,20 +624,45 @@ const ExamEngine = () => {
                                 style={{
                                     flex: 1,
                                     width: '100%',
-                                    minHeight: '350px',
+                                    minHeight: '400px',
                                     background: '#1e1e1e',
                                     color: '#d4d4d4',
                                     fontFamily: '"Fira Code", monospace',
                                     fontSize: '1rem',
                                     padding: '1.5rem',
                                     border: 'none',
-                                    borderBottomLeftRadius: '8px',
-                                    borderBottomRightRadius: '8px',
-                                    resize: 'vertical',
                                     outline: 'none',
                                     lineHeight: '1.6'
                                 }}
                             />
+
+                            <div style={{ background: '#1e1e1e', padding: '1rem', borderTop: '1px solid #333', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+                                    <button
+                                        className="btn btn-primary"
+                                        onClick={handleRunCode}
+                                        style={{ background: '#3b82f6', fontSize: '0.9rem', padding: '0.5rem 1.5rem' }}
+                                    >
+                                        <Cpu size={16} style={{ marginRight: '0.5rem' }} /> Run Code
+                                    </button>
+                                </div>
+
+                                {codingOutput[currentQuestion] && (
+                                    <div style={{
+                                        background: '#0f172a',
+                                        padding: '1rem',
+                                        borderRadius: '8px',
+                                        border: `1px solid ${codingOutput[currentQuestion].success ? '#1e293b' : '#ef4444'}`,
+                                        fontSize: '0.9rem',
+                                        fontFamily: 'monospace'
+                                    }}>
+                                        <div style={{ color: codingOutput[currentQuestion].success ? '#3b82f6' : '#ef4444', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+                                            {codingOutput[currentQuestion].status}
+                                        </div>
+                                        <div style={{ color: '#94a3b8' }}>{codingOutput[currentQuestion].output}</div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     )}
                 </div>
