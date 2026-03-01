@@ -21,12 +21,10 @@ const DomainOverview = () => {
         const fetchTopics = async () => {
             setTopicsLoading(true);
             try {
-                const domainsRes = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'} /api/domains`);
+                const domainsRes = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains`);
                 const domain = domainsRes.data.find(d => d.name === decodedName);
                 if (!domain) { setDbTopics([]); return; }
-                const topicsRes = await axios.get(
-                    `${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'} /api/domains / topics / by - domain / ${domain._id} `
-                );
+                `${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains/topics/by-domain/${domain._id}`
                 setDbTopics(topicsRes.data || []);
             } catch (err) {
                 console.warn('Could not load topics from DB', err.message);
@@ -42,11 +40,11 @@ const DomainOverview = () => {
         setLoading(true);
         const token = localStorage.getItem('token');
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'} /api/users / select - domain`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/select-domain`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token} `
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({ domainName: decodedName })
             });
@@ -156,7 +154,7 @@ const DomainOverview = () => {
                                                 </div>
                                             </div>
                                             <button
-                                                onClick={() => navigate(`/ learning ? topic = ${encodeURIComponent(topic.title)} `, { state: { domain: decodedName, topic: topic } })}
+                                                onClick={() => navigate(`/learning?topic=${encodeURIComponent(topic.title)}`, { state: { domain: decodedName, topic: topic } })}
                                                 style={{ background: 'transparent', border: 'none', color: details.color, cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}
                                             >
                                                 Start <ChevronRight size={14} />

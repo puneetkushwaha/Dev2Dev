@@ -95,11 +95,10 @@ const Profile = () => {
         const token = localStorage.getItem('token');
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'} /api/users / update - profile`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/update-profile`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${token} `,
-                    'Content-Type': 'application/json'
+                    'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify({
                     name: editData.name,
@@ -135,18 +134,17 @@ const Profile = () => {
     const handleDomainChange = async (domainName) => {
         const token = localStorage.getItem('token');
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'} /api/users / select - domain`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/select-domain`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token} `,
-                    'Content-Type': 'application/json'
+                    'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify({ domainName })
             });
             if (response.ok) {
                 setUserData(prev => ({ ...prev, selectedDomain: domainName }));
                 setIsChangingDomain(false);
-                setMessage({ type: 'success', text: `Track switched to ${domainName} ` });
+                setMessage({ type: 'success', text: `Track switched to ${domainName}` });
                 setTimeout(() => setMessage(null), 3000);
             }
         } catch (err) {
@@ -203,7 +201,7 @@ const Profile = () => {
                                 <UserIcon size={64} color="#fff" />
                             </div>
                             <h1 style={{ fontSize: '1.8rem', fontWeight: 900, color: '#fff', margin: '0 0 0.2rem 0' }}>{userData.name}</h1>
-                            <p style={{ opacity: 0.4, fontSize: '0.95rem', margin: 0 }}>{userData.username || `@${userData.name.toLowerCase().replace(/\s/g, '')} `}</p>
+                            <p style={{ opacity: 0.4, fontSize: '0.95rem', margin: 0 }}>{userData.username || `@${userData.name.toLowerCase().replace(/\s/g, '')}`}</p>
                         </div>
 
                         {/* Bio & Location Info */}

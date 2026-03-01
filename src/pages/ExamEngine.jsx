@@ -610,7 +610,7 @@ const ExamEngine = () => {
 
                 <div className="card glass-panel" style={{
                     marginBottom: '2rem',
-                    flex: 'none',
+                    flex: 1,
                     display: 'flex',
                     flexDirection: 'column',
                     minHeight: '650px',
@@ -660,10 +660,10 @@ const ExamEngine = () => {
                                 display: 'flex',
                                 flexDirection: 'column',
                                 flex: 1,
-                                minHeight: '600px',
+                                minHeight: '500px',
                                 border: `1px solid ${isTerminalMode ? '#333' : 'rgba(255,255,255,0.1)'}`,
                                 borderRadius: '12px',
-                                overflow: 'hidden',
+                                overflow: 'visible',
                                 margin: '1.5rem',
                                 background: isTerminalMode ? '#000' : '#1e1e1e',
                                 boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
