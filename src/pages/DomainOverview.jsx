@@ -24,7 +24,7 @@ const DomainOverview = () => {
                 const domainsRes = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains`);
                 const domain = domainsRes.data.find(d => d.name === decodedName);
                 if (!domain) { setDbTopics([]); return; }
-                `${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains/topics/by-domain/${domain._id}`
+                const topicsRes = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains/topics/by-domain/${domain._id}`);
                 setDbTopics(topicsRes.data || []);
             } catch (err) {
                 console.warn('Could not load topics from DB', err.message);

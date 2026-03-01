@@ -121,6 +121,15 @@ const Learning = () => {
         fetchUserData();
     }, [location.search, location.state]);
 
+    const isTerminalMode =
+        activeTopic?.toLowerCase().includes('linux') ||
+        activeTopic?.toLowerCase().includes('bash') ||
+        activeTopic?.toLowerCase().includes('terminal') ||
+        activeTopic?.toLowerCase().includes('networking') ||
+        activeTopic?.toLowerCase().includes('it skills') ||
+        lessonContent?.description?.toLowerCase().includes('terminal') ||
+        lessonContent?.description?.toLowerCase().includes('command');
+
     useEffect(() => {
         if (chatEndRef.current) {
             chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -282,9 +291,53 @@ const Learning = () => {
 
     const runCode = () => {
         try {
-            // Sanitize user code: remove markdown backticks if leaked from stubs
+            // Sanitize user code
             const cleanUserCode = userCode.replace(/```javascript\n|```[a-z]*\n|```/g, '').trim();
             const testCases = lessonContent?.testCases || lessonContent?.test_cases || [];
+
+            if (isTerminalMode) {
+                // Terminal/Bash Evaluation: Content-based matching
+                let passedCount = 0;
+                let firstFailure = null;
+
+                const tcs = testCases.length > 0 ? testCases : [{ input: 'N/A', expected: lessonContent?.test_case || 'true' }];
+
+                tcs.forEach((tc, idx) => {
+                    const expected = String(tc.expected || '').trim();
+                    const isPlaceholder = expected.toLowerCase() === 'sample output' || expected.toLowerCase() === 'placeholder' || expected.toLowerCase() === 'output';
+
+                    if (!expected || (isPlaceholder && cleanUserCode.length > 5)) {
+                        passedCount++;
+                        return;
+                    }
+
+                    // For terminal mode, we check if the expected substrings exist in user code
+                    // Handling multiple possible values separated by commas if needed, 
+                    // but usually AI provides one clear expectation.
+                    const lowerUserCode = cleanUserCode.toLowerCase();
+                    const lowerExpected = expected.toLowerCase();
+
+                    if (lowerUserCode.includes(lowerExpected)) {
+                        passedCount++;
+                    } else if (!firstFailure) {
+                        firstFailure = `Test Case ${idx + 1} Failed: Output does not contain expected value "${expected}"`;
+                    }
+                });
+
+                if (passedCount === (tcs.length || 1)) {
+                    setExecutionResult({
+                        success: true,
+                        message: `Accepted: ${passedCount} checks passed! 🚀`
+                    });
+                    saveProgress(activeTopic);
+                } else {
+                    setExecutionResult({
+                        success: false,
+                        message: firstFailure || "Verification Failed"
+                    });
+                }
+                return;
+            }
 
             if (testCases.length === 0) {
                 // Fallback to old single test_case if no array found
@@ -305,27 +358,23 @@ const Learning = () => {
 
             testCases.forEach((tc, idx) => {
                 try {
-                    // Robustly handle cases where tc.input or tc.expected might not be strings
                     const rawInput = tc.input !== undefined && tc.input !== null ? String(tc.input) : '';
                     const rawExpected = tc.expected !== undefined && tc.expected !== null ? String(tc.expected) : '';
 
                     const cleanInput = rawInput.replace(/;$/, '').trim();
                     const cleanExpected = rawExpected.replace(/;$/, '').trim();
 
-                    if (!cleanInput) return; // Skip empty test cases
+                    if (!cleanInput && !cleanExpected) return;
 
-                    // We evaluate in a sandbox-ish closure
                     const fullCode = `(function() { 
                         ${cleanUserCode}; 
                         try {
-                            // Use eval for the input itself to handle any labeled or complex expressions
                             const actual = eval(${JSON.stringify(cleanInput)});
                             const expectedValue = ${cleanExpected};
                             
                             const actualStr = JSON.stringify(actual);
                             const expectedStr = JSON.stringify(expectedValue);
                             
-                            // Return detailed result for better UI feedback
                             if (actualStr === expectedStr || String(actual) === String(expectedValue)) {
                                 return { success: true };
                             }
@@ -345,9 +394,8 @@ const Learning = () => {
                     if (res.success) {
                         passedCount++;
                     } else if (res.error) {
-                        if (!firstFailure) firstFailure = `Runtime Error on Test Case ${idx + 1} (${cleanInput}): ${res.error}`;
+                        if (!firstFailure) firstFailure = `Runtime Error on Test Case ${idx + 1}: ${res.error}`;
                     } else if (!firstFailure) {
-                        // Include the input in the failure message so the user knows WHICH one failed
                         firstFailure = `Test Case ${idx + 1} Failed: For input "${cleanInput}", expected ${res.expected}, but got ${res.actual}`;
                     }
                 } catch (e) {
@@ -584,7 +632,7 @@ const Learning = () => {
                 <div className="editor-section">
                     <div style={{ background: '#333', height: '40px', display: 'flex', alignItems: 'center', padding: '0 1rem', justifyContent: 'space-between' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#818cf8', fontSize: '0.85rem', fontWeight: 600 }}>
-                            <Code size={14} /> JavaScript <ChevronDown size={14} />
+                            {isTerminalMode ? <Terminal size={14} /> : <Code size={14} />} {isTerminalMode ? 'Terminal' : 'JavaScript'} <ChevronDown size={14} />
                         </div>
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                             <Settings size={14} style={{ opacity: 0.5 }} />

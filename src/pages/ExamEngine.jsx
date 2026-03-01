@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Timer, CheckCircle, AlertCircle, ChevronLeft, ChevronRight, SkipForward, Loader2, Brain, CheckSquare, Award, Cpu, Code2, Terminal, Settings, RotateCcw, FileCode, Play } from 'lucide-react';
+import Editor from '@monaco-editor/react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { jsPDF } from 'jspdf';
@@ -25,9 +26,20 @@ const ExamEngine = () => {
     const [skipsRemaining, setSkipsRemaining] = useState(5);
     const [timeLeft, setTimeLeft] = useState(0);
     const [isRunning, setIsRunning] = useState(false);
-    const [codingOutput, setCodingOutput] = useState({});
     const navigate = useNavigate();
     const editorRef = useRef(null);
+    const [editorLoaded, setEditorLoaded] = useState(false);
+    const [editorError, setEditorError] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (!editorLoaded) {
+                setEditorError(true);
+            }
+        }, 5000);
+        return () => clearTimeout(timer);
+    }, [editorLoaded]);
+
 
     useEffect(() => {
         if (typeQuery === 'mock' && idQuery && mockQuestions[idQuery]) {
@@ -77,7 +89,6 @@ const ExamEngine = () => {
         setResult(null);
         setTimeLeft((examObj.durationMinutes || 30) * 60);
         setIsRunning(true);
-        setCodingOutput({});
     };
 
     useEffect(() => {
@@ -99,60 +110,6 @@ const ExamEngine = () => {
         return `${h > 0 ? h + ':' : ''}${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
     };
 
-    const handleRunCode = () => {
-        const code = answers[currentQuestion];
-        if (!code) return alert("Pehle code likho!");
-
-        // Capture console output
-        const logs = [];
-        const originalLog = console.log;
-        const originalError = console.error;
-        console.log = (...args) => {
-            logs.push(args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(" "));
-            originalLog(...args);
-        };
-        console.error = (...args) => {
-            logs.push("Error: " + args.join(" "));
-            originalError(...args);
-        };
-
-        setCodingOutput(prev => ({
-            ...prev,
-            [currentQuestion]: {
-                status: 'Running...',
-                output: 'Executing code environment...',
-                success: true
-            }
-        }));
-
-        try {
-            // Use Function constructor for execution
-            // We wrap it to handle async or just basic execution
-            const executeCode = new Function(code);
-            const result = executeCode();
-
-            setCodingOutput(prev => ({
-                ...prev,
-                [currentQuestion]: {
-                    status: 'Success',
-                    output: logs.length > 0 ? logs.join("\n") : (result !== undefined ? `Result: ${JSON.stringify(result)}` : "Code executed successfully (No output)"),
-                    success: true
-                }
-            }));
-        } catch (err) {
-            setCodingOutput(prev => ({
-                ...prev,
-                [currentQuestion]: {
-                    status: 'Execution Error',
-                    output: err.message,
-                    success: false
-                }
-            }));
-        } finally {
-            console.log = originalLog;
-            console.error = originalError;
-        }
-    };
 
     const handleAnswerChange = (val) => {
         setAnswers(prev => ({
@@ -162,23 +119,7 @@ const ExamEngine = () => {
     };
 
     const handleKeyDown = (e) => {
-        if (e.key === 'Tab') {
-            e.preventDefault();
-            const start = e.target.selectionStart;
-            const end = e.target.selectionEnd;
-            const value = e.target.value;
-
-            // set textarea value to: text before caret + tab + text after caret
-            const newValue = value.substring(0, start) + "    " + value.substring(end);
-            handleAnswerChange(newValue);
-
-            // put caret at right position again
-            setTimeout(() => {
-                if (editorRef.current) {
-                    editorRef.current.selectionStart = editorRef.current.selectionEnd = start + 4;
-                }
-            }, 0);
-        }
+        // Monaco handles Tab automatically
     };
 
     const generatePDF = (reportData) => {
@@ -619,7 +560,9 @@ const ExamEngine = () => {
                     boxShadow: '0 20px 50px rgba(0,0,0,0.3)'
                 }}>
                     <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.02)' }}>
-                        <h2 style={{ fontSize: '1.25rem', lineHeight: 1.6, color: '#fff', margin: 0 }}>{q?.questionText || q?.q || 'No question text provided'}</h2>
+                        <h2 style={{ fontSize: '1.25rem', lineHeight: 1.6, color: '#fff', margin: 0 }}>
+                            {q?.questionText || q?.q || 'No question text provided'}
+                        </h2>
                     </div>
 
                     {(() => {
@@ -630,7 +573,7 @@ const ExamEngine = () => {
                             q?.questionText?.toLowerCase().includes('bash') ||
                             q?.questionText?.toLowerCase().includes('terminal');
 
-                        if (q?.type?.toLowerCase() === 'mcq' || (q?.options && q?.options.length > 0 && q?.type !== 'coding')) {
+                        if ((q?.type?.toLowerCase() === 'mcq' && q?.options && q.options.length > 0) || (q?.options && q?.options.length > 0 && q?.type !== 'coding')) {
                             return (
                                 <div style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                     {(q?.options || []).map((opt, i) => (
@@ -701,64 +644,80 @@ const ExamEngine = () => {
                                 </div>
 
                                 {/* Editor Body / Terminal Prompt */}
-                                <div style={{ flex: 1, display: 'flex', position: 'relative', overflow: 'hidden' }}>
-                                    {!isTerminalMode && (
-                                        <div style={{
-                                            width: '45px',
-                                            background: '#1e1e1e',
-                                            borderRight: '1px solid rgba(255,255,255,0.05)',
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            alignItems: 'flex-end',
-                                            paddingTop: '1.5rem',
-                                            paddingRight: '10px',
-                                            color: '#858585',
-                                            fontFamily: '"Fira Code", monospace',
-                                            fontSize: '0.85rem',
-                                            userSelect: 'none',
-                                            lineHeight: '1.7'
-                                        }}>
-                                            {(answers[currentQuestion] || '').split('\n').map((_, i) => (
-                                                <div key={i}>{i + 1}</div>
-                                            ))}
-                                            {(!(answers[currentQuestion])) && [1, 2, 3, 4, 5].map(n => <div key={n}>{n}</div>)}
-                                        </div>
-                                    )}
-
+                                <div style={{ flex: 1, minHeight: '400px', position: 'relative', overflow: 'hidden' }}>
                                     {isTerminalMode && (
                                         <div style={{
+                                            position: 'absolute',
+                                            top: 0,
+                                            left: 0,
+                                            bottom: 0,
+                                            width: '45px',
                                             padding: '1.5rem 0.5rem 0 1.5rem',
                                             color: '#4ec9b0',
                                             fontFamily: 'monospace',
                                             fontSize: '1rem',
-                                            lineHeight: '1.7'
+                                            lineHeight: '1.7',
+                                            background: '#000',
+                                            zIndex: 10,
+                                            borderRight: '1px solid rgba(255,255,255,0.05)'
                                         }}>
                                             #
                                         </div>
                                     )}
-
-                                    <textarea
-                                        ref={editorRef}
-                                        value={answers[currentQuestion] || ''}
-                                        onChange={(e) => handleAnswerChange(e.target.value)}
-                                        onKeyDown={handleKeyDown}
-                                        placeholder={isTerminalMode ? "Enter terminal commands..." : "// Start coding here... \nfunction solution() {\n    // your code\n}"}
-                                        spellCheck="false"
-                                        style={{
-                                            flex: 1,
-                                            background: 'transparent',
-                                            color: isTerminalMode ? '#4ec9b0' : '#d4d4d4',
-                                            fontFamily: isTerminalMode ? '"Courier New", monospace' : '"Fira Code", "Consolas", monospace',
-                                            fontSize: '1rem',
-                                            padding: isTerminalMode ? '1.5rem 1rem' : '1.5rem 1rem',
-                                            border: 'none',
-                                            outline: 'none',
-                                            lineHeight: '1.7',
-                                            resize: 'none',
-                                            whiteSpace: 'pre',
-                                            overflow: 'auto'
-                                        }}
-                                    />
+                                    {editorError ? (
+                                        <div style={{ padding: '2rem', background: '#1e1e1e', border: '1px solid #f48771', borderRadius: '8px' }}>
+                                            <div style={{ color: '#f48771', marginBottom: '1rem', fontWeight: 'bold' }}>⚠️ Editor Engine Blocked</div>
+                                            <p style={{ color: '#aaa', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
+                                                Your browser or network is blocking the professional editor scripts.
+                                                You can still write your code in the fallback box below.
+                                            </p>
+                                            <textarea
+                                                style={{
+                                                    width: '100%',
+                                                    height: '350px',
+                                                    background: '#000',
+                                                    color: '#fff',
+                                                    border: '1px solid #333',
+                                                    padding: '1rem',
+                                                    fontFamily: 'monospace',
+                                                    outline: 'none'
+                                                }}
+                                                value={answers[currentQuestion] || ''}
+                                                onChange={(e) => handleAnswerChange(e.target.value)}
+                                                placeholder="Enter your solution here..."
+                                            />
+                                        </div>
+                                    ) : (
+                                        <Editor
+                                            loading={<div style={{ color: '#4ec9b0', padding: '2rem', fontFamily: 'monospace', background: '#1e1e1e', height: '400px' }}>⚡ Connecting to Cloud Editor Engine...</div>}
+                                            height="400px"
+                                            language="javascript"
+                                            theme="vs-dark"
+                                            value={answers[currentQuestion] !== undefined ? answers[currentQuestion] : (q?.starterCode || '// Start typing your solution here...\n')}
+                                            onChange={handleAnswerChange}
+                                            onMount={(editor) => {
+                                                console.log("Monaco Mounted");
+                                                setEditorLoaded(true);
+                                                editorRef.current = editor;
+                                            }}
+                                            options={{
+                                                fontSize: 14,
+                                                fontFamily: '"Fira Code", "Consolas", monospace',
+                                                minimap: { enabled: false },
+                                                scrollBeyondLastLine: false,
+                                                lineNumbers: isTerminalMode ? 'off' : 'on',
+                                                automaticLayout: true,
+                                                tabSize: 4,
+                                                padding: { top: 16, left: isTerminalMode ? 35 : 0 },
+                                                readOnly: false,
+                                                renderLineHighlight: isTerminalMode ? 'none' : 'all',
+                                                scrollbar: {
+                                                    vertical: 'visible',
+                                                    horizontal: 'visible'
+                                                }
+                                            }}
+                                        />
+                                    )}
                                 </div>
 
                                 {/* Footer Output Area */}
@@ -767,63 +726,7 @@ const ExamEngine = () => {
                                     borderTop: '1px solid rgba(255,255,255,0.1)',
                                     padding: '1rem'
                                 }}>
-                                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                                        <button
-                                            onClick={handleRunCode}
-                                            style={{
-                                                background: isTerminalMode ? '#333' : '#007acc',
-                                                color: '#fff',
-                                                border: isTerminalMode ? '1px solid #555' : 'none',
-                                                padding: '0.5rem 1.25rem',
-                                                borderRadius: '4px',
-                                                fontSize: '0.85rem',
-                                                fontWeight: '600',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '6px',
-                                                cursor: 'pointer'
-                                            }}
-                                        >
-                                            {isTerminalMode ? <Terminal size={14} /> : <Play size={14} fill="white" />}
-                                            {isTerminalMode ? 'EXECUTE COMMAND' : 'Run Code'}
-                                        </button>
-                                    </div>
-
-                                    {codingOutput[currentQuestion] && (
-                                        <div style={{
-                                            marginTop: '1rem',
-                                            background: '#000',
-                                            borderRadius: '4px',
-                                            border: `1px solid ${isTerminalMode ? '#4ec9b0' : '#333'}`,
-                                            overflow: 'hidden'
-                                        }}>
-                                            <div style={{
-                                                background: '#252526',
-                                                padding: '4px 12px',
-                                                fontSize: '0.7rem',
-                                                color: '#aaa',
-                                                textTransform: 'uppercase',
-                                                display: 'flex',
-                                                justifyContent: 'space-between'
-                                            }}>
-                                                <span>{isTerminalMode ? 'SYSTEM CONSOLE' : 'Terminal'}</span>
-                                                <span style={{ color: codingOutput[currentQuestion].success ? '#4ec9b0' : '#f48771' }}>
-                                                    {codingOutput[currentQuestion].status}
-                                                </span>
-                                            </div>
-                                            <div style={{
-                                                padding: '1rem',
-                                                maxHeight: '200px',
-                                                overflowY: 'auto',
-                                                fontFamily: 'monospace',
-                                                fontSize: '0.9rem',
-                                                color: isTerminalMode ? '#4ec9b0' : '#cccccc',
-                                                whiteSpace: 'pre-wrap'
-                                            }}>
-                                                {codingOutput[currentQuestion].output}
-                                            </div>
-                                        </div>
-                                    )}
+                                    {/* Run Code functionality removed for Exam Mode */}
                                 </div>
                             </div>
                         );

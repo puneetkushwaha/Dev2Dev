@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
-    ChevronLeft, Play, Send, Loader2, Brain, CheckCircle,
+    ChevronLeft, Send, Loader2, Brain, CheckCircle,
     AlertCircle, Maximize2, FileText, Lock, ChevronDown, Clock, MoveLeft, History, RotateCcw, Settings, FileCode
 } from 'lucide-react';
+import Editor from '@monaco-editor/react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import axios from 'axios';
@@ -23,6 +24,18 @@ const MockAssessment = () => {
     const mockId = searchParams.get('id');
     const navigate = useNavigate();
     const editorRef = useRef(null);
+    const [editorLoaded, setEditorLoaded] = useState(false);
+    const [editorError, setEditorError] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (!editorLoaded) {
+                setEditorError(true);
+            }
+        }, 5000);
+        return () => clearTimeout(timer);
+    }, [editorLoaded]);
+
 
     const [questions, setQuestions] = useState([]);
     const [activeQIndex, setActiveQIndex] = useState(0);
@@ -127,21 +140,7 @@ const MockAssessment = () => {
     };
 
     const handleKeyDown = (e) => {
-        if (e.key === 'Tab') {
-            e.preventDefault();
-            const start = e.target.selectionStart;
-            const end = e.target.selectionEnd;
-            const value = e.target.value;
-
-            const newValue = value.substring(0, start) + "    " + value.substring(end);
-            handleCodeChange(newValue);
-
-            setTimeout(() => {
-                if (editorRef.current) {
-                    editorRef.current.selectionStart = editorRef.current.selectionEnd = start + 4;
-                }
-            }, 0);
-        }
+        // Monaco handles Tab automatically
     };
 
     const handleLangChange = (lang) => {
@@ -198,6 +197,27 @@ const MockAssessment = () => {
             setActiveBottomTab('Test Result');
         } else {
             setSubmitting(true);
+        }
+
+        // HTML/Web Detection for Local Preview
+        const code = answers[activeQIndex] || "";
+        const trimmedCode = code.trim().toLowerCase();
+        const isHTML = trimmedCode.startsWith('<!doctype') || trimmedCode.startsWith('<html') || trimmedCode.startsWith('<div') || trimmedCode.startsWith('<p') || trimmedCode.startsWith('<script') || trimmedCode.startsWith('<style');
+
+        if (isRun && isHTML) {
+            setResults(prev => ({
+                ...prev,
+                [activeQIndex]: {
+                    passed: true,
+                    message: "HTML Preview",
+                    type: "run",
+                    isPreview: true,
+                    html: code,
+                    feedback: "Web content rendered in preview mode."
+                }
+            }));
+            setRunning(false);
+            return;
         }
 
         try {
@@ -459,48 +479,54 @@ const MockAssessment = () => {
                             </div>
                         </div>
 
-                        <div style={{ flex: 1, display: 'flex', position: 'relative', overflow: 'hidden' }}>
-                            <div style={{
-                                width: '45px',
-                                background: '#1e1e1e',
-                                borderRight: '1px solid rgba(255,255,255,0.05)',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'flex-end',
-                                paddingTop: '1.5rem',
-                                paddingRight: '10px',
-                                color: '#858585',
-                                fontFamily: '"Fira Code", monospace',
-                                fontSize: '0.85rem',
-                                userSelect: 'none',
-                                lineHeight: '1.7'
-                            }}>
-                                {(answers[activeQIndex] || '').split('\n').map((_, i) => (
-                                    <div key={i}>{i + 1}</div>
-                                ))}
-                                {(!(answers[activeQIndex])) && [1, 2, 3, 4, 5].map(n => <div key={n}>{n}</div>)}
-                            </div>
-                            <textarea
-                                ref={editorRef}
-                                value={answers[activeQIndex] || ''}
-                                onChange={(e) => handleCodeChange(e.target.value)}
-                                onKeyDown={handleKeyDown}
-                                spellCheck="false" autoComplete="off" autoCorrect="off" autoCapitalize="off"
-                                style={{
-                                    flex: 1,
-                                    background: 'transparent',
-                                    color: '#d4d4d4',
-                                    fontFamily: '"Fira Code", "Consolas", monospace',
-                                    fontSize: '1rem',
-                                    padding: '1.5rem 1rem',
-                                    border: 'none',
-                                    outline: 'none',
-                                    lineHeight: '1.7',
-                                    resize: 'none',
-                                    whiteSpace: 'pre',
-                                    overflow: 'auto'
-                                }}
-                            />
+                        <div style={{ flex: 1, minHeight: '400px', position: 'relative', overflow: 'hidden', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                            {editorError ? (
+                                <div style={{ padding: '2rem', background: '#fff', border: '1px solid #f48771', borderRadius: '8px', flex: 1 }}>
+                                    <div style={{ color: '#f48771', marginBottom: '1rem', fontWeight: 'bold' }}>⚠️ Editor Engine Blocked</div>
+                                    <p style={{ color: '#666', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
+                                        Your browser or network is blocking the professional editor scripts.
+                                        You can still write your code in the fallback box below.
+                                    </p>
+                                    <textarea
+                                        style={{
+                                            width: '100%',
+                                            height: '350px',
+                                            background: '#f9f9f9',
+                                            color: '#333',
+                                            border: '1px solid #ccc',
+                                            padding: '1rem',
+                                            fontFamily: 'monospace',
+                                            outline: 'none'
+                                        }}
+                                        value={answers[activeQIndex] || ''}
+                                        onChange={(e) => handleCodeChange(e.target.value)}
+                                        placeholder="Enter your solution here..."
+                                    />
+                                </div>
+                            ) : (
+                                <Editor
+                                    loading={<div style={{ color: '#4ec9b0', padding: '2rem', fontFamily: 'monospace', background: '#fafafa', height: '400px' }}>⚡ Connecting to Cloud Editor Engine...</div>}
+                                    height="400px"
+                                    language={selectedLang.id === 'cpp' ? 'cpp' : selectedLang.id === 'python' ? 'python' : selectedLang.id === 'java' ? 'java' : selectedLang.id === 'c' ? 'c' : 'javascript'}
+                                    theme="vs-dark"
+                                    value={answers[activeQIndex] !== undefined && answers[activeQIndex] !== '' ? answers[activeQIndex] : (currentQ?.starterCode || '// Start typing your solution here...\n')}
+                                    onChange={handleCodeChange}
+                                    onMount={(editor) => {
+                                        setEditorLoaded(true);
+                                        editorRef.current = editor;
+                                    }}
+                                    options={{
+                                        fontSize: 14,
+                                        fontFamily: '"Fira Code", "Consolas", monospace',
+                                        minimap: { enabled: false },
+                                        scrollBeyondLastLine: false,
+                                        lineNumbers: 'on',
+                                        automaticLayout: true,
+                                        tabSize: 4,
+                                        padding: { top: 16 }
+                                    }}
+                                />
+                            )}
                         </div>
                     </div>
 
@@ -510,7 +536,7 @@ const MockAssessment = () => {
                         <div style={{ display: 'flex', background: '#fafafa', borderBottom: '1px solid #e0e0e0', padding: '0 8px', alignItems: 'center', justifyContent: 'space-between' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <div style={{ display: 'flex' }}>
-                                    {['Testcase', 'Test Result'].map(tab => (
+                                    {['Testcase'].map(tab => (
                                         <button key={tab} onClick={() => setActiveBottomTab(tab)}
                                             style={{
                                                 padding: '0.6rem 1rem', background: activeBottomTab === tab ? '#fff' : 'transparent',
@@ -580,48 +606,14 @@ const MockAssessment = () => {
                             )}
 
                             {activeBottomTab === 'Test Result' && (
-                                <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                                    {!currentResult && !running && (
-                                        <div style={{ color: '#888', textAlign: 'center', marginTop: '2rem' }}>
-                                            <p style={{ fontSize: '0.9rem' }}>Run your code to see the test results here.</p>
-                                        </div>
-                                    )}
-                                    {running && (
-                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '1rem' }}>
-                                            <Loader2 className="animate-spin" size={24} color="#818cf8" />
-                                            <span style={{ fontSize: '0.85rem', color: '#666' }}>Judging...</span>
-                                        </div>
-                                    )}
-                                    {currentResult && !running && (
-                                        <div>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-                                                <h2 style={{ color: currentResult.passed ? '#818cf8' : '#ef4444', margin: 0, fontSize: '1.2rem' }}>
-                                                    {currentResult.message}
-                                                </h2>
-                                                <span style={{ color: '#888', fontSize: '0.85rem' }}>Runtime: 49ms</span>
-                                            </div>
-                                            <div style={{ fontSize: '0.85rem', color: '#444' }}>
-                                                Check all test cases to verify correctness.
-                                            </div>
-                                        </div>
-                                    )}
+                                <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#888' }}>
+                                    <p>Run functionality is disabled during assessments.</p>
                                 </div>
                             )}
                         </div>
 
                         {/* Bottom Actions Bar */}
                         <div style={{ height: '48px', borderTop: '1px solid #e0e0e0', display: 'flex', alignItems: 'center', padding: '0 1rem', justifyContent: 'flex-end', gap: '0.5rem', background: '#fff' }}>
-                            <button
-                                onClick={handleRunCode}
-                                disabled={running || submitting}
-                                style={{
-                                    background: '#f8f9fa', color: '#333', border: '1px solid #d1d5db', padding: '0.45rem 1rem',
-                                    borderRadius: '6px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: '0.2s'
-                                }}
-                            >
-                                <Play size={14} /> Run Code
-                            </button>
-
                             <button
                                 onClick={() => submitToBackend(false)}
                                 disabled={running || submitting}

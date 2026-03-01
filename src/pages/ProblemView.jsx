@@ -5,6 +5,7 @@ import {
     AlertCircle, Maximize2, FileText, MessageSquare, History,
     Terminal, Info, ChevronDown, Book, Lock, Tag, Building2, Lightbulb, RotateCcw, Settings, FileCode
 } from 'lucide-react';
+import Editor from '@monaco-editor/react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -22,6 +23,18 @@ const ProblemView = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const editorRef = useRef(null);
+    const [editorLoaded, setEditorLoaded] = useState(false);
+    const [editorError, setEditorError] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (!editorLoaded) {
+                setEditorError(true);
+            }
+        }, 5000);
+        return () => clearTimeout(timer);
+    }, [editorLoaded]);
+
     const [problem, setProblem] = useState(null);
     const [loading, setLoading] = useState(true);
     const [code, setCode] = useState('');
@@ -123,21 +136,7 @@ const ProblemView = () => {
     };
 
     const handleKeyDown = (e) => {
-        if (e.key === 'Tab') {
-            e.preventDefault();
-            const start = e.target.selectionStart;
-            const end = e.target.selectionEnd;
-            const value = e.target.value;
-
-            const newValue = value.substring(0, start) + "    " + value.substring(end);
-            handleCodeChange(newValue);
-
-            setTimeout(() => {
-                if (editorRef.current) {
-                    editorRef.current.selectionStart = editorRef.current.selectionEnd = start + 4;
-                }
-            }, 0);
-        }
+        // Monaco handles Tab automatically
     };
 
     const handleLangChange = (lang) => {
@@ -199,6 +198,22 @@ const ProblemView = () => {
 
         setActiveBottomTab('Test Result');
         setResult(null);
+
+        // HTML/Web Detection for Local Preview
+        const trimmedCode = code.trim().toLowerCase();
+        const isHTML = trimmedCode.startsWith('<!doctype') || trimmedCode.startsWith('<html') || trimmedCode.startsWith('<div') || trimmedCode.startsWith('<p') || trimmedCode.startsWith('<script') || trimmedCode.startsWith('<style');
+
+        if (isRun && isHTML) {
+            setResult({
+                status: 'Success',
+                message: 'HTML Preview',
+                isPreview: true,
+                html: code,
+                aiFeedback: 'Web content rendered in preview mode.'
+            });
+            setRunning(false);
+            return;
+        }
 
         try {
             console.log(`🚀 Sending submission to: ${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/submit-exam`);
@@ -515,48 +530,68 @@ const ProblemView = () => {
                             </div>
                         </div>
 
-                        <div style={{ flex: 1, display: 'flex', position: 'relative', overflow: 'hidden' }}>
-                            <div style={{
-                                width: '45px',
-                                background: '#1e1e1e',
-                                borderRight: '1px solid rgba(255,255,255,0.05)',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'flex-end',
-                                paddingTop: '1.5rem',
-                                paddingRight: '10px',
-                                color: '#858585',
-                                fontFamily: '"Fira Code", monospace',
-                                fontSize: '0.85rem',
-                                userSelect: 'none',
-                                lineHeight: '1.7'
-                            }}>
-                                {(code || '').split('\n').map((_, i) => (
-                                    <div key={i}>{i + 1}</div>
-                                ))}
-                                {(!(code)) && [1, 2, 3, 4, 5].map(n => <div key={n}>{n}</div>)}
-                            </div>
-                            <textarea
-                                ref={editorRef}
-                                value={code}
-                                onChange={(e) => handleCodeChange(e.target.value)}
-                                onKeyDown={handleKeyDown}
-                                spellCheck="false" autoComplete="off" autoCorrect="off" autoCapitalize="off"
-                                style={{
-                                    flex: 1,
-                                    background: 'transparent',
-                                    color: '#d4d4d4',
-                                    fontFamily: '"Fira Code", "Consolas", monospace',
-                                    fontSize: '1rem',
-                                    padding: '1.5rem 1rem',
-                                    border: 'none',
-                                    outline: 'none',
-                                    lineHeight: '1.7',
-                                    resize: 'none',
-                                    whiteSpace: 'pre',
-                                    overflow: 'auto'
-                                }}
-                            />
+                        <div style={{ flex: 1, position: 'relative', overflow: 'hidden', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                            {editorError ? (
+                                <div style={{ padding: '2rem', background: '#1e1e1e', border: '1px solid #f48771', borderRadius: '8px', flex: 1 }}>
+                                    <div style={{ color: '#f48771', marginBottom: '1rem', fontWeight: 'bold' }}>⚠️ Editor Engine Blocked</div>
+                                    <p style={{ color: '#aaa', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
+                                        Your browser or network is blocking the professional editor scripts.
+                                        You can still write your code in the fallback box below.
+                                    </p>
+                                    <textarea
+                                        style={{
+                                            width: '100%',
+                                            height: '350px',
+                                            background: '#000',
+                                            color: '#fff',
+                                            border: '1px solid #333',
+                                            padding: '1rem',
+                                            fontFamily: 'monospace',
+                                            outline: 'none'
+                                        }}
+                                        value={code}
+                                        onChange={(e) => handleCodeChange(e.target.value)}
+                                        placeholder="Enter your solution here..."
+                                    />
+                                </div>
+                            ) : (
+                                <Editor
+                                    loading={
+                                        <div style={{
+                                            color: '#4ec9b0',
+                                            padding: '2rem',
+                                            fontFamily: 'monospace',
+                                            background: '#1a1a1a',
+                                            height: '100%'
+                                        }}>
+                                            ⚡ Connecting to Cloud Editor Engine...
+                                        </div>
+                                    }
+                                    height="100%"
+                                    language={selectedLang.id === 'cpp' ? 'cpp' : selectedLang.id === 'python' ? 'python' : selectedLang.id === 'java' ? 'java' : selectedLang.id === 'c' ? 'c' : 'javascript'}
+                                    theme="vs-dark"
+                                    value={code}
+                                    onChange={handleCodeChange}
+                                    onMount={(editor) => {
+                                        setEditorLoaded(true);
+                                        editorRef.current = editor;
+                                    }}
+                                    options={{
+                                        fontSize: 14,
+                                        fontFamily: '"Fira Code", "Consolas", monospace',
+                                        minimap: { enabled: false },
+                                        scrollBeyondLastLine: false,
+                                        lineNumbers: 'on',
+                                        glyphMargin: false,
+                                        folding: true,
+                                        lineDecorationsWidth: 10,
+                                        lineNumbersMinChars: 3,
+                                        automaticLayout: true,
+                                        tabSize: 4,
+                                        padding: { top: 16 }
+                                    }}
+                                />
+                            )}
                         </div>
 
                         {/* Editor Bottom Toolbar */}
@@ -716,45 +751,52 @@ const ProblemView = () => {
                                             <p>Run your code to see the test results here.</p>
                                         </div>
                                     )}
+
                                     {(submitting || running) && (
                                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '1rem' }}>
                                             <Loader2 className="animate-spin" size={32} color="#6366f1" />
                                             <span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.4)' }}>AI Evaluation in progress...</span>
                                         </div>
                                     )}
-                                    {result && (
-                                        <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+
+                                    {result && !running && (
+                                        <div style={{ animation: 'fadeIn 0.3s ease-out', height: '100%', display: 'flex', flexDirection: 'column' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
                                                 <div style={{
                                                     padding: '0.5rem 1rem',
                                                     borderRadius: '8px',
-                                                    background: result.passed ? 'rgba(79, 70, 229, 0.1)' : 'rgba(239,68,68,0.1)',
+                                                    background: result.status === 'Success' ? 'rgba(79, 70, 229, 0.1)' : 'rgba(239,68,68,0.1)',
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     gap: '0.5rem'
                                                 }}>
-                                                    {result.passed ? <CheckCircle size={18} color="#6366f1" /> : <AlertCircle size={18} color="#ef4444" />}
-                                                    <span style={{ fontSize: '1.1rem', fontWeight: 800, color: result.passed ? '#818cf8' : '#ef4444' }}>
-                                                        {result.passed ? 'Accepted' : 'Wrong Answer'}
+                                                    {result.status === 'Success' ? <CheckCircle size={18} color="#6366f1" /> : <AlertCircle size={18} color="#ef4444" />}
+                                                    <span style={{ fontSize: '1.1rem', fontWeight: 800, color: result.status === 'Success' ? '#818cf8' : '#ef4444' }}>
+                                                        {result.message || (result.status === 'Success' ? 'Accepted' : 'Error')}
                                                     </span>
                                                 </div>
-                                                <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem' }}>Runtime: 52ms</span>
+                                                {!result.isPreview && <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem' }}>Runtime: 52ms</span>}
                                             </div>
 
-                                            <div style={{ background: 'rgba(99,102,241,0.05)', padding: '1.5rem', borderRadius: '12px', border: '1px solid rgba(99,102,241,0.15)' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem', color: '#818cf8' }}>
-                                                    <Brain size={20} />
-                                                    <span style={{ fontWeight: 700, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.5px' }}>AI Insights</span>
+                                            {result.isPreview ? (
+                                                <div style={{ flex: 1, border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', overflow: 'hidden', background: '#fff' }}>
+                                                    <iframe
+                                                        title="web-preview"
+                                                        style={{ width: '100%', height: '400px', border: 'none' }}
+                                                        srcDoc={result.html}
+                                                    />
                                                 </div>
-                                                <div style={{ fontSize: '0.95rem', lineHeight: 1.6, color: 'rgba(255,255,255,0.85)' }}>
-                                                    {result.detailedAnalysis?.codingResults?.[0]?.aiFeedback || "Evaluation completed successfully. Review your logic and complexity."}
-                                                    {result.detailedAnalysis?.codingResults?.[0]?.error && (
-                                                        <div style={{ display: 'none' }}>
-                                                            {console.error("AI Evaluation Error:", result.detailedAnalysis.codingResults[0].error)}
-                                                        </div>
-                                                    )}
+                                            ) : (
+                                                <div style={{ background: 'rgba(99,102,241,0.05)', padding: '1.5rem', borderRadius: '12px', border: '1px solid rgba(99,102,241,0.15)' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem', color: '#818cf8' }}>
+                                                        <Brain size={20} />
+                                                        <span style={{ fontWeight: 700, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.5px' }}>AI Insights</span>
+                                                    </div>
+                                                    <div style={{ fontSize: '0.95rem', lineHeight: 1.6, color: 'rgba(255,255,255,0.85)' }}>
+                                                        {result.detailedAnalysis?.codingResults?.[0]?.aiFeedback || result.aiFeedback || "Evaluation completed successfully. Review your logic and complexity."}
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            )}
                                         </div>
                                     )}
                                 </div>
