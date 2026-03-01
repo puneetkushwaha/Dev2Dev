@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, BookOpen, Briefcase, DollarSign, Activity, CheckCircle, ShieldCheck, Cpu, Code2, Cloud, Database, Smartphone, ChevronRight } from 'lucide-react';
+import { ArrowLeft, BookOpen, Briefcase, DollarSign, Activity, CheckCircle, ShieldCheck, Cpu, Code2, Cloud, Database, Smartphone, ChevronRight, Loader2 } from 'lucide-react';
 import axios from 'axios';
 import Loader from '../components/Loader';
 import { domainDetails, defaultDomain } from '../data/domainData';

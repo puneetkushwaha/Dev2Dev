@@ -560,23 +560,6 @@ const ExamEngine = () => {
                         const isCurrent = currentQuestion === idx;
 
                         const handleSidebarClick = () => {
-                            // Rule: Can only jump to answered questions or the immediate next available if properly progressed
-                            // User says: "phle wla questions complete kro"
-                            if (idx > currentQuestion) {
-                                // Checking if all questions before the target index are "dealt with" (answered or skipped)
-                                // But since we want strict sequential, we check if everything up to target is answered.
-                                // Actually, simpler: if they click anything higher than current, check if current is answered.
-                                if (!answers[currentQuestion]) {
-                                    alert("Pehle pehle wala question complete karo!");
-                                    return;
-                                }
-
-                                // Also prevent jumping too far ahead if they try to skip multiple
-                                if (idx > currentQuestion + 1) {
-                                    alert("Aap questions jump nahi kar sakte. Ek ek karke progress karein.");
-                                    return;
-                                }
-                            }
                             setCurrentQuestion(idx);
                         };
 
@@ -592,8 +575,7 @@ const ExamEngine = () => {
                                     color: isAnswered ? 'var(--text)' : 'var(--text-secondary)',
                                     cursor: 'pointer',
                                     fontWeight: isCurrent ? 'bold' : 'normal',
-                                    transition: 'all 0.2s',
-                                    opacity: (idx > currentQuestion + 1) ? 0.4 : 1
+                                    transition: 'all 0.2s'
                                 }}
                             >
                                 {idx + 1}
