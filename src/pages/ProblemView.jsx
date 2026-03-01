@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     ChevronLeft, Play, Send, Loader2, Brain, CheckCircle,
     AlertCircle, Maximize2, FileText, MessageSquare, History,
-    Terminal, Info, ChevronDown, Book, Lock, Tag, Building2, Lightbulb
+    Terminal, Info, ChevronDown, Book, Lock, Tag, Building2, Lightbulb, RotateCcw, Settings, FileCode
 } from 'lucide-react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
@@ -21,6 +21,7 @@ const LANGUAGES = [
 const ProblemView = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const editorRef = useRef(null);
     const [problem, setProblem] = useState(null);
     const [loading, setLoading] = useState(true);
     const [code, setCode] = useState('');
@@ -116,6 +117,28 @@ const ProblemView = () => {
         };
         fetchProblem();
     }, [id]);
+
+    const handleCodeChange = (val) => {
+        setCode(val);
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            const start = e.target.selectionStart;
+            const end = e.target.selectionEnd;
+            const value = e.target.value;
+
+            const newValue = value.substring(0, start) + "    " + value.substring(end);
+            handleCodeChange(newValue);
+
+            setTimeout(() => {
+                if (editorRef.current) {
+                    editorRef.current.selectionStart = editorRef.current.selectionEnd = start + 4;
+                }
+            }, 0);
+        }
+    };
 
     const handleLangChange = (lang) => {
         setSelectedLang(lang);
@@ -438,103 +461,103 @@ const ProblemView = () => {
 
                 {/* Right Side: Editor & Bottom Panel */}
                 <div style={{ flex: 1.2, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    {/* Editor Panel */}
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#1a1a1a', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden' }}>
+                    {/* Editor Panel - VS Code Dark Overhaul */}
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#1e1e1e', overflow: 'hidden' }}>
+
                         <div style={{
-                            height: '40px',
-                            background: '#262626',
-                            borderBottom: '1px solid rgba(255,255,255,0.05)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            padding: '0 0.75rem',
-                            justifyContent: 'space-between',
+                            height: '40px', background: '#252526', borderBottom: '1px solid rgba(255,255,255,0.05)',
+                            display: 'flex', alignItems: 'center', padding: '0 0.75rem', justifyContent: 'space-between',
                             flexShrink: 0
                         }}>
-                            <div style={{ position: 'relative' }}>
-                                <button
-                                    onClick={() => setShowLangMenu(!showLangMenu)}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '0.5rem',
-                                        background: 'transparent',
-                                        border: 'none',
-                                        color: '#fff',
-                                        fontSize: '0.8rem',
-                                        fontWeight: 600,
-                                        cursor: 'pointer',
-                                        padding: '0.25rem 0.5rem',
-                                        borderRadius: '4px'
-                                    }}
-                                >
-                                    <span style={{ color: '#818cf8' }}>{selectedLang.name}</span>
-                                    <ChevronDown size={14} style={{ opacity: 0.5 }} />
-                                </button>
-
-                                {showLangMenu && (
-                                    <div style={{
-                                        position: 'absolute',
-                                        top: '100%',
-                                        left: 0,
-                                        marginTop: '8px',
-                                        background: '#2a2a2a',
-                                        border: '1px solid rgba(255,255,255,0.1)',
-                                        borderRadius: '8px',
-                                        boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
-                                        zIndex: 100,
-                                        minWidth: '140px',
-                                        overflow: 'hidden'
-                                    }}>
-                                        {LANGUAGES.map(lang => (
-                                            <button
-                                                key={lang.id}
-                                                onClick={() => handleLangChange(lang)}
-                                                style={{
-                                                    width: '100%',
-                                                    textAlign: 'left',
-                                                    padding: '0.75rem 1rem',
-                                                    background: selectedLang.id === lang.id ? 'rgba(79, 70, 229, 0.1)' : 'transparent',
-                                                    color: selectedLang.id === lang.id ? '#818cf8' : '#fff',
-                                                    border: 'none',
-                                                    fontSize: '0.85rem',
-                                                    cursor: 'pointer',
-                                                    transition: '0.1s'
-                                                }}
-                                            >
-                                                {lang.name}
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
+                            <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+                                <div style={{ position: 'relative', height: '100%', display: 'flex', alignItems: 'center' }}>
+                                    <button
+                                        onClick={() => setShowLangMenu(!showLangMenu)}
+                                        style={{
+                                            display: 'flex', alignItems: 'center', gap: '8px', background: '#1e1e1e',
+                                            border: 'none', color: '#cccccc', fontSize: '0.8rem',
+                                            cursor: 'pointer', padding: '0 1rem', height: '100%',
+                                            borderTop: '1px solid #007acc'
+                                        }}
+                                    >
+                                        <FileCode size={14} color="#519aba" />
+                                        <span>{selectedLang.name}</span>
+                                        <ChevronDown size={12} style={{ opacity: 0.5 }} />
+                                    </button>
+                                    {showLangMenu && (
+                                        <div style={{
+                                            position: 'absolute', top: '100%', left: 0, marginTop: '2px',
+                                            background: '#252526', border: '1px solid #333', borderRadius: '4px',
+                                            boxShadow: '0 10px 25px rgba(0,0,0,0.5)', zIndex: 100, minWidth: '160px', overflow: 'hidden'
+                                        }}>
+                                            {LANGUAGES.map(lang => (
+                                                <button key={lang.id} onClick={() => handleLangChange(lang)}
+                                                    style={{
+                                                        width: '100%', textAlign: 'left', padding: '0.8rem 1rem', border: 'none',
+                                                        background: selectedLang.id === lang.id ? '#37373d' : 'transparent',
+                                                        color: selectedLang.id === lang.id ? '#fff' : '#cccccc',
+                                                        fontSize: '0.85rem', cursor: 'pointer', transition: '0.1s'
+                                                    }}>
+                                                    {lang.name}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.25)', paddingLeft: '1rem' }}>
+                                    {q?.title}
+                                </div>
                             </div>
-
-                            <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                <button style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', padding: '0.4rem' }}>
-                                    <Maximize2 size={16} />
-                                </button>
+                            <div style={{ display: 'flex', gap: '15px', color: 'rgba(255,255,255,0.4)', paddingRight: '0.5rem' }}>
+                                <RotateCcw size={14} style={{ cursor: 'pointer' }} onClick={() => handleCodeChange(q?.starterCodes?.[selectedLang.id] || selectedLang.boilerplate)} />
+                                <Settings size={14} style={{ cursor: 'pointer' }} />
+                                <Maximize2 size={14} style={{ cursor: 'pointer' }} />
                             </div>
                         </div>
 
-                        <textarea
-                            value={code}
-                            onChange={(e) => setCode(e.target.value)}
-                            spellCheck="false"
-                            autoComplete="off"
-                            autoCorrect="off"
-                            autoCapitalize="off"
-                            style={{
-                                flex: 1,
-                                background: '#1a1a1a',
-                                border: 'none',
-                                color: '#e5e7eb',
-                                fontFamily: '"Fira Code", "Source Code Pro", "JetBrains Mono", monospace',
-                                fontSize: '0.98rem',
-                                padding: '1.5rem',
-                                resize: 'none',
-                                outline: 'none',
-                                lineHeight: 1.6
-                            }}
-                        />
+                        <div style={{ flex: 1, display: 'flex', position: 'relative', overflow: 'hidden' }}>
+                            <div style={{
+                                width: '45px',
+                                background: '#1e1e1e',
+                                borderRight: '1px solid rgba(255,255,255,0.05)',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'flex-end',
+                                paddingTop: '1.5rem',
+                                paddingRight: '10px',
+                                color: '#858585',
+                                fontFamily: '"Fira Code", monospace',
+                                fontSize: '0.85rem',
+                                userSelect: 'none',
+                                lineHeight: '1.7'
+                            }}>
+                                {(code || '').split('\n').map((_, i) => (
+                                    <div key={i}>{i + 1}</div>
+                                ))}
+                                {(!(code)) && [1, 2, 3, 4, 5].map(n => <div key={n}>{n}</div>)}
+                            </div>
+                            <textarea
+                                ref={editorRef}
+                                value={code}
+                                onChange={(e) => handleCodeChange(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                                spellCheck="false" autoComplete="off" autoCorrect="off" autoCapitalize="off"
+                                style={{
+                                    flex: 1,
+                                    background: 'transparent',
+                                    color: '#d4d4d4',
+                                    fontFamily: '"Fira Code", "Consolas", monospace',
+                                    fontSize: '1rem',
+                                    padding: '1.5rem 1rem',
+                                    border: 'none',
+                                    outline: 'none',
+                                    lineHeight: '1.7',
+                                    resize: 'none',
+                                    whiteSpace: 'pre',
+                                    overflow: 'auto'
+                                }}
+                            />
+                        </div>
 
                         {/* Editor Bottom Toolbar */}
                         <div style={{
@@ -795,7 +818,7 @@ const ProblemView = () => {
                     border-radius: 8px;
                 }
             `}</style>
-        </div>
+        </div >
     );
 };
 

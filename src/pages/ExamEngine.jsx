@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Timer, CheckCircle, AlertCircle, ChevronLeft, ChevronRight, SkipForward, Loader2, Brain, CheckSquare, Award, Cpu } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Timer, CheckCircle, AlertCircle, ChevronLeft, ChevronRight, SkipForward, Loader2, Brain, CheckSquare, Award, Cpu, Code2, Terminal, Settings, RotateCcw, FileCode, Play } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { jsPDF } from 'jspdf';
@@ -27,6 +27,7 @@ const ExamEngine = () => {
     const [isRunning, setIsRunning] = useState(false);
     const [codingOutput, setCodingOutput] = useState({});
     const navigate = useNavigate();
+    const editorRef = useRef(null);
 
     useEffect(() => {
         if (typeQuery === 'mock' && idQuery && mockQuestions[idQuery]) {
@@ -154,7 +155,30 @@ const ExamEngine = () => {
     };
 
     const handleAnswerChange = (val) => {
-        setAnswers(prev => ({ ...prev, [currentQuestion]: val }));
+        setAnswers(prev => ({
+            ...prev,
+            [currentQuestion]: val
+        }));
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            const start = e.target.selectionStart;
+            const end = e.target.selectionEnd;
+            const value = e.target.value;
+
+            // set textarea value to: text before caret + tab + text after caret
+            const newValue = value.substring(0, start) + "    " + value.substring(end);
+            handleAnswerChange(newValue);
+
+            // put caret at right position again
+            setTimeout(() => {
+                if (editorRef.current) {
+                    editorRef.current.selectionStart = editorRef.current.selectionEnd = start + 4;
+                }
+            }, 0);
+        }
     };
 
     const generatePDF = (reportData) => {
@@ -616,126 +640,212 @@ const ExamEngine = () => {
                         <h2 style={{ fontSize: '1.25rem', lineHeight: 1.6, color: '#fff', margin: 0 }}>{q?.questionText || q?.q || 'No question text provided'}</h2>
                     </div>
 
-                    {/* Rendering Logic: Check if MCQ or Coding */}
-                    {(q?.type?.toLowerCase() === 'mcq' || (q?.options && q?.options.length > 0 && q?.type !== 'coding')) ? (
-                        <div style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                            {(q?.options || []).map((opt, i) => (
-                                <label key={i} style={{
-                                    display: 'flex', alignItems: 'center', gap: '1rem',
-                                    padding: '1.2rem', borderRadius: '16px',
-                                    background: answers[currentQuestion] === opt ? 'rgba(99, 102, 241, 0.15)' : 'rgba(255,255,255,0.03)',
-                                    border: `1px solid ${answers[currentQuestion] === opt ? 'var(--primary)' : 'rgba(255,255,255,0.08)'}`,
-                                    cursor: 'pointer', transition: 'all 0.2s ease'
-                                }}>
-                                    <input
-                                        type="radio"
-                                        name={`q-${currentQuestion}`}
-                                        checked={answers[currentQuestion] === opt}
-                                        onChange={() => handleAnswerChange(opt)}
-                                        style={{ accentColor: 'var(--primary)', width: '18px', height: '18px' }}
-                                    />
-                                    <span style={{ fontSize: '1.05rem', color: answers[currentQuestion] === opt ? '#fff' : 'rgba(255,255,255,0.8)' }}>{opt}</span>
-                                </label>
-                            ))}
-                        </div>
-                    ) : (
-                        <div style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            flex: 1,
-                            minHeight: '500px',
-                            border: '1px solid rgba(99, 102, 241, 0.2)',
-                            borderRadius: '12px',
-                            overflow: 'hidden',
-                            margin: '1.5rem',
-                            background: '#0f172a'
-                        }}>
+                    {(() => {
+                        const isTerminalMode =
+                            activeExam?.title?.toLowerCase().includes('cyber security') ||
+                            activeExam?.title?.toLowerCase().includes('linux') ||
+                            q?.questionText?.toLowerCase().includes('linux') ||
+                            q?.questionText?.toLowerCase().includes('bash') ||
+                            q?.questionText?.toLowerCase().includes('terminal');
+
+                        if (q?.type?.toLowerCase() === 'mcq' || (q?.options && q?.options.length > 0 && q?.type !== 'coding')) {
+                            return (
+                                <div style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                    {(q?.options || []).map((opt, i) => (
+                                        <label key={i} style={{
+                                            display: 'flex', alignItems: 'center', gap: '1rem',
+                                            padding: '1.2rem', borderRadius: '16px',
+                                            background: answers[currentQuestion] === opt ? 'rgba(99, 102, 241, 0.15)' : 'rgba(255,255,255,0.03)',
+                                            border: `1px solid ${answers[currentQuestion] === opt ? 'var(--primary)' : 'rgba(255,255,255,0.08)'}`,
+                                            cursor: 'pointer', transition: 'all 0.2s ease'
+                                        }}>
+                                            <input
+                                                type="radio"
+                                                name={`q-${currentQuestion}`}
+                                                checked={answers[currentQuestion] === opt}
+                                                onChange={() => handleAnswerChange(opt)}
+                                                style={{ accentColor: 'var(--primary)', width: '18px', height: '18px' }}
+                                            />
+                                            <span style={{ fontSize: '1.05rem', color: answers[currentQuestion] === opt ? '#fff' : 'rgba(255,255,255,0.8)' }}>{opt}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            );
+                        }
+
+                        return (
                             <div style={{
                                 display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                background: '#1e1e2e',
-                                padding: '0.8rem 1.2rem',
-                                borderBottom: '1px solid rgba(255,255,255,0.1)'
+                                flexDirection: 'column',
+                                flex: 1,
+                                minHeight: '600px',
+                                border: `1px solid ${isTerminalMode ? '#333' : 'rgba(255,255,255,0.1)'}`,
+                                borderRadius: '12px',
+                                overflow: 'hidden',
+                                margin: '1.5rem',
+                                background: isTerminalMode ? '#000' : '#1e1e1e',
+                                boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
                             }}>
-                                <span style={{ color: '#818cf8', fontFamily: '"Fira Code", monospace', fontSize: '0.85rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <Code2 size={16} />
-                                    JS COMPILER / EDITOR
-                                </span>
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                    <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#ff5f56', boxShadow: '0 0 8px rgba(255,95,86,0.3)' }}></div>
-                                    <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#ffbd2e', boxShadow: '0 0 8px rgba(255,189,46,0.3)' }}></div>
-                                    <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#27c93f', boxShadow: '0 0 8px rgba(39,201,63,0.3)' }}></div>
-                                </div>
-                            </div>
-
-                            <textarea
-                                value={answers[currentQuestion] || ''}
-                                onChange={(e) => handleAnswerChange(e.target.value)}
-                                placeholder="// Write your JavaScript logic here...
-// You can use console.log() to see output.
-function solution() {
-    return 'Hello World';
-}"
-                                spellCheck="false"
-                                style={{
-                                    flex: 1,
-                                    width: '100%',
-                                    minHeight: '350px',
-                                    background: '#0f172a',
-                                    color: '#e2e8f0',
-                                    fontFamily: '"Fira Code", "Consolas", monospace',
-                                    fontSize: '1rem',
-                                    padding: '1.5rem',
-                                    border: 'none',
-                                    outline: 'none',
-                                    lineHeight: '1.7',
-                                    resize: 'none'
-                                }}
-                            />
-
-                            <div style={{ background: '#1e1e2e', padding: '1.2rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.2rem' }}>
-                                    <button
-                                        className="btn btn-primary"
-                                        onClick={handleRunCode}
-                                        style={{
-                                            background: '#3b82f6',
-                                            fontSize: '0.9rem',
-                                            padding: '0.7rem 1.8rem',
+                                {/* VS Code Style / Terminal Header */}
+                                <div style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    background: isTerminalMode ? '#1e1e1e' : '#252526',
+                                    padding: '0 1rem',
+                                    height: '35px',
+                                    borderBottom: '1px solid rgba(255,255,255,0.05)'
+                                }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+                                        <div style={{
+                                            background: isTerminalMode ? '#000' : '#1e1e1e',
+                                            padding: '0 1rem',
+                                            height: '100%',
                                             display: 'flex',
                                             alignItems: 'center',
-                                            gap: '0.6rem',
-                                            borderRadius: '10px',
-                                            fontWeight: '700',
-                                            boxShadow: '0 4px 12px rgba(59,130,246,0.3)'
-                                        }}
-                                    >
-                                        <Play size={16} fill="white" /> RUN CODE
-                                    </button>
+                                            gap: '8px',
+                                            borderTop: `1px solid ${isTerminalMode ? '#4ec9b0' : '#007acc'}`,
+                                            fontSize: '0.8rem',
+                                            color: '#cccccc'
+                                        }}>
+                                            {isTerminalMode ? <Terminal size={14} color="#4ec9b0" /> : <FileCode size={14} color="#519aba" />}
+                                            <span>{isTerminalMode ? 'root@terminal:~' : 'solution.js'}</span>
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '15px', color: 'rgba(255,255,255,0.4)' }}>
+                                        <RotateCcw size={14} style={{ cursor: 'pointer' }} onClick={() => handleAnswerChange(q?.starterCode || '')} />
+                                        <Settings size={14} style={{ cursor: 'pointer' }} />
+                                    </div>
                                 </div>
 
-                                {codingOutput[currentQuestion] && (
-                                    <div style={{
-                                        background: '#020617',
-                                        padding: '1.25rem',
-                                        borderRadius: '10px',
-                                        border: `1px solid ${codingOutput[currentQuestion].success ? 'rgba(129, 140, 248, 0.3)' : '#ef4444'}`,
-                                        fontSize: '0.9rem',
-                                        fontFamily: '"Fira Code", monospace',
-                                        animation: 'slideIn 0.3s ease-out',
-                                        boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.5)'
-                                    }}>
-                                        <div style={{ color: codingOutput[currentQuestion].success ? '#818cf8' : '#ef4444', fontWeight: 'bold', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                                            {codingOutput[currentQuestion].success ? <CheckCircle size={16} /> : <AlertCircle size={16} />}
-                                            {codingOutput[currentQuestion].status}
+                                {/* Editor Body / Terminal Prompt */}
+                                <div style={{ flex: 1, display: 'flex', position: 'relative', overflow: 'hidden' }}>
+                                    {!isTerminalMode && (
+                                        <div style={{
+                                            width: '45px',
+                                            background: '#1e1e1e',
+                                            borderRight: '1px solid rgba(255,255,255,0.05)',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'flex-end',
+                                            paddingTop: '1.5rem',
+                                            paddingRight: '10px',
+                                            color: '#858585',
+                                            fontFamily: '"Fira Code", monospace',
+                                            fontSize: '0.85rem',
+                                            userSelect: 'none',
+                                            lineHeight: '1.7'
+                                        }}>
+                                            {(answers[currentQuestion] || '').split('\n').map((_, i) => (
+                                                <div key={i}>{i + 1}</div>
+                                            ))}
+                                            {(!(answers[currentQuestion])) && [1, 2, 3, 4, 5].map(n => <div key={n}>{n}</div>)}
                                         </div>
-                                        <pre style={{ color: '#94a3b8', whiteSpace: 'pre-wrap', margin: 0, lineHeight: 1.5 }}>{codingOutput[currentQuestion].output}</pre>
+                                    )}
+
+                                    {isTerminalMode && (
+                                        <div style={{
+                                            padding: '1.5rem 0.5rem 0 1.5rem',
+                                            color: '#4ec9b0',
+                                            fontFamily: 'monospace',
+                                            fontSize: '1rem',
+                                            lineHeight: '1.7'
+                                        }}>
+                                            #
+                                        </div>
+                                    )}
+
+                                    <textarea
+                                        ref={editorRef}
+                                        value={answers[currentQuestion] || ''}
+                                        onChange={(e) => handleAnswerChange(e.target.value)}
+                                        onKeyDown={handleKeyDown}
+                                        placeholder={isTerminalMode ? "Enter terminal commands..." : "// Start coding here... \nfunction solution() {\n    // your code\n}"}
+                                        spellCheck="false"
+                                        style={{
+                                            flex: 1,
+                                            background: 'transparent',
+                                            color: isTerminalMode ? '#4ec9b0' : '#d4d4d4',
+                                            fontFamily: isTerminalMode ? '"Courier New", monospace' : '"Fira Code", "Consolas", monospace',
+                                            fontSize: '1rem',
+                                            padding: isTerminalMode ? '1.5rem 1rem' : '1.5rem 1rem',
+                                            border: 'none',
+                                            outline: 'none',
+                                            lineHeight: '1.7',
+                                            resize: 'none',
+                                            whiteSpace: 'pre',
+                                            overflow: 'auto'
+                                        }}
+                                    />
+                                </div>
+
+                                {/* Footer Output Area */}
+                                <div style={{
+                                    background: isTerminalMode ? '#1e1e1e' : '#1e1e1e',
+                                    borderTop: '1px solid rgba(255,255,255,0.1)',
+                                    padding: '1rem'
+                                }}>
+                                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                                        <button
+                                            onClick={handleRunCode}
+                                            style={{
+                                                background: isTerminalMode ? '#333' : '#007acc',
+                                                color: '#fff',
+                                                border: isTerminalMode ? '1px solid #555' : 'none',
+                                                padding: '0.5rem 1.25rem',
+                                                borderRadius: '4px',
+                                                fontSize: '0.85rem',
+                                                fontWeight: '600',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '6px',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            {isTerminalMode ? <Terminal size={14} /> : <Play size={14} fill="white" />}
+                                            {isTerminalMode ? 'EXECUTE COMMAND' : 'Run Code'}
+                                        </button>
                                     </div>
-                                )}
+
+                                    {codingOutput[currentQuestion] && (
+                                        <div style={{
+                                            marginTop: '1rem',
+                                            background: '#000',
+                                            borderRadius: '4px',
+                                            border: `1px solid ${isTerminalMode ? '#4ec9b0' : '#333'}`,
+                                            overflow: 'hidden'
+                                        }}>
+                                            <div style={{
+                                                background: '#252526',
+                                                padding: '4px 12px',
+                                                fontSize: '0.7rem',
+                                                color: '#aaa',
+                                                textTransform: 'uppercase',
+                                                display: 'flex',
+                                                justifyContent: 'space-between'
+                                            }}>
+                                                <span>{isTerminalMode ? 'SYSTEM CONSOLE' : 'Terminal'}</span>
+                                                <span style={{ color: codingOutput[currentQuestion].success ? '#4ec9b0' : '#f48771' }}>
+                                                    {codingOutput[currentQuestion].status}
+                                                </span>
+                                            </div>
+                                            <div style={{
+                                                padding: '1rem',
+                                                maxHeight: '200px',
+                                                overflowY: 'auto',
+                                                fontFamily: 'monospace',
+                                                fontSize: '0.9rem',
+                                                color: isTerminalMode ? '#4ec9b0' : '#cccccc',
+                                                whiteSpace: 'pre-wrap'
+                                            }}>
+                                                {codingOutput[currentQuestion].output}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        );
+                    })()}
                 </div>
 
                 <div className="flex-between">

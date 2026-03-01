@@ -50,7 +50,25 @@ const Learning = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const chatEndRef = useRef(null);
+    const editorRef = useRef(null);
 
+    const handleCodeKeyDown = (e) => {
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            const start = e.target.selectionStart;
+            const end = e.target.selectionEnd;
+            const value = e.target.value;
+
+            const newValue = value.substring(0, start) + "    " + value.substring(end);
+            setUserCode(newValue);
+
+            setTimeout(() => {
+                if (editorRef.current) {
+                    editorRef.current.selectionStart = editorRef.current.selectionEnd = start + 4;
+                }
+            }, 0);
+        }
+    };
     // --- Effects ---
     useEffect(() => {
         const fetchUserData = async () => {
@@ -1004,18 +1022,71 @@ const Learning = () => {
                                 </button>
                             </div>
 
-                            <div style={{ flex: 1, position: 'relative' }}>
-                                <textarea
-                                    value={userCode}
-                                    onChange={(e) => setUserCode(e.target.value)}
-                                    spellCheck="false"
-                                    style={{
-                                        width: '100%', height: '100%', background: 'transparent', color: '#A5B4FC',
-                                        border: 'none', padding: '1.25rem', fontFamily: 'monospace', fontSize: '1rem',
-                                        outline: 'none', resize: 'none'
-                                    }}
-                                />
-                            </div>
+                            {(() => {
+                                const isTerminalMode = selectedDomain === 'Cyber Security' || activeTopic?.toLowerCase().includes('linux') || activeTopic?.toLowerCase().includes('bash');
+
+                                return (
+                                    <div style={{ flex: 1, display: 'flex', position: 'relative', overflow: 'hidden', background: isTerminalMode ? '#000' : 'transparent' }}>
+                                        {!isTerminalMode && (
+                                            <div style={{
+                                                width: '45px',
+                                                background: 'rgba(255,255,255,0.02)',
+                                                borderRight: '1px solid rgba(255,255,255,0.05)',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'flex-end',
+                                                paddingTop: '1.25rem',
+                                                paddingRight: '10px',
+                                                color: 'rgba(255,255,255,0.2)',
+                                                fontFamily: '"Fira Code", monospace',
+                                                fontSize: '0.85rem',
+                                                userSelect: 'none',
+                                                lineHeight: '1.7'
+                                            }}>
+                                                {(userCode || '').split('\n').map((_, i) => (
+                                                    <div key={i}>{i + 1}</div>
+                                                ))}
+                                                {(!(userCode)) && [1, 2, 3, 4, 5].map(n => <div key={n}>{n}</div>)}
+                                            </div>
+                                        )}
+
+                                        {isTerminalMode && (
+                                            <div style={{
+                                                padding: '1.25rem 0.5rem 0 1.25rem',
+                                                color: '#4ec9b0',
+                                                fontFamily: 'monospace',
+                                                fontSize: '1rem',
+                                                lineHeight: '1.7'
+                                            }}>
+                                                #
+                                            </div>
+                                        )}
+
+                                        <textarea
+                                            ref={editorRef}
+                                            value={userCode}
+                                            onChange={(e) => setUserCode(e.target.value)}
+                                            onKeyDown={handleCodeKeyDown}
+                                            spellCheck="false"
+                                            placeholder={isTerminalMode ? "Enter terminal commands..." : "// Start coding here..."}
+                                            style={{
+                                                flex: 1,
+                                                background: 'transparent',
+                                                color: isTerminalMode ? '#4ec9b0' : '#A5B4FC',
+                                                fontFamily: isTerminalMode ? '"Courier New", monospace' : '"Fira Code", "Consolas", monospace',
+                                                fontSize: '1rem',
+                                                padding: '1.25rem',
+                                                border: 'none',
+                                                outline: 'none',
+                                                lineHeight: '1.7',
+                                                resize: 'none',
+                                                whiteSpace: 'pre',
+                                                overflow: 'auto'
+                                            }}
+                                        />
+                                    </div>
+                                );
+                            })()}
 
                             <div style={{ height: '35%', background: '#050508', borderTop: '1px solid rgba(255,255,255,0.1)', padding: '1rem' }}>
                                 {executionResult && <p style={{ color: executionResult.success ? '#818cf8' : '#EF4444' }}>{executionResult.message}</p>}
