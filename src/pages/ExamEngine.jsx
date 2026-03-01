@@ -102,26 +102,55 @@ const ExamEngine = () => {
         const code = answers[currentQuestion];
         if (!code) return alert("Pehle code likho!");
 
-        // Mock execution for demo/exam purposes
+        // Capture console output
+        const logs = [];
+        const originalLog = console.log;
+        const originalError = console.error;
+        console.log = (...args) => {
+            logs.push(args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(" "));
+            originalLog(...args);
+        };
+        console.error = (...args) => {
+            logs.push("Error: " + args.join(" "));
+            originalError(...args);
+        };
+
         setCodingOutput(prev => ({
             ...prev,
             [currentQuestion]: {
                 status: 'Running...',
-                output: 'Analyzing code structure...',
+                output: 'Executing code environment...',
                 success: true
             }
         }));
 
-        setTimeout(() => {
+        try {
+            // Use Function constructor for execution
+            // We wrap it to handle async or just basic execution
+            const executeCode = new Function(code);
+            const result = executeCode();
+
             setCodingOutput(prev => ({
                 ...prev,
                 [currentQuestion]: {
                     status: 'Success',
-                    output: 'Code logic seems correct. Will be evaluated by AI upon submission.',
+                    output: logs.length > 0 ? logs.join("\n") : (result !== undefined ? `Result: ${JSON.stringify(result)}` : "Code executed successfully (No output)"),
                     success: true
                 }
             }));
-        }, 1500);
+        } catch (err) {
+            setCodingOutput(prev => ({
+                ...prev,
+                [currentQuestion]: {
+                    status: 'Execution Error',
+                    output: err.message,
+                    success: false
+                }
+            }));
+        } finally {
+            console.log = originalLog;
+            console.error = originalError;
+        }
     };
 
     const handleAnswerChange = (val) => {
@@ -578,7 +607,7 @@ const ExamEngine = () => {
                         <h2 style={{ fontSize: '1.25rem', lineHeight: 1.6 }}>{q?.questionText || 'No question text provided'}</h2>
                     </div>
 
-                    {q?.type === 'mcq' ? (
+                    {q?.type?.toLowerCase() === 'mcq' ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             {(q?.options || []).map((opt, i) => (
                                 <label
@@ -602,7 +631,7 @@ const ExamEngine = () => {
                             ))}
                         </div>
                     ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0', height: '100%', minHeight: '350px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0', flex: 1, minHeight: '500px', border: '1px solid #333', borderRadius: '8px', overflow: 'hidden' }}>
                             <div style={{
                                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                                 background: '#1e1e1e', padding: '0.75rem 1rem',
@@ -624,15 +653,16 @@ const ExamEngine = () => {
                                 style={{
                                     flex: 1,
                                     width: '100%',
-                                    minHeight: '400px',
-                                    background: '#1e1e1e',
-                                    color: '#d4d4d4',
-                                    fontFamily: '"Fira Code", monospace',
+                                    minHeight: '300px',
+                                    background: '#1e1e2e',
+                                    color: '#f8f8f2',
+                                    fontFamily: '"Fira Code", "Consolas", monospace',
                                     fontSize: '1rem',
                                     padding: '1.5rem',
                                     border: 'none',
                                     outline: 'none',
-                                    lineHeight: '1.6'
+                                    lineHeight: '1.6',
+                                    resize: 'none'
                                 }}
                             />
 
