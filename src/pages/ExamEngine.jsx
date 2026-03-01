@@ -602,94 +602,135 @@ const ExamEngine = () => {
                     </div>
                 </div>
 
-                <div className="card glass-panel" style={{ marginBottom: '2rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ marginBottom: '2rem' }}>
-                        <h2 style={{ fontSize: '1.25rem', lineHeight: 1.6 }}>{q?.questionText || 'No question text provided'}</h2>
+                <div className="card glass-panel" style={{
+                    marginBottom: '2rem',
+                    flex: 'none',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    minHeight: '650px',
+                    background: 'rgba(15, 15, 25, 0.7)',
+                    border: '1px solid rgba(255,255,255,0.05)',
+                    boxShadow: '0 20px 50px rgba(0,0,0,0.3)'
+                }}>
+                    <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.02)' }}>
+                        <h2 style={{ fontSize: '1.25rem', lineHeight: 1.6, color: '#fff', margin: 0 }}>{q?.questionText || q?.q || 'No question text provided'}</h2>
                     </div>
 
-                    {q?.type?.toLowerCase() === 'mcq' ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {/* Rendering Logic: Check if MCQ or Coding */}
+                    {(q?.type?.toLowerCase() === 'mcq' || (q?.options && q?.options.length > 0 && q?.type !== 'coding')) ? (
+                        <div style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             {(q?.options || []).map((opt, i) => (
-                                <label
-                                    key={i}
-                                    style={{
-                                        display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem',
-                                        borderRadius: 'var(--radius-sm)', border: answers[currentQuestion] === opt ? '2px solid var(--primary)' : '1px solid var(--border)',
-                                        background: answers[currentQuestion] === opt ? 'rgba(99,102,241,0.05)' : 'var(--bg-secondary)',
-                                        cursor: 'pointer', transition: 'all 0.2s'
-                                    }}
-                                >
+                                <label key={i} style={{
+                                    display: 'flex', alignItems: 'center', gap: '1rem',
+                                    padding: '1.2rem', borderRadius: '16px',
+                                    background: answers[currentQuestion] === opt ? 'rgba(99, 102, 241, 0.15)' : 'rgba(255,255,255,0.03)',
+                                    border: `1px solid ${answers[currentQuestion] === opt ? 'var(--primary)' : 'rgba(255,255,255,0.08)'}`,
+                                    cursor: 'pointer', transition: 'all 0.2s ease'
+                                }}>
                                     <input
                                         type="radio"
-                                        name={`q${currentQuestion}`}
+                                        name={`q-${currentQuestion}`}
                                         checked={answers[currentQuestion] === opt}
                                         onChange={() => handleAnswerChange(opt)}
-                                        style={{ accentColor: 'var(--primary)', width: '1.2rem', height: '1.2rem' }}
+                                        style={{ accentColor: 'var(--primary)', width: '18px', height: '18px' }}
                                     />
-                                    <span style={{ fontSize: '1.05rem' }}>{opt}</span>
+                                    <span style={{ fontSize: '1.05rem', color: answers[currentQuestion] === opt ? '#fff' : 'rgba(255,255,255,0.8)' }}>{opt}</span>
                                 </label>
                             ))}
                         </div>
                     ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0', flex: 1, minHeight: '500px', border: '1px solid #333', borderRadius: '8px', overflow: 'hidden' }}>
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            flex: 1,
+                            minHeight: '500px',
+                            border: '1px solid rgba(99, 102, 241, 0.2)',
+                            borderRadius: '12px',
+                            overflow: 'hidden',
+                            margin: '1.5rem',
+                            background: '#0f172a'
+                        }}>
                             <div style={{
-                                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                background: '#1e1e1e', padding: '0.75rem 1rem',
-                                borderTopLeftRadius: '8px', borderTopRightRadius: '8px',
-                                borderBottom: '1px solid #333'
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                background: '#1e1e2e',
+                                padding: '0.8rem 1.2rem',
+                                borderBottom: '1px solid rgba(255,255,255,0.1)'
                             }}>
-                                <span style={{ color: '#d4d4d4', fontFamily: 'monospace', fontSize: '0.85rem' }}>Code Editor (JavaScript/React/Node)</span>
-                                <div style={{ display: 'flex', gap: '5px' }}>
-                                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f56' }}></div>
-                                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ffbd2e' }}></div>
-                                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#27c93f' }}></div>
+                                <span style={{ color: '#818cf8', fontFamily: '"Fira Code", monospace', fontSize: '0.85rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <Code2 size={16} />
+                                    JS COMPILER / EDITOR
+                                </span>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#ff5f56', boxShadow: '0 0 8px rgba(255,95,86,0.3)' }}></div>
+                                    <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#ffbd2e', boxShadow: '0 0 8px rgba(255,189,46,0.3)' }}></div>
+                                    <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#27c93f', boxShadow: '0 0 8px rgba(39,201,63,0.3)' }}></div>
                                 </div>
                             </div>
+
                             <textarea
                                 value={answers[currentQuestion] || ''}
                                 onChange={(e) => handleAnswerChange(e.target.value)}
-                                placeholder="// Write your code logic here..."
+                                placeholder="// Write your JavaScript logic here...
+// You can use console.log() to see output.
+function solution() {
+    return 'Hello World';
+}"
                                 spellCheck="false"
                                 style={{
                                     flex: 1,
                                     width: '100%',
-                                    minHeight: '300px',
-                                    background: '#1e1e2e',
-                                    color: '#f8f8f2',
+                                    minHeight: '350px',
+                                    background: '#0f172a',
+                                    color: '#e2e8f0',
                                     fontFamily: '"Fira Code", "Consolas", monospace',
                                     fontSize: '1rem',
                                     padding: '1.5rem',
                                     border: 'none',
                                     outline: 'none',
-                                    lineHeight: '1.6',
+                                    lineHeight: '1.7',
                                     resize: 'none'
                                 }}
                             />
 
-                            <div style={{ background: '#1e1e1e', padding: '1rem', borderTop: '1px solid #333', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px' }}>
-                                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+                            <div style={{ background: '#1e1e2e', padding: '1.2rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.2rem' }}>
                                     <button
                                         className="btn btn-primary"
                                         onClick={handleRunCode}
-                                        style={{ background: '#3b82f6', fontSize: '0.9rem', padding: '0.5rem 1.5rem' }}
+                                        style={{
+                                            background: '#3b82f6',
+                                            fontSize: '0.9rem',
+                                            padding: '0.7rem 1.8rem',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '0.6rem',
+                                            borderRadius: '10px',
+                                            fontWeight: '700',
+                                            boxShadow: '0 4px 12px rgba(59,130,246,0.3)'
+                                        }}
                                     >
-                                        <Cpu size={16} style={{ marginRight: '0.5rem' }} /> Run Code
+                                        <Play size={16} fill="white" /> RUN CODE
                                     </button>
                                 </div>
 
                                 {codingOutput[currentQuestion] && (
                                     <div style={{
-                                        background: '#0f172a',
-                                        padding: '1rem',
-                                        borderRadius: '8px',
-                                        border: `1px solid ${codingOutput[currentQuestion].success ? '#1e293b' : '#ef4444'}`,
+                                        background: '#020617',
+                                        padding: '1.25rem',
+                                        borderRadius: '10px',
+                                        border: `1px solid ${codingOutput[currentQuestion].success ? 'rgba(129, 140, 248, 0.3)' : '#ef4444'}`,
                                         fontSize: '0.9rem',
-                                        fontFamily: 'monospace'
+                                        fontFamily: '"Fira Code", monospace',
+                                        animation: 'slideIn 0.3s ease-out',
+                                        boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.5)'
                                     }}>
-                                        <div style={{ color: codingOutput[currentQuestion].success ? '#3b82f6' : '#ef4444', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+                                        <div style={{ color: codingOutput[currentQuestion].success ? '#818cf8' : '#ef4444', fontWeight: 'bold', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                            {codingOutput[currentQuestion].success ? <CheckCircle size={16} /> : <AlertCircle size={16} />}
                                             {codingOutput[currentQuestion].status}
                                         </div>
-                                        <div style={{ color: '#94a3b8' }}>{codingOutput[currentQuestion].output}</div>
+                                        <pre style={{ color: '#94a3b8', whiteSpace: 'pre-wrap', margin: 0, lineHeight: 1.5 }}>{codingOutput[currentQuestion].output}</pre>
                                     </div>
                                 )}
                             </div>
