@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Timer, CheckCircle, AlertCircle, ChevronLeft, ChevronRight, SkipForward, Loader2, Brain, CheckSquare, Award, Cpu, Code2, Terminal, Settings, RotateCcw, FileCode, Play, Sparkles } from 'lucide-react';
+import { Timer, CheckCircle, AlertCircle, ChevronLeft, ChevronRight, SkipForward, Loader2, Brain, CheckSquare, Award, Cpu, Code2, Terminal, Settings, RotateCcw, FileCode, Play, Sparkles, Lock } from 'lucide-react';
 import Editor from '@monaco-editor/react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
@@ -31,6 +31,16 @@ const ExamEngine = () => {
     const editorRef = useRef(null);
     const [editorLoaded, setEditorLoaded] = useState(false);
     const [editorError, setEditorError] = useState(false);
+    const [maxUnlockedIndex, setMaxUnlockedIndex] = useState(0);
+    const [isFullscreen, setIsFullscreen] = useState(false);
+
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            setIsFullscreen(!!document.fullscreenElement);
+        };
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    }, []);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -38,7 +48,49 @@ const ExamEngine = () => {
                 setEditorError(true);
             }
         }, 5000);
-        return () => clearTimeout(timer);
+
+        // Strict Anti-Cheat Event Interception at Document Level
+        const preventCheat = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        };
+
+        const preventShortcuts = (e) => {
+            if ((e.ctrlKey || e.metaKey) && ['c', 'v', 'x'].includes(e.key.toLowerCase())) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        };
+
+        // Capture phase listeners to intercept events before Monaco editor handles them
+        document.addEventListener('copy', preventCheat, { capture: true });
+        document.addEventListener('cut', preventCheat, { capture: true });
+        document.addEventListener('paste', preventCheat, { capture: true });
+        document.addEventListener('contextmenu', preventCheat, { capture: true });
+        document.addEventListener('keydown', preventShortcuts, { capture: true });
+
+        // Global styles to force no selection while assessment is active
+        const style = document.createElement('style');
+        style.innerHTML = `
+            *:not(.monaco-editor):not(.monaco-editor *) {
+                -webkit-user-select: none !important;
+                -ms-user-select: none !important;
+                user-select: none !important;
+            }
+        `;
+        document.head.appendChild(style);
+
+        return () => {
+            clearTimeout(timer);
+            document.removeEventListener('copy', preventCheat, { capture: true });
+            document.removeEventListener('cut', preventCheat, { capture: true });
+            document.removeEventListener('paste', preventCheat, { capture: true });
+            document.removeEventListener('contextmenu', preventCheat, { capture: true });
+            document.removeEventListener('keydown', preventShortcuts, { capture: true });
+            if (document.head.contains(style)) {
+                document.head.removeChild(style);
+            }
+        };
     }, [editorLoaded]);
 
 
@@ -86,10 +138,19 @@ const ExamEngine = () => {
         setCurrentQuestion(0);
         setAnswers({});
         setSkipsRemaining(5);
+        setMaxUnlockedIndex(0);
         setExamStarted(true);
         setResult(null);
         setTimeLeft((examObj.durationMinutes || 30) * 60);
         setIsRunning(true);
+
+        try {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log(`Error attempting to enable fullscreen mode: ${err.message}`);
+            });
+        } catch (e) {
+            console.error("Fullscreen API not supported.", e);
+        }
     };
 
     useEffect(() => {
@@ -516,10 +577,39 @@ const ExamEngine = () => {
     const q = questions[currentQuestion];
 
     return (
-        <div className="container animate-fade-in" style={{ padding: '2rem 1.5rem', maxWidth: '1200px', display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
+        <div
+            className="container animate-fade-in"
+            style={{
+                padding: isFullscreen ? '2rem 5vw' : '2rem 1.5rem',
+                maxWidth: isFullscreen ? '100vw' : '1200px',
+                margin: '0 auto',
+                display: 'flex',
+                gap: isFullscreen ? '3rem' : '2rem',
+                alignItems: 'flex-start',
+                transition: 'all 0.4s ease-in-out',
+                height: isFullscreen ? '100vh' : 'auto',
+                overflow: isFullscreen ? 'hidden' : 'visible',
+                userSelect: 'none',
+                WebkitUserSelect: 'none',
+                msUserSelect: 'none',
+                MozUserSelect: 'none'
+            }}
+            onCopy={(e) => e.preventDefault()}
+            onCut={(e) => e.preventDefault()}
+            onPaste={(e) => e.preventDefault()}
+        >
 
             {/* Sidebar for Navigation */}
-            <div className="card glass-panel" style={{ width: '300px', flexShrink: 0, height: 'calc(100vh - 120px)', overflowY: 'auto', position: 'sticky', top: '80px', padding: '1rem' }}>
+            <div className="card glass-panel" style={{
+                width: isFullscreen ? '350px' : '300px',
+                flexShrink: 0,
+                height: isFullscreen ? 'calc(100vh - 4rem)' : 'calc(100vh - 120px)',
+                overflowY: 'auto',
+                position: isFullscreen ? 'static' : 'sticky',
+                top: isFullscreen ? '0' : '80px',
+                padding: '1.5rem',
+                transition: 'width 0.3s ease, height 0.3s ease'
+            }}>
                 <h3 style={{ marginBottom: '1rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem' }}>Questions Navigation</h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem' }}>
                     {questions.map((_, idx) => {
@@ -527,7 +617,11 @@ const ExamEngine = () => {
                         const isCurrent = currentQuestion === idx;
 
                         const handleSidebarClick = () => {
-                            setCurrentQuestion(idx);
+                            if (idx <= maxUnlockedIndex) {
+                                setCurrentQuestion(idx);
+                            } else {
+                                alert("Please answer or skip the current question to unlock this one.");
+                            }
                         };
 
                         return (
@@ -538,14 +632,20 @@ const ExamEngine = () => {
                                     padding: '0.5rem 0',
                                     borderRadius: 'var(--radius-sm)',
                                     border: isCurrent ? '2px solid var(--primary)' : '1px solid var(--border)',
-                                    background: isAnswered ? 'var(--primary-light)' : 'var(--bg-secondary)',
-                                    color: isAnswered ? 'var(--text)' : 'var(--text-secondary)',
-                                    cursor: 'pointer',
+                                    background: idx > maxUnlockedIndex ? 'rgba(255,255,255,0.02)' : (isAnswered ? 'var(--primary-light)' : 'var(--bg-secondary)'),
+                                    color: idx > maxUnlockedIndex ? 'rgba(255,255,255,0.1)' : (isAnswered ? 'var(--text)' : 'var(--text-secondary)'),
+                                    cursor: idx > maxUnlockedIndex ? 'not-allowed' : 'pointer',
                                     fontWeight: isCurrent ? 'bold' : 'normal',
-                                    transition: 'all 0.2s'
+                                    transition: 'all 0.2s',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    position: 'relative'
                                 }}
                             >
                                 {idx + 1}
+                                {idx > maxUnlockedIndex && <Lock size={10} style={{ position: 'absolute', top: '2px', right: '2px', opacity: 0.5 }} />}
                             </button>
                         );
                     })}
@@ -558,11 +658,11 @@ const ExamEngine = () => {
             </div>
 
             {/* Main Exam Area */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, height: isFullscreen ? 'calc(100vh - 4rem)' : 'auto', transition: 'height 0.3s ease' }}>
                 <div className="flex-between" style={{ marginBottom: '1.5rem', padding: '1rem', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)' }}>
                     <div className="flex-center" style={{ gap: '0.5rem' }}>
                         <AlertCircle size={20} color="var(--warning)" />
-                        <span style={{ fontWeight: 'bold' }}>Question {currentQuestion + 1} of {questions.length}</span>
+                        <span style={{ fontWeight: 'bold', fontSize: isFullscreen ? '1.1rem' : '1rem' }}>Question {currentQuestion + 1} of {questions.length}</span>
                         <span className="badge" style={{ marginLeft: '1rem', background: 'var(--primary-light)', padding: '0.2rem 0.6rem', borderRadius: '4px', fontSize: '0.8rem' }}>
                             {q?.difficulty || 'Medium'}
                         </span>
@@ -729,10 +829,21 @@ const ExamEngine = () => {
                                             theme="vs-dark"
                                             value={answers[currentQuestion] !== undefined ? answers[currentQuestion] : (q?.starterCode || '// Start typing your solution here...\n')}
                                             onChange={handleAnswerChange}
-                                            onMount={(editor) => {
+                                            onMount={(editor, monaco) => {
                                                 console.log("Monaco Mounted");
                                                 setEditorLoaded(true);
                                                 editorRef.current = editor;
+
+                                                // Intercept copy/paste specifically within Monaco Editor
+                                                editor.onKeyDown((e) => {
+                                                    if (e.ctrlKey || e.metaKey) {
+                                                        // KeyCode 33 = C, 52 = V, 53 = X
+                                                        if (e.keyCode === monaco.KeyCode.KeyC || e.keyCode === monaco.KeyCode.KeyV || e.keyCode === monaco.KeyCode.KeyX) {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                        }
+                                                    }
+                                                });
                                             }}
                                             options={{
                                                 fontSize: 14,
@@ -745,6 +856,7 @@ const ExamEngine = () => {
                                                 padding: { top: 16, left: isTerminalMode ? 35 : 0 },
                                                 readOnly: false,
                                                 renderLineHighlight: isTerminalMode ? 'none' : 'all',
+                                                contextmenu: false, // Disable right-click inside the editor
                                                 scrollbar: {
                                                     vertical: 'visible',
                                                     horizontal: 'visible'
@@ -783,6 +895,7 @@ const ExamEngine = () => {
                                 onClick={() => {
                                     if (skipsRemaining > 0) {
                                         setSkipsRemaining(prev => prev - 1);
+                                        setMaxUnlockedIndex(prev => Math.max(prev, currentQuestion + 1));
                                         setCurrentQuestion(prev => prev + 1);
                                     } else {
                                         alert("No more skips available! You must answer this question.");
@@ -799,25 +912,29 @@ const ExamEngine = () => {
                             <button
                                 className="btn btn-primary"
                                 onClick={() => {
-                                    if (!answers[currentQuestion]) {
-                                        // If trying to go next without answer, it counts as skip
-                                        if (skipsRemaining > 0) {
-                                            setSkipsRemaining(prev => prev - 1);
-                                            setCurrentQuestion(prev => prev + 1);
-                                        } else {
-                                            alert("Pehle ye question complete karo ya phir skips khatam ho gaye hain!");
-                                        }
-                                    } else {
+                                    if (answers[currentQuestion]) {
+                                        setMaxUnlockedIndex(prev => Math.max(prev, currentQuestion + 1));
                                         setCurrentQuestion(prev => prev + 1);
+                                    } else {
+                                        alert("Please answer this question or use 'Skip' to proceed.");
                                     }
+                                }}
+                                style={{
+                                    opacity: answers[currentQuestion] ? 1 : 0.6,
+                                    cursor: answers[currentQuestion] ? 'pointer' : 'not-allowed'
                                 }}
                             >
                                 Next <ChevronRight size={18} style={{ marginLeft: '0.5rem' }} />
                             </button>
                         ) : (
-                            <button className="btn btn-primary" disabled={submitting} style={{ background: 'var(--success)', border: 'none' }} onClick={handleSubmitExam}>
-                                {submitting ? <Loader2 size={18} className="animate-spin" style={{ marginRight: '0.5rem' }} /> : <CheckCircle size={18} style={{ marginRight: '0.5rem' }} />}
-                                {submitting ? 'Submitting...' : 'Submit Exam'}
+                            <button
+                                className="btn btn-primary"
+                                disabled={submitting || !answers[currentQuestion]}
+                                style={{ background: answers[currentQuestion] ? 'var(--success)' : 'rgba(255,255,255,0.1)', border: 'none' }}
+                                onClick={handleSubmitExam}
+                            >
+                                {submitting ? <Loader2 className="animate-spin" size={20} /> : <CheckCircle size={20} style={{ marginRight: '0.5rem' }} />}
+                                {submitting ? 'Evaluating...' : 'Submit Exam'}
                             </button>
                         )}
                     </div>
@@ -825,6 +942,6 @@ const ExamEngine = () => {
             </div>
         </div>
     );
-}
+};
 
 export default ExamEngine;

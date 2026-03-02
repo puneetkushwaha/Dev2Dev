@@ -8,17 +8,20 @@ export const cnMcqs = [
             "A network of cables without devices",
             "A standalone printer"
         ],
-        ans: 1
+        ans: 1,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "In which topology are all nodes connected to a single central device?",
         options: ["Star topology", "Ring topology", "Bus topology", "Mesh topology"],
-        ans: 0
+        ans: 0,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "Which topology connects every node individually to every other node?",
         options: ["Bus topology", "Mesh topology", "Star topology", "Ring topology"],
-        ans: 1
+        ans: 1,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What is Bandwidth in the context of computer networks?",
@@ -28,7 +31,8 @@ export const cnMcqs = [
             "The data carrying capacity of the transmission medium",
             "The number of devices in a network"
         ],
-        ans: 2
+        ans: 2,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "Which of the following describes a LAN?",
@@ -38,7 +42,8 @@ export const cnMcqs = [
             "A network built over the internet",
             "A network connecting multiple cities"
         ],
-        ans: 1
+        ans: 1,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What does VPN stand for?",
@@ -48,7 +53,8 @@ export const cnMcqs = [
             "Virtual Private Network",
             "Verified Protocol Network"
         ],
-        ans: 2
+        ans: 2,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What is an advantage of using a VPN?",
@@ -58,14 +64,16 @@ export const cnMcqs = [
             "It provides a physical connection to the remote office.",
             "It replaces the need for an ISP."
         ],
-        ans: 1
+        ans: 1,
+        explanation: "Detailed explanation will be provided soon."
     },
 
     // IP Addressing & DNS
     {
         q: "How many bits are in an IPv4 address?",
         options: ["16-bit", "32-bit", "64-bit", "128-bit"],
-        ans: 1
+        ans: 1,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "Which of the following is true regarding IPv6?",
@@ -75,7 +83,8 @@ export const cnMcqs = [
             "IPv6 has a 128-bit address length and is represented in hexadecimal.",
             "IPv6 does not provide encryption and authentication."
         ],
-        ans: 2
+        ans: 2,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What is a MAC address?",
@@ -85,17 +94,20 @@ export const cnMcqs = [
             "A protocol used to translate domain names",
             "An email address"
         ],
-        ans: 0
+        ans: 0,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "Which of the following is a private IPv4 address?",
         options: ["8.8.8.8", "192.168.1.1", "172.64.0.1", "200.1.1.1"],
-        ans: 1
+        ans: 1,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What is the loopback address in IPv4?",
         options: ["10.0.0.1", "127.0.0.1", "192.168.0.1", "255.255.255.255"],
-        ans: 1
+        ans: 1,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What is the primary purpose of DNS?",
@@ -105,19 +117,22 @@ export const cnMcqs = [
             "To transfer files between clients",
             "To encrypt network traffic"
         ],
-        ans: 0
+        ans: 0,
+        explanation: "Detailed explanation will be provided soon."
     },
 
     // Protocols (HTTP, DHCP, ARP, etc.)
     {
         q: "Which application layer protocol helps web browsers and servers communicate over the WWW?",
         options: ["FTP", "SMTP", "HTTP", "DNS"],
-        ans: 2
+        ans: 2,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What is the default port for HTTPS?",
         options: ["21", "25", "80", "443"],
-        ans: 3
+        ans: 3,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What does the DHCP protocol do?",
@@ -127,7 +142,8 @@ export const cnMcqs = [
             "Auto-attributes IP addresses and network configurations to devices",
             "Transfers emails across servers"
         ],
-        ans: 2
+        ans: 2,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What is the function of the ARP protocol?",
@@ -137,17 +153,20 @@ export const cnMcqs = [
             "Transfers files between clients",
             "Routes packets across different networks"
         ],
-        ans: 1
+        ans: 1,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "Which protocol is primarily used to send emails?",
         options: ["HTTP", "FTP", "SMTP", "Telnet"],
-        ans: 2
+        ans: 2,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "Which protocol is used for securely transferring files between a client and a server?",
         options: ["SFTP", "TFTP", "SNMP", "BOOTP"],
-        ans: 0
+        ans: 0,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What does ICMP do in a computer network?",
@@ -157,34 +176,40 @@ export const cnMcqs = [
             "Translates URLs to IP addresses",
             "Transmits video streams"
         ],
-        ans: 1
+        ans: 1,
+        explanation: "Detailed explanation will be provided soon."
     },
 
     // OSI & TCP/IP Models
     {
         q: "How many layers are there in the OSI reference model?",
         options: ["4", "5", "6", "7"],
-        ans: 3
+        ans: 3,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "Which layer in the OSI model is responsible for transferring raw bits over a communication channel?",
         options: ["Data Link Layer", "Physical Layer", "Network Layer", "Transport Layer"],
-        ans: 1
+        ans: 1,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "Which layer transforms a raw transmission facility into a line that appears free of undetected transmission errors using frames?",
         options: ["Physical Layer", "Network Layer", "Data Link Layer", "Session Layer"],
-        ans: 2
+        ans: 2,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "Which device operates primarily at the Network layer of the OSI model?",
         options: ["Hub", "Switch", "Router", "Repeater"],
-        ans: 2
+        ans: 2,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "Which layer in the OSI model is responsible for end-to-end communication, segmentation, and reassembly?",
         options: ["Network Layer", "Transport Layer", "Presentation Layer", "Application Layer"],
-        ans: 1
+        ans: 1,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What is the main function of the Presentation layer?",
@@ -194,12 +219,14 @@ export const cnMcqs = [
             "Data translation, encryption, and compression",
             "Accessing the network media"
         ],
-        ans: 2
+        ans: 2,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "The TCP/IP model consists of how many layers?",
         options: ["4", "5", "6", "7"],
-        ans: 0
+        ans: 0,
+        explanation: "Detailed explanation will be provided soon."
     },
 
     // Transport Layer & TCP/UDP
@@ -211,7 +238,8 @@ export const cnMcqs = [
             "It does not perform error checking.",
             "It is faster than UDP for streaming media."
         ],
-        ans: 1
+        ans: 1,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "How does TCP establish a reliable connection?",
@@ -221,12 +249,14 @@ export const cnMcqs = [
             "Through a 4-way termination process",
             "By broadcasting connection requests"
         ],
-        ans: 1
+        ans: 1,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "Which transport protocol is considered connectionless, faster, but less reliable?",
         options: ["TCP", "IP", "UDP", "ARP"],
-        ans: 2
+        ans: 2,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What happens in the third step of a TCP 3-way handshake?",
@@ -236,12 +266,14 @@ export const cnMcqs = [
             "The client sends an ACK packet back to the server.",
             "The server tears down the connection."
         ],
-        ans: 2
+        ans: 2,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "Which protocol is mostly used for real-time video streaming or online gaming?",
         options: ["TCP", "UDP", "HTTP", "FTP"],
-        ans: 1
+        ans: 1,
+        explanation: "Detailed explanation will be provided soon."
     },
 
     // Networking Devices
@@ -253,7 +285,8 @@ export const cnMcqs = [
             "A hub is wireless, a switch is wired.",
             "There is no difference between them."
         ],
-        ans: 1
+        ans: 1,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What is the primary function of a Router?",
@@ -263,7 +296,8 @@ export const cnMcqs = [
             "To provide power to network cables",
             "To convert domain names to IP addresses"
         ],
-        ans: 1
+        ans: 1,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What is the purpose of a Firewall?",
@@ -273,7 +307,8 @@ export const cnMcqs = [
             "To monitor and control incoming and outgoing network traffic based on security rules",
             "To assign IP addresses to new devices"
         ],
-        ans: 2
+        ans: 2,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What is a gateway?",
@@ -283,7 +318,8 @@ export const cnMcqs = [
             "A type of wireless router",
             "An antivirus software"
         ],
-        ans: 1
+        ans: 1,
+        explanation: "Detailed explanation will be provided soon."
     },
 
     // Subnetting, MAC, & Concepts
@@ -295,7 +331,8 @@ export const cnMcqs = [
             "To encrypt the data payload",
             "To increase the bandwidth of the network"
         ],
-        ans: 1
+        ans: 1,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What is the difference between Unicasting and Multicasting?",
@@ -305,12 +342,14 @@ export const cnMcqs = [
             "Both mean sending data to all devices on the network.",
             "Unicasting requires cables; Multicasting requires wireless."
         ],
-        ans: 0
+        ans: 0,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What command-line tool traces the route taken by data from the router to the destination network?",
         options: ["ping", "ipconfig", "tracert / traceroute", "netstat"],
-        ans: 2
+        ans: 2,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What is the utility of the 'ping' command?",
@@ -320,7 +359,8 @@ export const cnMcqs = [
             "To resolve DNS names securely",
             "To view the routing table"
         ],
-        ans: 1
+        ans: 1,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What does NAT (Network Address Translation) do?",
@@ -330,7 +370,8 @@ export const cnMcqs = [
             "Allows multiple computers on a private network to share a single public IP connection",
             "Secures a computer from viruses"
         ],
-        ans: 2
+        ans: 2,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What is 'IP spoofing'?",
@@ -340,7 +381,8 @@ export const cnMcqs = [
             "A hacking technique where IP packets are created with a forged source IP address to conceal identity",
             "A method of compressing IP packets"
         ],
-        ans: 2
+        ans: 2,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What does 'Jitter' refer to in networking?",
@@ -350,7 +392,8 @@ export const cnMcqs = [
             "A type of physical layer cable",
             "A routing protocol error"
         ],
-        ans: 1
+        ans: 1,
+        explanation: "Detailed explanation will be provided soon."
     },
 
     // Security & Wi-Fi
@@ -362,7 +405,8 @@ export const cnMcqs = [
             "Privacy, Security, & Trust (PST)",
             "TCP, UDP, & IP"
         ],
-        ans: 0
+        ans: 0,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What is the difference between Symmetric and Asymmetric encryption?",
@@ -372,7 +416,8 @@ export const cnMcqs = [
             "There is no difference between the two.",
             "Symmetric is only for text; Asymmetric is for images."
         ],
-        ans: 1
+        ans: 1,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What specifies the difference between a straight-through and crossover cable?",
@@ -382,7 +427,8 @@ export const cnMcqs = [
             "Straight-through is fiber optic; crossover is copper.",
             "Crossover is much faster than straight-through."
         ],
-        ans: 1
+        ans: 1,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What is a major advantage of Fiber Optic cables over copper twisted-pair cables?",
@@ -392,17 +438,20 @@ export const cnMcqs = [
             "They support much higher bandwidth over longer distances and are resistant to electromagnetic interference.",
             "They carry electricity much better."
         ],
-        ans: 2
+        ans: 2,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What does Wi-Fi stand for?",
         options: ["Wireless Fiber", "Wireless Fidelity", "Wide Firewall", "Wired Filter"],
-        ans: 1
+        ans: 1,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "What is the standard data termination rate for UTP (Unshielded Twisted Pair) cables?",
         options: ["10 ohms", "50 ohms", "100 ohms", "150 ohms"],
-        ans: 2
+        ans: 2,
+        explanation: "Detailed explanation will be provided soon."
     },
     {
         q: "Which of the following describes a 'Socket' in networking?",
@@ -412,6 +461,7 @@ export const cnMcqs = [
             "A type of routing protocol",
             "The CPU of a router"
         ],
-        ans: 1
+        ans: 1,
+        explanation: "Detailed explanation will be provided soon."
     }
 ];

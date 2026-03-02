@@ -32,7 +32,49 @@ const ProblemView = () => {
                 setEditorError(true);
             }
         }, 5000);
-        return () => clearTimeout(timer);
+
+        // Strict Anti-Cheat Event Interception at Document Level
+        const preventCheat = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        };
+
+        const preventShortcuts = (e) => {
+            if ((e.ctrlKey || e.metaKey) && ['c', 'v', 'x'].includes(e.key.toLowerCase())) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        };
+
+        // Capture phase listeners to intercept events before Monaco editor handles them
+        document.addEventListener('copy', preventCheat, { capture: true });
+        document.addEventListener('cut', preventCheat, { capture: true });
+        document.addEventListener('paste', preventCheat, { capture: true });
+        document.addEventListener('contextmenu', preventCheat, { capture: true });
+        document.addEventListener('keydown', preventShortcuts, { capture: true });
+
+        // Global styles to force no selection while assessment is active
+        const style = document.createElement('style');
+        style.innerHTML = `
+            *:not(.monaco-editor):not(.monaco-editor *) {
+                -webkit-user-select: none !important;
+                -ms-user-select: none !important;
+                user-select: none !important;
+            }
+        `;
+        document.head.appendChild(style);
+
+        return () => {
+            clearTimeout(timer);
+            document.removeEventListener('copy', preventCheat, { capture: true });
+            document.removeEventListener('cut', preventCheat, { capture: true });
+            document.removeEventListener('paste', preventCheat, { capture: true });
+            document.removeEventListener('contextmenu', preventCheat, { capture: true });
+            document.removeEventListener('keydown', preventShortcuts, { capture: true });
+            if (document.head.contains(style)) {
+                document.head.removeChild(style);
+            }
+        };
     }, [editorLoaded]);
 
     const [problem, setProblem] = useState(null);
@@ -199,6 +241,14 @@ const ProblemView = () => {
         setActiveBottomTab('Test Result');
         setResult(null);
 
+        try {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log(`Fullscreen error: ${err.message}`);
+            });
+        } catch (e) {
+            console.error("Fullscreen API not supported.", e);
+        }
+
         // HTML/Web Detection for Local Preview
         const trimmedCode = code.trim().toLowerCase();
         const isHTML = trimmedCode.startsWith('<!doctype') || trimmedCode.startsWith('<html') || trimmedCode.startsWith('<div') || trimmedCode.startsWith('<p') || trimmedCode.startsWith('<script') || trimmedCode.startsWith('<style');
@@ -226,7 +276,7 @@ const ProblemView = () => {
             const res = await axios.post(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/submit-exam`, {
                 examName: problem.title,
                 language: selectedLang.id,
-                answers: { [codingQIndex !== -1 ? codingQIndex : 0]: code },
+                answers: { 0: code },
                 isRun
             }, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -259,7 +309,24 @@ const ProblemView = () => {
     ];
 
     return (
-        <div className="problem-view-layout" style={{ height: 'calc(100vh - 56px)', display: 'flex', flexDirection: 'column', background: '#0a0a0a', color: '#fff', fontFamily: 'Inter, sans-serif' }}>
+        <div
+            className="problem-view-layout"
+            style={{
+                height: 'calc(100vh - 56px)',
+                display: 'flex',
+                flexDirection: 'column',
+                background: '#0a0a0a',
+                color: '#fff',
+                fontFamily: 'Inter, sans-serif',
+                userSelect: 'none',
+                WebkitUserSelect: 'none',
+                msUserSelect: 'none',
+                MozUserSelect: 'none'
+            }}
+            onCopy={(e) => e.preventDefault()}
+            onCut={(e) => e.preventDefault()}
+            onPaste={(e) => e.preventDefault()}
+        >
             {/* Header Navigation */}
             <div style={{
                 height: '45px',
@@ -580,9 +647,20 @@ const ProblemView = () => {
                                     theme="vs-dark"
                                     value={code}
                                     onChange={handleCodeChange}
-                                    onMount={(editor) => {
+                                    onMount={(editor, monaco) => {
                                         setEditorLoaded(true);
                                         editorRef.current = editor;
+
+                                        // Intercept copy/paste specifically within Monaco Editor
+                                        editor.onKeyDown((e) => {
+                                            if (e.ctrlKey || e.metaKey) {
+                                                // KeyCode 33 = C, 52 = V, 53 = X
+                                                if (e.keyCode === monaco.KeyCode.KeyC || e.keyCode === monaco.KeyCode.KeyV || e.keyCode === monaco.KeyCode.KeyX) {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                }
+                                            }
+                                        });
                                     }}
                                     options={{
                                         fontSize: 14,
@@ -596,7 +674,8 @@ const ProblemView = () => {
                                         lineNumbersMinChars: 3,
                                         automaticLayout: true,
                                         tabSize: 4,
-                                        padding: { top: 16 }
+                                        padding: { top: 16 },
+                                        contextmenu: false // Disable right-click inside the editor
                                     }}
                                 />
                             )}

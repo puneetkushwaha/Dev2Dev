@@ -33,13 +33,65 @@ const MockAssessment = () => {
                 setEditorError(true);
             }
         }, 5000);
-        return () => clearTimeout(timer);
+
+        // Strict Anti-Cheat Event Interception at Document Level
+        const preventCheat = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        };
+
+        const preventShortcuts = (e) => {
+            if ((e.ctrlKey || e.metaKey) && ['c', 'v', 'x'].includes(e.key.toLowerCase())) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        };
+
+        // Capture phase listeners to intercept events before Monaco editor handles them
+        document.addEventListener('copy', preventCheat, { capture: true });
+        document.addEventListener('cut', preventCheat, { capture: true });
+        document.addEventListener('paste', preventCheat, { capture: true });
+        document.addEventListener('contextmenu', preventCheat, { capture: true });
+        document.addEventListener('keydown', preventShortcuts, { capture: true });
+
+        // Global styles to force no selection while assessment is active
+        const style = document.createElement('style');
+        style.innerHTML = `
+            *:not(.monaco-editor):not(.monaco-editor *) {
+                -webkit-user-select: none !important;
+                -ms-user-select: none !important;
+                user-select: none !important;
+            }
+        `;
+        document.head.appendChild(style);
+
+        return () => {
+            clearTimeout(timer);
+            document.removeEventListener('copy', preventCheat, { capture: true });
+            document.removeEventListener('cut', preventCheat, { capture: true });
+            document.removeEventListener('paste', preventCheat, { capture: true });
+            document.removeEventListener('contextmenu', preventCheat, { capture: true });
+            document.removeEventListener('keydown', preventShortcuts, { capture: true });
+            if (document.head.contains(style)) {
+                document.head.removeChild(style);
+            }
+        };
     }, [editorLoaded]);
 
 
     const [questions, setQuestions] = useState([]);
     const [activeQIndex, setActiveQIndex] = useState(0);
     const [answers, setAnswers] = useState({});
+    const [maxUnlockedIndex, setMaxUnlockedIndex] = useState(0);
+    const [isFullscreen, setIsFullscreen] = useState(false);
+
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            setIsFullscreen(!!document.fullscreenElement);
+        };
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    }, []);
 
     const [selectedLang, setSelectedLang] = useState(LANGUAGES[0]);
     const [showLangMenu, setShowLangMenu] = useState(false);
@@ -113,6 +165,14 @@ const MockAssessment = () => {
             }
             setActiveTestCaseTab(0);
             setLoading(false);
+
+            try {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Fullscreen error: ${err.message}`);
+                });
+            } catch (e) {
+                console.error("Fullscreen API not supported.", e);
+            }
         };
 
         fetchQuestions();
@@ -287,18 +347,36 @@ const MockAssessment = () => {
     const currentResult = results[activeQIndex];
 
     return (
-        <div className="problem-view-layout" style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: '#f0f0f0', color: '#333', fontFamily: 'Inter, sans-serif' }}>
+        <div
+            className="problem-view-layout"
+            style={{
+                height: '100vh',
+                display: 'flex',
+                flexDirection: 'column',
+                background: '#f0f0f0',
+                color: '#333',
+                fontFamily: 'Inter, sans-serif',
+                userSelect: 'none',
+                WebkitUserSelect: 'none',
+                msUserSelect: 'none',
+                MozUserSelect: 'none'
+            }}
+            onCopy={(e) => e.preventDefault()}
+            onCut={(e) => e.preventDefault()}
+            onPaste={(e) => e.preventDefault()}
+        >
 
             {/* Top Navbar Header (LeetCode Assessment Style) */}
             <div style={{
-                height: '50px',
+                height: isFullscreen ? '60px' : '50px',
                 background: '#fff',
                 borderBottom: '1px solid #e0e0e0',
                 display: 'flex',
                 alignItems: 'center',
-                padding: '0 1rem',
+                padding: isFullscreen ? '0 5vw' : '0 1rem',
                 justifyContent: 'space-between',
-                flexShrink: 0
+                flexShrink: 0,
+                transition: 'all 0.3s ease'
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontWeight: 700, fontSize: '1.2rem', color: '#f59e0b' }}>
                     <MoveLeft
@@ -320,19 +398,30 @@ const MockAssessment = () => {
                         {questions.map((q, idx) => (
                             <button
                                 key={q.id}
-                                onClick={() => { setActiveQIndex(idx); setActiveTestCaseTab(0); }}
+                                onClick={() => {
+                                    if (idx <= maxUnlockedIndex) {
+                                        setActiveQIndex(idx);
+                                        setActiveTestCaseTab(0);
+                                    } else {
+                                        alert("Pehle पिछला question solve karein!");
+                                    }
+                                }}
                                 style={{
                                     border: 'none',
                                     background: activeQIndex === idx ? '#fff' : 'transparent',
                                     padding: '0.4rem 1rem',
                                     borderRadius: '4px',
                                     boxShadow: activeQIndex === idx ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-                                    cursor: 'pointer',
-                                    color: activeQIndex === idx ? '#333' : '#666',
+                                    cursor: idx <= maxUnlockedIndex ? 'pointer' : 'not-allowed',
+                                    color: idx <= maxUnlockedIndex ? (activeQIndex === idx ? '#333' : '#666') : '#ccc',
                                     fontWeight: activeQIndex === idx ? 600 : 400,
-                                    fontSize: '0.9rem'
+                                    fontSize: '0.9rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '4px'
                                 }}
                             >
+                                {idx > maxUnlockedIndex && <Lock size={12} />}
                                 Question {idx + 1}
                             </button>
                         ))}
@@ -361,10 +450,27 @@ const MockAssessment = () => {
             </div>
 
             {/* Main Content Area - Split Pane */}
-            <div style={{ flex: 1, display: 'flex', overflow: 'hidden', padding: '0', gap: '0' }}>
+            <div style={{
+                flex: 1,
+                display: 'flex',
+                overflow: 'hidden',
+                padding: isFullscreen ? '1rem 5vw' : '0',
+                gap: isFullscreen ? '1.5rem' : '0',
+                transition: 'all 0.3s ease'
+            }}>
 
                 {/* Left Side: Description */}
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#fff', borderRight: '1px solid #e0e0e0', overflow: 'hidden' }}>
+                <div style={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    background: '#fff',
+                    borderRight: isFullscreen ? 'none' : '1px solid #e0e0e0',
+                    borderRadius: isFullscreen ? '12px' : '0',
+                    boxShadow: isFullscreen ? '0 4px 6px -1px rgba(0, 0, 0, 0.1)' : 'none',
+                    overflow: 'hidden',
+                    transition: 'all 0.3s ease'
+                }}>
                     <div style={{ display: 'flex', background: '#fafafa', borderBottom: '1px solid #e0e0e0', padding: '0 8px' }}>
                         <button style={{
                             display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.8rem 1rem',
@@ -519,9 +625,20 @@ const MockAssessment = () => {
                                     theme="vs-dark"
                                     value={answers[activeQIndex] !== undefined && answers[activeQIndex] !== '' ? answers[activeQIndex] : (currentQ?.starterCode || '// Start typing your solution here...\n')}
                                     onChange={handleCodeChange}
-                                    onMount={(editor) => {
+                                    onMount={(editor, monaco) => {
                                         setEditorLoaded(true);
                                         editorRef.current = editor;
+
+                                        // Intercept copy/paste specifically within Monaco Editor
+                                        editor.onKeyDown((e) => {
+                                            if (e.ctrlKey || e.metaKey) {
+                                                // KeyCode 33 = C, 52 = V, 53 = X
+                                                if (e.keyCode === monaco.KeyCode.KeyC || e.keyCode === monaco.KeyCode.KeyV || e.keyCode === monaco.KeyCode.KeyX) {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                }
+                                            }
+                                        });
                                     }}
                                     options={{
                                         fontSize: 14,
@@ -531,7 +648,8 @@ const MockAssessment = () => {
                                         lineNumbers: 'on',
                                         automaticLayout: true,
                                         tabSize: 4,
-                                        padding: { top: 16 }
+                                        padding: { top: 16 },
+                                        contextmenu: false // Disable right-click inside the editor
                                     }}
                                 />
                             )}
@@ -622,15 +740,35 @@ const MockAssessment = () => {
 
                         {/* Bottom Actions Bar */}
                         <div style={{ height: '48px', borderTop: '1px solid #e0e0e0', display: 'flex', alignItems: 'center', padding: '0 1rem', justifyContent: 'flex-end', gap: '0.5rem', background: '#fff' }}>
+                            {activeQIndex < questions.length - 1 && (
+                                <button
+                                    onClick={() => {
+                                        if (answers[activeQIndex] && answers[activeQIndex] !== (questions[activeQIndex]?.starterCode || LANGUAGES[0].boilerplate)) {
+                                            setMaxUnlockedIndex(prev => Math.max(prev, activeQIndex + 1));
+                                            setActiveQIndex(prev => prev + 1);
+                                            setActiveTestCaseTab(0);
+                                        } else {
+                                            alert("Please write some code to unlock the next question!");
+                                        }
+                                    }}
+                                    style={{
+                                        background: '#fff', color: '#818cf8', border: '1px solid #818cf8', padding: '0.45rem 1.5rem',
+                                        borderRadius: '6px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: '0.2s'
+                                    }}
+                                >
+                                    Next Question
+                                </button>
+                            )}
                             <button
                                 onClick={() => submitToBackend(false)}
-                                disabled={running || submitting}
+                                disabled={running || submitting || (activeQIndex === questions.length - 1 && (!answers[activeQIndex] || answers[activeQIndex] === (questions[activeQIndex]?.starterCode || LANGUAGES[0].boilerplate)))}
                                 style={{
                                     background: '#818cf8', color: '#fff', border: 'none', padding: '0.45rem 1.5rem',
-                                    borderRadius: '6px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: '0.2s'
+                                    borderRadius: '6px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: '0.2s',
+                                    opacity: (activeQIndex === questions.length - 1 && (!answers[activeQIndex] || answers[activeQIndex] === (questions[activeQIndex]?.starterCode || LANGUAGES[0].boilerplate))) ? 0.6 : 1
                                 }}
                             >
-                                Submit
+                                {submitting ? 'Submitting...' : 'Submit Assessment'}
                             </button>
                         </div>
                     </div>
