@@ -31,8 +31,9 @@ const TutorialPlayer = () => {
                 if (userString) {
                     try {
                         const user = JSON.parse(userString);
-                        unlockedList = user.unlockedTutorials || [];
-                        isUserPremium = user.isPremium === true;
+                        // backend returns objects with tutorialId, but some legacy might have just IDs
+                        unlockedList = (user.unlockedTutorials || []).map(t => typeof t === 'object' ? t.tutorialId?.toString() : t?.toString());
+                        isUserPremium = user.isPremium === true || (user.proExpiry && new Date(user.proExpiry) > new Date());
                     } catch (e) { }
                 }
                 setIsUnlocked(isUserPremium || unlockedList.includes(res.data._id));
