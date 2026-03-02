@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Search, Bell, User, LogOut, Code2, BookOpen, UserCircle, Settings, FileText, BarChart2, Briefcase, PlusCircle, MonitorPlay, ChevronDown, Menu, X } from 'lucide-react';
+import { Search, Bell, User, LogOut, Code2, BookOpen, UserCircle, Settings, FileText, BarChart2, Briefcase, PlusCircle, MonitorPlay, ChevronDown, Menu, X, Trophy } from 'lucide-react';
 import axios from 'axios';
 
 const Navbar = () => {
@@ -91,6 +91,7 @@ const Navbar = () => {
                 <div className="nav-center hide-mobile">
                     <Link to="/exams" className={`gfg-nav-link ${currentPath === '/exams' ? 'active' : ''}`}>Practice</Link>
                     <Link to="/learning" className={`gfg-nav-link ${currentPath === '/learning' ? 'active' : ''}`}>Courses</Link>
+                    <Link to="/leaderboard" className={`gfg-nav-link ${currentPath === '/leaderboard' ? 'active' : ''}`}>Leaderboard</Link>
                     <Link to="/tutorials" className={`gfg-nav-link ${currentPath === '/tutorials' ? 'active' : ''}`}>Tutorials</Link>
                     <Link to="/interview" className={`gfg-nav-link ${currentPath === '/interview' ? 'active' : ''}`}>Interviews</Link>
                     <Link to="/resume" className={`gfg-nav-link ${currentPath === '/resume' ? 'active' : ''}`}>Resume</Link>
@@ -144,6 +145,7 @@ const Navbar = () => {
                             <Link to="/dashboard"><span>Dashboard</span> <MonitorPlay size={18} opacity={0.5} /></Link>
                             <Link to="/exams"><span>Practice Problems</span> <Code2 size={18} opacity={0.5} /></Link>
                             <Link to="/learning"><span>Learning Courses</span> <BookOpen size={18} opacity={0.5} /></Link>
+                            <Link to="/leaderboard"><span>Leaderboard</span> <Trophy size={18} opacity={0.5} /></Link>
                             <Link to="/interview"><span>Mock Interviews</span> <Briefcase size={18} opacity={0.5} /></Link>
                             <Link to="/resume"><span>Resume Analyzer</span> <FileText size={18} opacity={0.5} /></Link>
                             <Link to="/profile"><span>My Profile</span> <UserCircle size={18} opacity={0.5} /></Link>

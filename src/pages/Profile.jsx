@@ -14,6 +14,7 @@ import ProfileStats from '../components/profile/ProfileStats';
 import ActivityHeatmap from '../components/profile/ActivityHeatmap';
 import LanguageStats from '../components/profile/LanguageStats';
 import SkillBreakdown from '../components/profile/SkillBreakdown';
+import ProfileBadges from '../components/profile/ProfileBadges';
 import { generateCertificate, isEligibleForCertificate } from '../utils/certificateGenerator';
 
 const Profile = () => {
@@ -26,7 +27,7 @@ const Profile = () => {
     const [saveLoading, setSaveLoading] = useState(false);
     const [message, setMessage] = useState(null);
     const [showAllExams, setShowAllExams] = useState(false);
-    const [activeTab, setActiveTab] = useState('analytics');
+    const [activeTab, setActiveTab] = useState('stats');
     const [domainTopics, setDomainTopics] = useState([]);
     const [isDomainMaster, setIsDomainMaster] = useState(false);
     // 'stats' or 'certificates'
@@ -54,6 +55,10 @@ const Profile = () => {
 
                     setUserData(profileData);
                     setDomains(domainData);
+
+                    // Sync localStorage
+                    localStorage.setItem('user', JSON.stringify(profileData));
+                    localStorage.setItem('userRole', profileData.role);
 
                     setEditData({
                         name: profileData.name,
@@ -401,9 +406,23 @@ const Profile = () => {
                             </div>
                             {activeTab === 'certificates' && <div style={{ position: 'absolute', bottom: '-1rem', left: 0, right: 0, height: '3px', background: '#818cf8', borderRadius: '10px' }}></div>}
                         </button>
+                        <button
+                            onClick={() => setActiveTab('badges')}
+                            style={{
+                                background: 'transparent', border: 'none', color: activeTab === 'badges' ? '#facc15' : 'rgba(255,255,255,0.4)',
+                                fontSize: '1.1rem', fontWeight: 800, cursor: 'pointer', position: 'relative', padding: '0.5rem 0',
+                                display: 'flex', alignItems: 'center', gap: '0.6rem'
+                            }}
+                        >
+                            Badges
+                            <div style={{ background: 'rgba(250, 204, 21, 0.2)', color: '#facc15', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '100px' }}>
+                                {(userData.badges || []).length}
+                            </div>
+                            {activeTab === 'badges' && <div style={{ position: 'absolute', bottom: '-1rem', left: 0, right: 0, height: '3px', background: '#facc15', borderRadius: '10px' }}></div>}
+                        </button>
                     </div>
 
-                    {activeTab === 'stats' ? (
+                    {activeTab === 'stats' && (
                         <>
                             {/* Problems Stats */}
                             <ProfileStats solvedStats={userData.solvedStats} totalAvailableStats={userData.totalAvailableStats} />
@@ -450,7 +469,9 @@ const Profile = () => {
                                 </div>
                             </div>
                         </>
-                    ) : (
+                    )}
+
+                    {activeTab === 'certificates' && (
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '2rem' }}>
                             {/* Domain Mastery Certificate */}
                             {isDomainMaster && (
@@ -553,6 +574,10 @@ const Profile = () => {
                                 </div>
                             )}
                         </div>
+                    )}
+
+                    {activeTab === 'badges' && (
+                        <ProfileBadges user={userData} />
                     )}
                 </main>
             </div>

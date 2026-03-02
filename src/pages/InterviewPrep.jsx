@@ -16,20 +16,38 @@ const InterviewPrep = () => {
         const fetchData = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/mock-stats`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                setStats(res.data || {});
+                if (!token) return;
+
+                const [statsRes, profileRes] = await Promise.all([
+                    axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/mock-stats`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    }),
+                    axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/profile`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    })
+                ]);
+
+                setStats(statsRes.data || {});
+
+                const user = profileRes.data;
+                const hasPro = user.hasProAccess || user.isPro === true || user.isPremium === true;
+                setIsPro(hasPro);
+
+                // Sync localStorage
+                localStorage.setItem('user', JSON.stringify(user));
+                localStorage.setItem('userRole', user.role);
+
             } catch (err) {
-                console.error("Failed to fetch mock stats:", err);
-            } finally {
+                console.error("Failed to fetch recruitment data:", err);
+                // Fallback to localStorage
                 const userString = localStorage.getItem('user');
                 if (userString) {
                     try {
                         const user = JSON.parse(userString);
-                        setIsPro(user.hasProAccess || user.isPro === true);
+                        setIsPro(user.hasProAccess || user.isPro === true || user.isPremium === true);
                     } catch (e) { }
                 }
+            } finally {
                 setLoading(false);
             }
         };

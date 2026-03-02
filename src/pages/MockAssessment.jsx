@@ -108,6 +108,7 @@ const MockAssessment = () => {
     const [showExitModal, setShowExitModal] = useState(false);
 
     const [loading, setLoading] = useState(true);
+    const [activeHintIndex, setActiveHintIndex] = useState(null);
 
     useEffect(() => {
         const fetchQuestions = async () => {
@@ -129,7 +130,9 @@ const MockAssessment = () => {
                             description: q.description,
                             starterCode: q.starterCode || LANGUAGES[0].boilerplate,
                             starterCodes: q.starterCodes || {},
-                            testCases: q.testCases || []
+                            testCases: q.testCases || [],
+                            constraints: q.constraints,
+                            hints: q.hints || []
                         }));
                         setQuestions(formatted);
 
@@ -517,12 +520,62 @@ const MockAssessment = () => {
                                 </ReactMarkdown>
                             </div>
 
+                            {currentQ?.constraints && (
+                                <div style={{ marginTop: '2rem' }}>
+                                    <h4 style={{ fontSize: '0.9rem', color: '#1a1a1a', marginBottom: '0.5rem', fontWeight: 600 }}>Constraints:</h4>
+                                    <pre style={{
+                                        background: '#f8f9fa',
+                                        padding: '1rem',
+                                        borderRadius: '8px',
+                                        fontSize: '0.85rem',
+                                        color: '#444',
+                                        fontFamily: '"Fira Code", monospace',
+                                        whiteSpace: 'pre-wrap',
+                                        border: '1px solid #eee'
+                                    }}>
+                                        {currentQ.constraints}
+                                    </pre>
+                                </div>
+                            )}
+
                             <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid #eee' }}>
                                 <h4 style={{ fontSize: '0.9rem', color: '#1a1a1a', marginBottom: '1rem', fontWeight: 600 }}>Discussion & Hints</h4>
-                                <div style={{ display: 'flex', gap: '0.75rem' }}>
-                                    <button style={{ padding: '0.5rem 1rem', background: '#f5f5f5', border: 'none', borderRadius: '6px', fontSize: '0.8rem', color: '#666', cursor: 'pointer' }}>Show Hint 1</button>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+                                    {(currentQ?.hints || []).map((hint, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => setActiveHintIndex(activeHintIndex === idx ? null : idx)}
+                                            style={{
+                                                padding: '0.5rem 1rem',
+                                                background: activeHintIndex === idx ? '#818cf8' : '#f5f5f5',
+                                                border: 'none',
+                                                borderRadius: '6px',
+                                                fontSize: '0.8rem',
+                                                color: activeHintIndex === idx ? '#fff' : '#666',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            {activeHintIndex === idx ? 'Hide Hint' : `Show Hint ${idx + 1}`}
+                                        </button>
+                                    ))}
                                     <button style={{ padding: '0.5rem 1rem', background: '#f5f5f5', border: 'none', borderRadius: '6px', fontSize: '0.8rem', color: '#666', cursor: 'pointer' }}>Related Topics</button>
                                 </div>
+
+                                {activeHintIndex !== null && (
+                                    <div style={{
+                                        marginTop: '1rem',
+                                        padding: '1rem',
+                                        background: '#fdf9f0',
+                                        borderLeft: '4px solid #f59e0b',
+                                        borderRadius: '4px',
+                                        fontSize: '0.9rem',
+                                        color: '#92400e',
+                                        animation: 'fadeIn 0.3s ease-in-out'
+                                    }}>
+                                        <strong>Hint {activeHintIndex + 1}:</strong> {currentQ.hints[activeHintIndex]}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

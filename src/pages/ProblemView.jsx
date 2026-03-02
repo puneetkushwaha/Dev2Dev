@@ -519,12 +519,41 @@ const ProblemView = () => {
                             </div>
                         )}
                         {activeLeftTab === 'Editorial' && (
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'rgba(255,255,255,0.3)' }}>
-                                <Lock size={48} style={{ marginBottom: '1.5rem', opacity: 0.1 }} />
-                                <h3 style={{ color: '#fff', marginBottom: '0.5rem' }}>Editorial Locked</h3>
-                                <p style={{ fontSize: '0.9rem', marginBottom: '1.5rem', textAlign: 'center' }}>Subscribe to Premium to unlock full editorial and optimal solutions.</p>
-                                <button style={{ background: '#f59e0b', color: '#000', border: 'none', borderRadius: '8px', padding: '0.7rem 2rem', fontWeight: 800, fontSize: '0.9rem', cursor: 'pointer' }}>Go Premium</button>
-                            </div>
+                            (() => {
+                                const userString = localStorage.getItem('user');
+                                let hasAccess = false;
+                                if (userString) {
+                                    try {
+                                        const user = JSON.parse(userString);
+                                        hasAccess = user.isPremium || user.isPro || user.hasProAccess;
+                                    } catch (e) { }
+                                }
+
+                                if (hasAccess) {
+                                    return (
+                                        <div className="markdown-body" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '1rem', lineHeight: '1.7' }}>
+                                            <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>Editorial Solution</h2>
+                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                {q?.explanation || "No editorial available for this problem yet."}
+                                            </ReactMarkdown>
+                                        </div>
+                                    );
+                                }
+
+                                return (
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'rgba(255,255,255,0.3)' }}>
+                                        <Lock size={48} style={{ marginBottom: '1.5rem', opacity: 0.1 }} />
+                                        <h3 style={{ color: '#fff', marginBottom: '0.5rem' }}>Editorial Locked</h3>
+                                        <p style={{ fontSize: '0.9rem', marginBottom: '1.5rem', textAlign: 'center' }}>Subscribe to Premium to unlock full editorial and optimal solutions.</p>
+                                        <button
+                                            onClick={() => navigate('/pricing')}
+                                            style={{ background: '#f59e0b', color: '#000', border: 'none', borderRadius: '8px', padding: '0.7rem 2rem', fontWeight: 800, fontSize: '0.9rem', cursor: 'pointer' }}
+                                        >
+                                            Go Premium
+                                        </button>
+                                    </div>
+                                );
+                            })()
                         )}
                         {activeLeftTab === 'Solutions' && (
                             <div style={{ padding: '2rem', textAlign: 'center', color: 'rgba(255,255,255,0.3)' }}>

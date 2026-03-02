@@ -48,6 +48,9 @@ const Dashboard = () => {
                     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                 });
                 setUserData(profileRes.data);
+                // Sync localStorage
+                localStorage.setItem('user', JSON.stringify(profileRes.data));
+                localStorage.setItem('userRole', profileRes.data.role);
 
                 const [domainsRes, tutorialsRes] = await Promise.all([
                     axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains`),

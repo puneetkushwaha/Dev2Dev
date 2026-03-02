@@ -22,10 +22,12 @@ const Tutorials = () => {
 
                 // Get locally cached user info to check unlocked status
                 const userString = localStorage.getItem('user');
+                let isUserPremium = false;
                 if (userString) {
                     try {
                         const user = JSON.parse(userString);
                         setUnlockedTutorials(user.unlockedTutorials || []);
+                        isUserPremium = user.isPremium === true;
                     } catch (e) { }
                 }
 
@@ -42,6 +44,20 @@ const Tutorials = () => {
         t.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         t.category.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    const isTutorialLocked = (tutorial) => {
+        if (!tutorial.isPremium) return false;
+
+        const userString = localStorage.getItem('user');
+        if (userString) {
+            try {
+                const user = JSON.parse(userString);
+                if (user.isPremium) return false;
+                if (user.unlockedTutorials?.includes(tutorial._id)) return false;
+            } catch (e) { }
+        }
+        return true;
+    };
 
     if (loading) return <Loader text="Unlocking Premium Knowledge..." />;
 
@@ -77,46 +93,49 @@ const Tutorials = () => {
 
             {/* Tutorials Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '2rem' }}>
-                {filteredTutorials.map((tutorial) => (
-                    <div
-                        key={tutorial._id}
-                        onClick={() => navigate(`/tutorials/${tutorial._id}`)}
-                        className="tutorial-card"
-                        style={{
-                            background: 'rgba(255,255,255,0.02)',
-                            borderRadius: '24px',
-                            border: '1px solid rgba(255,255,255,0.05)',
-                            overflow: 'hidden',
-                            cursor: 'pointer',
-                            transition: 'all 0.3s ease'
-                        }}
-                    >
-                        <div style={{ position: 'relative', height: '200px' }}>
-                            <img src={tutorial.thumbnail} alt={tutorial.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(99, 102, 241, 0.9)', color: '#fff', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700 }}>
-                                {tutorial.category}
-                            </div>
-                            <div style={{ position: 'absolute', bottom: '12px', left: '12px', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', color: '#fff', padding: '4px 8px', borderRadius: '8px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                <Play size={12} fill="white" /> {tutorial.lessons.length} Lessons
-                            </div>
-                        </div>
-                        <div style={{ padding: '1.5rem' }}>
-                            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.75rem' }}>{tutorial.title}</h3>
-                            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', lineHeight: 1.5, marginBottom: '1.5rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                                {tutorial.description}
-                            </p>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: (tutorial.isPremium && !unlockedTutorials.includes(tutorial._id)) ? '#fbbf24' : '#6366f1', fontSize: '0.9rem', fontWeight: 700 }}>
-                                    {(tutorial.isPremium && !unlockedTutorials.includes(tutorial._id)) ? <Lock size={16} /> : <Play size={16} />}
-                                    {(tutorial.isPremium && !unlockedTutorials.includes(tutorial._id)) ? `Unlock for ₹${tutorial.price} / Year` : 'Start Learning'} <ChevronRight size={18} />
+                {filteredTutorials.map((tutorial) => {
+                    const locked = isTutorialLocked(tutorial);
+                    return (
+                        <div
+                            key={tutorial._id}
+                            onClick={() => navigate(`/tutorials/${tutorial._id}`)}
+                            className="tutorial-card"
+                            style={{
+                                background: 'rgba(255,255,255,0.02)',
+                                borderRadius: '24px',
+                                border: '1px solid rgba(255,255,255,0.05)',
+                                overflow: 'hidden',
+                                cursor: 'pointer',
+                                transition: 'all 0.3s ease'
+                            }}
+                        >
+                            <div style={{ position: 'relative', height: '200px' }}>
+                                <img src={tutorial.thumbnail} alt={tutorial.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                <div style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(99, 102, 241, 0.9)', color: '#fff', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700 }}>
+                                    {tutorial.category}
                                 </div>
-                                <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem' }}>
-                                    Updated {new Date(tutorial.createdAt).toLocaleDateString()}
+                                <div style={{ position: 'absolute', bottom: '12px', left: '12px', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', color: '#fff', padding: '4px 8px', borderRadius: '8px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                    <Play size={12} fill="white" /> {tutorial.lessons.length} Lessons
                                 </div>
                             </div>
+                            <div style={{ padding: '1.5rem' }}>
+                                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.75rem' }}>{tutorial.title}</h3>
+                                <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', lineHeight: 1.5, marginBottom: '1.5rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                    {tutorial.description}
+                                </p>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: locked ? '#fbbf24' : '#6366f1', fontSize: '0.9rem', fontWeight: 700 }}>
+                                        {locked ? <Lock size={16} /> : <Play size={16} />}
+                                        {locked ? `Unlock for ₹${tutorial.price} / Year` : 'Start Learning'} <ChevronRight size={18} />
+                                    </div>
+                                    <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem' }}>
+                                        Updated {new Date(tutorial.createdAt).toLocaleDateString()}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             <style>{`

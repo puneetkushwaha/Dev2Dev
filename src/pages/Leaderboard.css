@@ -1,0 +1,224 @@
+.leaderboard-container {
+    min-height: 100vh;
+    padding: 100px 5% 50px 5%;
+    background: #0a0a0f;
+    color: #e2e8f0;
+    font-family: 'Inter', sans-serif;
+}
+
+.leaderboard-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.leaderboard-header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    letter-spacing: -0.5px;
+}
+
+.leaderboard-header .header-icon {
+    color: #facc15;
+    filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.5));
+}
+
+.leaderboard-header p {
+    color: #94a3b8;
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.leaderboard-table-wrapper {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 1rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    overflow-x: auto;
+}
+
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.leaderboard-table th {
+    text-align: left;
+    padding: 1.2rem 1rem;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.leaderboard-row {
+    transition: all 0.2s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.leaderboard-row:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.leaderboard-row td {
+    padding: 1.2rem 1rem;
+    vertical-align: middle;
+}
+
+.rank-cell {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #64748b;
+    width: 80px;
+    text-align: center;
+}
+
+.rank-medal {
+    display: inline-flex;
+    padding: 6px;
+    border-radius: 50%;
+    box-shadow: 0 0 15px currentColor;
+}
+
+.gold {
+    color: #facc15;
+}
+
+.silver {
+    color: #cbd5e1;
+}
+
+.bronze {
+    color: #d97706;
+}
+
+.user-cell {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(255, 255, 255, 0.05);
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    font-weight: 700;
+    color: #fff;
+}
+
+.username {
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: #f8fafc;
+}
+
+.stat-cell {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.score-glow {
+    color: #38bdf8;
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+}
+
+.streak-glow {
+    color: #fb923c;
+    text-shadow: 0 0 10px rgba(251, 146, 60, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.badge-cell {
+    min-width: 180px;
+}
+
+.top-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(139, 92, 246, 0.15);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    padding: 6px 14px;
+    border-radius: 20px;
+    color: #c4b5fd;
+    font-weight: 600;
+    font-size: 0.85rem;
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+}
+
+.badge-icon {
+    display: flex;
+}
+
+.no-badge {
+    color: #64748b;
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+.leaderboard-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: #0a0a0f;
+}
+
+.loader {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(139, 92, 246, 0.3);
+    border-radius: 50%;
+    border-top-color: #8b5cf6;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Rank 1 Highlight */
+.rank-1 {
+    background: linear-gradient(90deg, rgba(250, 204, 21, 0.05) 0%, transparent 100%);
+    border-left: 3px solid #facc15;
+}
+
+.rank-2 {
+    background: linear-gradient(90deg, rgba(203, 213, 225, 0.05) 0%, transparent 100%);
+    border-left: 3px solid #cbd5e1;
+}
+
+.rank-3 {
+    background: linear-gradient(90deg, rgba(217, 119, 6, 0.05) 0%, transparent 100%);
+    border-left: 3px solid #d97706;
+}

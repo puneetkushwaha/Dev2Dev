@@ -33,6 +33,7 @@ import Pricing from './pages/Pricing';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Notifications from './pages/Notifications';
+import Leaderboard from './pages/Leaderboard';
 import { HelmetProvider } from 'react-helmet-async';
 import ScrollToTop from './components/ScrollToTop';
 
@@ -80,6 +81,7 @@ function App() {
             <Route path="/tutorials" element={<Tutorials />} />
             <Route path="/tutorials/:id" element={<TutorialPlayer />} />
             <Route path="/notifications" element={<Notifications />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
           </Route>
 
           {/* Catch-all route to redirect back to landing */}

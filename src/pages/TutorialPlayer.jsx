@@ -27,13 +27,15 @@ const TutorialPlayer = () => {
 
                 const userString = localStorage.getItem('user');
                 let unlockedList = [];
+                let isUserPremium = false;
                 if (userString) {
                     try {
                         const user = JSON.parse(userString);
                         unlockedList = user.unlockedTutorials || [];
+                        isUserPremium = user.isPremium === true;
                     } catch (e) { }
                 }
-                setIsUnlocked(unlockedList.includes(res.data._id));
+                setIsUnlocked(isUserPremium || unlockedList.includes(res.data._id));
 
                 setLoading(false);
             } catch (err) {

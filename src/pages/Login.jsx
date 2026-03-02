@@ -26,6 +26,7 @@ const Login = () => {
             if (res.ok) {
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('userRole', data.role);
+                localStorage.setItem('user', JSON.stringify(data));
                 navigate(data.selectedDomain ? '/dashboard' : '/onboarding');
             } else {
                 setError(data.message || 'Verification Failed');
@@ -49,6 +50,7 @@ const Login = () => {
             if (res.ok) {
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('userRole', data.role);
+                localStorage.setItem('user', JSON.stringify(data));
                 navigate(data.selectedDomain ? '/dashboard' : '/onboarding');
             } else {
                 setError('Authentication Bypass Denied');

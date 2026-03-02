@@ -564,22 +564,22 @@ const ExamEditorModal = ({ exam, domains, onSave, onClose }) => {
 };
 
 // ──────────────────────────────────────────
-// Sub-component: UserDetailModal
+// Sub-components for Modals
 // ──────────────────────────────────────────
+const InfoCard = ({ icon, label, value }) => (
+    <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#818cf8', flexShrink: 0 }}>
+            {icon}
+        </div>
+        <div style={{ minWidth: 0, flex: 1 }}>
+            <div style={{ fontSize: '0.7rem', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '0.2rem' }}>{label}</div>
+            <div style={{ fontSize: '0.9rem', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{value || 'N/A'}</div>
+        </div>
+    </div>
+);
+
 const UserDetailModal = ({ user, onClose }) => {
     if (!user) return null;
-
-    const InfoCard = ({ icon, label, value }) => (
-        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#818cf8', flexShrink: 0 }}>
-                {icon}
-            </div>
-            <div style={{ minWidth: 0, flex: 1 }}>
-                <div style={{ fontSize: '0.7rem', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '0.2rem' }}>{label}</div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{value || 'N/A'}</div>
-            </div>
-        </div>
-    );
 
     return (
         <div style={{
@@ -693,18 +693,18 @@ const UserDetailModal = ({ user, onClose }) => {
     );
 };
 
+const StatBox = ({ label, value, color }) => (
+    <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '16px', textAlign: 'center' }}>
+        <div style={{ fontSize: '0.7rem', opacity: 0.5, textTransform: 'uppercase', marginBottom: '0.5rem' }}>{label}</div>
+        <div style={{ fontSize: '1.5rem', fontWeight: 800, color: color }}>{value}%</div>
+    </div>
+);
+
 // ──────────────────────────────────────────
 // Sub-component: InterviewDetailModal
 // ──────────────────────────────────────────
 const InterviewDetailModal = ({ interview, onClose }) => {
     if (!interview) return null;
-
-    const StatBox = ({ label, value, color }) => (
-        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '16px', textAlign: 'center' }}>
-            <div style={{ fontSize: '0.7rem', opacity: 0.5, textTransform: 'uppercase', marginBottom: '0.5rem' }}>{label}</div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: color }}>{value}%</div>
-        </div>
-    );
 
     return (
         <div style={{
@@ -955,8 +955,62 @@ const TutorialEditorModal = ({ tutorial, onSave, onClose }) => {
 };
 
 // ──────────────────────────────────────────
-// Main: AdminDashboard
+// Sub-component: AddUserModal
 // ──────────────────────────────────────────
+const AddUserModal = ({ user, onChange, onSave, onClose, saving }) => {
+    return (
+        <div style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000,
+            background: 'rgba(0,0,0,0.85)', padding: '2rem', display: 'flex', justifyContent: 'center', alignItems: 'center',
+            backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)'
+        }} className="animate-fade-in" onClick={onClose}>
+            <div style={{
+                background: '#0F172A', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)',
+                width: '100%', maxWidth: '500px', display: 'flex', flexDirection: 'column',
+                boxShadow: '0 50px 100px rgba(0,0,0,0.8)', overflow: 'hidden'
+            }} onClick={e => e.stopPropagation()}>
+
+                <div style={{ padding: '1.5rem 2rem', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(99,102,241,0.05)' }}>
+                    <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Add New User</h2>
+                    <button className="icon-only" onClick={onClose} disabled={saving}><XCircle size={20} /></button>
+                </div>
+
+                <div style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                    <div className="form-group">
+                        <label>Full Name</label>
+                        <input value={user.name} onChange={e => onChange({ ...user, name: e.target.value })} placeholder="e.g. Puneet Kumar" />
+                    </div>
+                    <div className="form-group">
+                        <label>Email Address</label>
+                        <input type="email" value={user.email} onChange={e => onChange({ ...user, email: e.target.value })} placeholder="puneet12@gmail.com" />
+                    </div>
+                    <div className="form-group">
+                        <label>Set Password</label>
+                        <input type="password" value={user.password} onChange={e => onChange({ ...user, password: e.target.value })} placeholder="Minimum 6 characters" />
+                    </div>
+
+                    <div className="form-group" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                        <div>
+                            <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>Premium Access</div>
+                            <div style={{ fontSize: '0.75rem', opacity: 0.5 }}>Unlocks all features automatically</div>
+                        </div>
+                        <label className="toggle-switch">
+                            <input type="checkbox" checked={user.isPremium} onChange={e => onChange({ ...user, isPremium: e.target.checked })} />
+                            <span className="slider"></span>
+                        </label>
+                    </div>
+
+                    <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem' }}>
+                        <button className="btn-secondary" style={{ flex: 1 }} onClick={onClose} disabled={saving}>Cancel</button>
+                        <button className="btn-primary" style={{ flex: 2 }} onClick={onSave} disabled={saving}>
+                            {saving ? <Loader2 size={16} className="spin" /> : <Plus size={16} />} Create User
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
 const AdminDashboard = () => {
     const [stats, setStats] = useState({ users: 0, domains: 0, topics: 0, exams: 0 });
     const [domains, setDomains] = useState([]);
@@ -978,7 +1032,10 @@ const AdminDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
 
-    useEffect(() => { fetchAllData(); }, []);
+    // User Management State
+    const [showAddUserModal, setShowAddUserModal] = useState(false);
+    const [newUser, setNewUser] = useState({ name: '', email: '', password: '', isPremium: false });
+    const [creatingUser, setCreatingUser] = useState(false);
 
     const fetchAllData = async () => {
         setLoading(true);
@@ -1006,6 +1063,8 @@ const AdminDashboard = () => {
         if (n) setNotifications(n);
         setLoading(false);
     };
+
+    useEffect(() => { fetchAllData(); }, []);
 
     const fetchTopics = async (domainId) => {
         const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/topics/domain/${domainId}`, authConfig());
@@ -1099,6 +1158,29 @@ const AdminDashboard = () => {
         fetchAllData();
     };
 
+    const handleTogglePremium = async (userId) => {
+        await axios.put(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/users/premium/${userId}`, {}, authConfig());
+        fetchAllData();
+    };
+
+    const handleCreateUser = async () => {
+        if (!newUser.name || !newUser.email || !newUser.password) {
+            alert("Please fill all required fields");
+            return;
+        }
+        setCreatingUser(true);
+        try {
+            await axios.post(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/users`, newUser, authConfig());
+            setShowAddUserModal(false);
+            setNewUser({ name: '', email: '', password: '', isPremium: false });
+            fetchAllData();
+        } catch (err) {
+            alert(err.response?.data?.message || err.message);
+        } finally {
+            setCreatingUser(false);
+        }
+    };
+
     // ── Renders ──
     const renderOverview = () => (
         <div className="animate-fade-in content-view">
@@ -1169,14 +1251,19 @@ const AdminDashboard = () => {
         <div className="animate-fade-in content-view">
             <div className="view-header">
                 <h2 className="view-title">User Base</h2>
-                <div className="search-wrap">
-                    <Search size={15} />
-                    <input type="text" placeholder="Search users..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    <div className="search-wrap">
+                        <Search size={15} />
+                        <input type="text" placeholder="Search users..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+                    </div>
+                    <button className="btn-primary" onClick={() => setShowAddUserModal(true)}>
+                        <Plus size={18} /> Add User
+                    </button>
                 </div>
             </div>
             <div className="table-container">
                 <table className="pro-table">
-                    <thead><tr><th>User</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead>
+                    <thead><tr><th>User</th><th>Email</th><th>Role</th><th>Premium</th><th>Actions</th></tr></thead>
                     <tbody>
                         {users.filter(u =>
                             u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -1186,6 +1273,16 @@ const AdminDashboard = () => {
                                 <td><div className="user-profile-sm"><div className="user-avatar">{u.name[0]}</div><span>{u.name}</span></div></td>
                                 <td style={{ opacity: 0.6 }}>{u.email}</td>
                                 <td><span className={`role-pill ${u.role}`}>{u.role}</span></td>
+                                <td>
+                                    <button
+                                        onClick={() => handleTogglePremium(u._id)}
+                                        className={`icon-only ${u.isPremium ? 'premium-active' : ''}`}
+                                        title={u.isPremium ? "Revoke Premium" : "Grant Premium"}
+                                        style={{ color: u.isPremium ? '#f59e0b' : 'rgba(255,255,255,0.2)' }}
+                                    >
+                                        <Zap size={16} fill={u.isPremium ? "currentColor" : "none"} />
+                                    </button>
+                                </td>
                                 <td className="table-actions">
                                     <button onClick={() => setSelectedUserDetails(u)} className="btn-sm"><Info size={12} /> View</button>
                                     <button onClick={() => handleToggleRole(u._id)} className="icon-only" title="Toggle Role"><Shield size={14} /></button>
@@ -1594,6 +1691,13 @@ const AdminDashboard = () => {
                 />
             )}
 
+            {selectedUserDetails && (
+                <UserDetailModal
+                    user={selectedUserDetails}
+                    onClose={() => setSelectedUserDetails(null)}
+                />
+            )}
+
             {selectedInterview && (
                 <InterviewDetailModal
                     interview={selectedInterview}
@@ -1601,10 +1705,13 @@ const AdminDashboard = () => {
                 />
             )}
 
-            {selectedUserDetails && (
-                <UserDetailModal
-                    user={selectedUserDetails}
-                    onClose={() => setSelectedUserDetails(null)}
+            {showAddUserModal && (
+                <AddUserModal
+                    user={newUser}
+                    onChange={setNewUser}
+                    onSave={handleCreateUser}
+                    onClose={() => setShowAddUserModal(false)}
+                    saving={creatingUser}
                 />
             )}
 
@@ -1836,6 +1943,16 @@ const CSS = `
     @keyframes spin { to { transform: rotate(360deg); } }
     .animate-fade-in { animation: fadeIn 0.3s ease-out; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    .premium-active {
+        background: rgba(245, 158, 11, 0.1) !important;
+        border: 1px solid rgba(245, 158, 11, 0.2) !important;
+        color: #f59e0b !important;
+    }
+    
+    .premium-active:hover {
+        background: rgba(245, 158, 11, 0.2) !important;
+    }
 `;
 
 export default AdminDashboard;

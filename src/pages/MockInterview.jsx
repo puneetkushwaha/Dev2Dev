@@ -84,7 +84,7 @@ const MockInterview = () => {
                 });
 
                 const user = res.data;
-                setIsPro(user.hasProAccess || user.isPro === true);
+                setIsPro(user.hasProAccess || user.isPro === true || user.isPremium === true);
                 setFreeAiInterviewCount(user.freeAiInterviewCount || 0);
 
                 // Keep local storage in sync with DB truth
@@ -110,7 +110,7 @@ const MockInterview = () => {
                 if (userString) {
                     try {
                         const user = JSON.parse(userString);
-                        setIsPro(user.hasProAccess || user.isPro === true);
+                        setIsPro(user.hasProAccess || user.isPro === true || user.isPremium === true);
                         setFreeAiInterviewCount(user.freeAiInterviewCount || 0);
                     } catch (e) { }
                 }
