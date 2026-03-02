@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Timer, CheckCircle, AlertCircle, ChevronLeft, ChevronRight, SkipForward, Loader2, Brain, CheckSquare, Award, Cpu, Code2, Terminal, Settings, RotateCcw, FileCode, Play } from 'lucide-react';
+import { Timer, CheckCircle, AlertCircle, ChevronLeft, ChevronRight, SkipForward, Loader2, Brain, CheckSquare, Award, Cpu, Code2, Terminal, Settings, RotateCcw, FileCode, Play, Sparkles } from 'lucide-react';
 import Editor from '@monaco-editor/react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
+import { generateCertificate, isEligibleForCertificate } from '../utils/certificateGenerator';
 import { mockQuestions } from '../data/mockQuestions';
 import Loader from '../components/Loader';
 
@@ -210,6 +211,20 @@ const ExamEngine = () => {
         setSubmitting(false);
     };
 
+    const handleDownloadCertificate = () => {
+        if (!result) return;
+
+        // Get user name from localStorage or profile
+        const userStr = localStorage.getItem('user');
+        const userData = userStr ? JSON.parse(userStr) : { name: 'DevElevator' };
+        generateCertificate(userData, {
+            examName: activeExam.title,
+            score: result.score,
+            totalMarks: result.totalMarks,
+            dateRun: new Date()
+        }, 'EXAM');
+    };
+
     if (result) {
         return (
             <div className="container animate-fade-in" style={{ padding: '4rem 1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -227,9 +242,15 @@ const ExamEngine = () => {
                     <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>
                         {result.passed ? 'Congratulations!' : 'Keep Practicing!'}
                     </h1>
-                    <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.7)', marginBottom: '2rem' }}>
+                    <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.7)', marginBottom: '1rem' }}>
                         You scored <strong>{result.score}</strong> out of <strong>{result.totalMarks}</strong>
                     </p>
+                    {result.passed && isEligibleForCertificate(activeExam.title) && (
+                        <p style={{ fontSize: '0.95rem', color: '#818cf8', fontWeight: 'bold', marginBottom: '2rem', background: 'rgba(129, 140, 248, 0.1)', display: 'inline-block', padding: '0.5rem 1.5rem', borderRadius: '100px', border: '1px solid rgba(129, 140, 248, 0.2)' }}>
+                            <Sparkles size={16} style={{ display: 'inline', marginRight: '8px', marginBottom: '-2px' }} />
+                            Official Certificate Ready! Download below or visit your profile.
+                        </p>
+                    )}
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2.5rem' }}>
                         <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '20px' }}>
@@ -243,6 +264,11 @@ const ExamEngine = () => {
                     </div>
 
                     <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                        {result.passed && isEligibleForCertificate(activeExam.title) && (
+                            <button className="btn-primary" onClick={handleDownloadCertificate} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'linear-gradient(135deg, #6366f1, #a855f7)', border: 'none' }}>
+                                <Award size={20} /> Download Certification
+                            </button>
+                        )}
                         <button className="btn-primary" onClick={() => generatePDF(result)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             <SkipForward size={20} /> Download PDF Report
                         </button>
@@ -665,26 +691,34 @@ const ExamEngine = () => {
                                         </div>
                                     )}
                                     {editorError ? (
-                                        <div style={{ padding: '2rem', background: '#1e1e1e', border: '1px solid #f48771', borderRadius: '8px' }}>
-                                            <div style={{ color: '#f48771', marginBottom: '1rem', fontWeight: 'bold' }}>⚠️ Editor Engine Blocked</div>
-                                            <p style={{ color: '#aaa', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
-                                                Your browser or network is blocking the professional editor scripts.
-                                                You can still write your code in the fallback box below.
+                                        <div style={{ padding: '2rem', background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#4ec9b0', marginBottom: '1rem', fontWeight: 'bold' }}>
+                                                <Terminal size={18} />
+                                                <span>Classic Editor Active</span>
+                                            </div>
+                                            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', marginBottom: '1.5rem', lineHeight: '1.5' }}>
+                                                Your current connection is optimized for our high-performance editor.
+                                                You are now using the <span style={{ color: '#4ec9b0' }}>Classic Mode</span> for maximum reliability.
                                             </p>
                                             <textarea
                                                 style={{
                                                     width: '100%',
                                                     height: '350px',
-                                                    background: '#000',
-                                                    color: '#fff',
-                                                    border: '1px solid #333',
-                                                    padding: '1rem',
-                                                    fontFamily: 'monospace',
-                                                    outline: 'none'
+                                                    background: '#0a0a0a',
+                                                    color: '#d4d4d4',
+                                                    border: '1px solid rgba(255,255,255,0.1)',
+                                                    borderRadius: '8px',
+                                                    padding: '1.5rem',
+                                                    fontFamily: '"Fira Code", "Consolas", monospace',
+                                                    fontSize: '0.95rem',
+                                                    outline: 'none',
+                                                    resize: 'none',
+                                                    lineHeight: '1.6',
+                                                    boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.5)'
                                                 }}
                                                 value={answers[currentQuestion] || ''}
                                                 onChange={(e) => handleAnswerChange(e.target.value)}
-                                                placeholder="Enter your solution here..."
+                                                placeholder="// Enter your solution here..."
                                             />
                                         </div>
                                     ) : (

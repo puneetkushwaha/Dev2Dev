@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ChevronLeft, HelpCircle, FileText, Clock } from 'lucide-react';
+import { ChevronLeft, HelpCircle, FileText, Clock, Award, Sparkles } from 'lucide-react';
+import { generateCertificate, isEligibleForCertificate } from '../utils/certificateGenerator';
 
 const MockReport = () => {
     const location = useLocation();
@@ -22,6 +23,20 @@ const MockReport = () => {
         const m = Math.floor((seconds % 3600) / 60);
         const s = seconds % 60;
         return `${m} minutes ${s} seconds`;
+    };
+
+    const handleDownloadCertificate = () => {
+        if (!report) return;
+
+        const userStr = localStorage.getItem('user');
+        const userData = userStr ? JSON.parse(userStr) : { name: 'Elevate User' };
+
+        generateCertificate(userData, {
+            examName: report.examName,
+            score: report.score,
+            totalMarks: report.totalMarks,
+            dateRun: report.dateRun
+        }, 'EXAM');
     };
 
     const statusStyle = (passed) => {
@@ -83,9 +98,24 @@ const MockReport = () => {
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem', color: '#6b7280', fontSize: '0.9rem' }}>
                                     <span>{statusStyle(report.passed).text}</span>
                                     <span>•</span>
-                                    <span>Today</span>
+                                    <span>{new Date(report.dateRun || Date.now()).toLocaleDateString()}</span>
                                 </div>
                             </div>
+                            <div style={{ flex: 1 }}></div>
+                            {report.passed && isEligibleForCertificate(report.examName) && (
+                                <button
+                                    onClick={handleDownloadCertificate}
+                                    style={{
+                                        display: 'flex', alignItems: 'center', gap: '0.5rem',
+                                        background: 'linear-gradient(135deg, #6366f1, #a855f7)',
+                                        color: '#fff', border: 'none', padding: '0.8rem 1.5rem',
+                                        borderRadius: '12px', fontWeight: 700, cursor: 'pointer',
+                                        boxShadow: '0 4px 15px rgba(99,102,241,0.3)'
+                                    }}
+                                >
+                                    <Award size={18} /> Download Certificate
+                                </button>
+                            )}
                         </div>
 
                         <div style={{ marginBottom: '2rem', fontSize: '0.95rem', color: '#374151', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>

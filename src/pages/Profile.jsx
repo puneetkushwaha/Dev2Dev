@@ -14,6 +14,7 @@ import ProfileStats from '../components/profile/ProfileStats';
 import ActivityHeatmap from '../components/profile/ActivityHeatmap';
 import LanguageStats from '../components/profile/LanguageStats';
 import SkillBreakdown from '../components/profile/SkillBreakdown';
+import { generateCertificate, isEligibleForCertificate } from '../utils/certificateGenerator';
 
 const Profile = () => {
     const [userData, setUserData] = useState(null);
@@ -25,10 +26,14 @@ const Profile = () => {
     const [saveLoading, setSaveLoading] = useState(false);
     const [message, setMessage] = useState(null);
     const [showAllExams, setShowAllExams] = useState(false);
+    const [activeTab, setActiveTab] = useState('analytics');
+    const [domainTopics, setDomainTopics] = useState([]);
+    const [isDomainMaster, setIsDomainMaster] = useState(false);
+    // 'stats' or 'certificates'
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchProfileData = async () => {
+        const fetchProfile = async () => {
             const token = localStorage.getItem('token');
             if (!token) {
                 navigate('/login');
@@ -80,9 +85,41 @@ const Profile = () => {
                 setLoading(false);
             }
         };
-
-        fetchProfileData();
+        fetchProfile();
     }, [navigate]);
+
+    useEffect(() => {
+        const checkDomainMastery = async () => {
+            if (!userData || !userData.selectedDomain) return;
+
+            try {
+                // 1. Get Domain ID
+                const domainsRes = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains`);
+                const domainsData = await domainsRes.json();
+                const domain = domainsData.find(d => d.name === userData.selectedDomain);
+
+                if (domain) {
+                    // 2. Get All Topics for this Domain
+                    const topicsRes = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains/topics/by-domain/${domain._id}`);
+                    const allTopics = await topicsRes.json();
+                    setDomainTopics(allTopics);
+
+                    // 3. Check if all topics are completed
+                    if (allTopics.length > 0) {
+                        const completed = userData.progress?.completedTopics || [];
+                        const allCompleted = allTopics.every(topic =>
+                            completed.some(ct => ct.toLowerCase() === topic.title.toLowerCase())
+                        );
+                        setIsDomainMaster(allCompleted);
+                    }
+                }
+            } catch (err) {
+                console.error("Error checking domain mastery:", err);
+            }
+        };
+
+        checkDomainMastery();
+    }, [userData]);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -150,6 +187,24 @@ const Profile = () => {
         } catch (err) {
             console.error("Domain switch error", err);
         }
+    };
+
+    const handleDownloadCertificate = (exam) => {
+        generateCertificate(userData, {
+            examName: exam.examName,
+            score: exam.score,
+            totalMarks: exam.totalMarks,
+            dateRun: exam.dateRun
+        });
+    };
+
+    const handleDownloadDomainCertificate = () => {
+        generateCertificate(userData, {
+            examName: `${userData.selectedDomain} Mastery`,
+            score: 'Mastered',
+            totalMarks: 'Elite',
+            dateRun: new Date()
+        }, 'DOMAIN');
     };
 
     if (loading) {
@@ -320,51 +375,185 @@ const Profile = () => {
                         </div>
                     </div>
 
-                    {/* Problems Stats */}
-                    <ProfileStats solvedStats={userData.solvedStats} totalAvailableStats={userData.totalAvailableStats} />
-
-                    {/* Activity Heatmap */}
-                    <ActivityHeatmap heatmap={userData.activityHeatmap || {}} />
-
-                    {/* Bottom Split: Skills & Recent Submissions */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '2rem' }}>
-
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                            <SkillBreakdown stats={userData.skillStats} />
-                            <LanguageStats stats={userData.languageStats} />
-                        </div>
-
-                        <div style={{
-                            background: 'rgba(255,255,255,0.02)', padding: '2.5rem', borderRadius: '32px',
-                            border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', gap: '1.5rem'
-                        }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#fff', margin: 0, display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                                    <CheckCircle size={20} color="#818cf8" /> Recent AC
-                                </h3>
-                                <button onClick={() => setShowAllExams(true)} style={{ background: 'transparent', border: 'none', color: '#818cf8', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer' }}>View all</button>
+                    {/* Tab Navigation */}
+                    <div style={{ display: 'flex', gap: '2rem', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '1rem', marginTop: '1rem' }}>
+                        <button
+                            onClick={() => setActiveTab('stats')}
+                            style={{
+                                background: 'transparent', border: 'none', color: activeTab === 'stats' ? '#818cf8' : 'rgba(255,255,255,0.4)',
+                                fontSize: '1.1rem', fontWeight: 800, cursor: 'pointer', position: 'relative', padding: '0.5rem 0'
+                            }}
+                        >
+                            Analytics
+                            {activeTab === 'stats' && <div style={{ position: 'absolute', bottom: '-1rem', left: 0, right: 0, height: '3px', background: '#818cf8', borderRadius: '10px' }}></div>}
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('certificates')}
+                            style={{
+                                background: 'transparent', border: 'none', color: activeTab === 'certificates' ? '#818cf8' : 'rgba(255,255,255,0.4)',
+                                fontSize: '1.1rem', fontWeight: 800, cursor: 'pointer', position: 'relative', padding: '0.5rem 0',
+                                display: 'flex', alignItems: 'center', gap: '0.6rem'
+                            }}
+                        >
+                            Certificates
+                            <div style={{ background: 'rgba(129, 140, 248, 0.2)', color: '#818cf8', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '100px' }}>
+                                {((userData.examScores || []).filter(e => e.passed && isEligibleForCertificate(e.examName)).length) + (isDomainMaster ? 1 : 0)}
                             </div>
+                            {activeTab === 'certificates' && <div style={{ position: 'absolute', bottom: '-1rem', left: 0, right: 0, height: '3px', background: '#818cf8', borderRadius: '10px' }}></div>}
+                        </button>
+                    </div>
 
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                {(userData.examScores || []).filter(e => e.passed).slice(-2).reverse().map((exam, i) => (
-                                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', borderRadius: '16px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.03)' }}>
-                                        <div>
-                                            <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#fff' }}>{exam.examName}</div>
-                                            <div style={{ fontSize: '0.8rem', opacity: 0.4 }}>{new Date(exam.dateRun).toLocaleDateString()}</div>
+                    {activeTab === 'stats' ? (
+                        <>
+                            {/* Problems Stats */}
+                            <ProfileStats solvedStats={userData.solvedStats} totalAvailableStats={userData.totalAvailableStats} />
+
+                            {/* Activity Heatmap */}
+                            <ActivityHeatmap heatmap={userData.activityHeatmap || {}} />
+
+                            {/* Bottom Split: Skills & Recent Submissions */}
+                            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '2rem' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                                    <SkillBreakdown stats={userData.skillStats} />
+                                    <LanguageStats stats={userData.languageStats} />
+                                </div>
+
+                                <div style={{
+                                    background: 'rgba(255,255,255,0.02)', padding: '2.5rem', borderRadius: '32px',
+                                    border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', gap: '1.5rem'
+                                }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#fff', margin: 0, display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                            <CheckCircle size={20} color="#818cf8" /> Recent AC
+                                        </h3>
+                                        <button onClick={() => setShowAllExams(true)} style={{ background: 'transparent', border: 'none', color: '#818cf8', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer' }}>View all</button>
+                                    </div>
+
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                        {(userData.examScores || []).filter(e => e.passed).slice(-2).reverse().map((exam, i) => (
+                                            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', borderRadius: '16px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.03)' }}>
+                                                <div>
+                                                    <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#fff' }}>{exam.examName}</div>
+                                                    <div style={{ fontSize: '0.8rem', opacity: 0.4 }}>{new Date(exam.dateRun).toLocaleDateString()}</div>
+                                                </div>
+                                                <div style={{
+                                                    padding: '0.4rem 0.8rem', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 900,
+                                                    background: exam.difficulty === 'Easy' ? 'rgba(129, 140, 248,0.1)' : exam.difficulty === 'Medium' ? 'rgba(251,191,36,0.1)' : 'rgba(239,68,68,0.1)',
+                                                    color: exam.difficulty === 'Easy' ? '#818cf8' : exam.difficulty === 'Medium' ? '#fbbf24' : '#ef4444'
+                                                }}>
+                                                    {exam.difficulty}
+                                                </div>
+                                            </div>
+                                        ))}
+                                        {!(userData.examScores || []).some(e => e.passed) && <div style={{ opacity: 0.2, textAlign: 'center', padding: '2rem' }}>No solutions yet.</div>}
+                                    </div>
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '2rem' }}>
+                            {/* Domain Mastery Certificate */}
+                            {isDomainMaster && (
+                                <div style={{
+                                    background: 'linear-gradient(135deg, rgba(64, 123, 255, 0.1), rgba(129, 140, 248, 0.1))',
+                                    padding: '2rem', borderRadius: '24px',
+                                    border: '1px solid rgba(64, 123, 255, 0.3)', position: 'relative', overflow: 'hidden'
+                                }}>
+                                    <div style={{ position: 'absolute', top: '-10px', right: '-10px', width: '100px', height: '100px', background: 'radial-gradient(circle, rgba(64, 123, 255, 0.2) 0%, transparent 70%)', filter: 'blur(30px)' }}></div>
+                                    <div style={{ position: 'absolute', bottom: '0', right: '0', opacity: 0.1 }}><Award size={120} /></div>
+
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', position: 'relative' }}>
+                                        <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'rgba(64, 123, 255, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(64, 123, 255, 0.4)' }}>
+                                            <Trophy size={28} color="#407BFF" />
                                         </div>
-                                        <div style={{
-                                            padding: '0.4rem 0.8rem', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 900,
-                                            background: exam.difficulty === 'Easy' ? 'rgba(129, 140, 248,0.1)' : exam.difficulty === 'Medium' ? 'rgba(251,191,36,0.1)' : 'rgba(239,68,68,0.1)',
-                                            color: exam.difficulty === 'Easy' ? '#818cf8' : exam.difficulty === 'Medium' ? '#fbbf24' : '#ef4444'
-                                        }}>
-                                            {exam.difficulty}
+                                        <div>
+                                            <h4 style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 900, margin: 0 }}>{userData.selectedDomain} Master</h4>
+                                            <span style={{ fontSize: '0.8rem', color: '#407BFF', fontWeight: 700 }}>PREMIUM CERTIFICATION</span>
                                         </div>
                                     </div>
-                                ))}
-                                {!(userData.examScores || []).some(e => e.passed) && <div style={{ opacity: 0.2, textAlign: 'center', padding: '2rem' }}>No solutions yet.</div>}
-                            </div>
+
+                                    <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.5, marginBottom: '2rem' }}>
+                                        Official recognition for mastering the entire {userData.selectedDomain} curriculum and all technical modules.
+                                    </p>
+
+                                    <button
+                                        onClick={handleDownloadDomainCertificate}
+                                        style={{
+                                            width: '100%', background: '#407BFF', border: 'none',
+                                            color: '#fff', padding: '0.8rem', borderRadius: '12px',
+                                            fontSize: '0.9rem', fontWeight: 900, cursor: 'pointer', transition: '0.3s',
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+                                            boxShadow: '0 4px 15px rgba(64, 123, 255, 0.3)'
+                                        }}
+                                        onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
+                                        onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                                    >
+                                        <Download size={18} /> Claim Master Certificate
+                                    </button>
+                                </div>
+                            )}
+
+                            {(userData.examScores || []).filter(e => e.passed && isEligibleForCertificate(e.examName)).length > 0 || isDomainMaster ? (
+                                (userData.examScores || []).filter(e => e.passed && isEligibleForCertificate(e.examName)).reverse().map((exam, i) => (
+                                    <div key={i} style={{
+                                        background: 'rgba(255,255,255,0.02)', padding: '2rem', borderRadius: '24px',
+                                        border: '1px solid rgba(255,255,255,0.05)', position: 'relative', overflow: 'hidden',
+                                        transition: '0.3s'
+                                    }} onMouseEnter={e => e.currentTarget.style.border = '1px solid rgba(129, 140, 248, 0.3)'}>
+                                        <div style={{ position: 'absolute', top: '-10px', right: '-10px', width: '80px', height: '80px', background: 'radial-gradient(circle, rgba(129, 140, 248, 0.1) 0%, transparent 70%)', filter: 'blur(20px)' }}></div>
+
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+                                            <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: 'rgba(129, 140, 248, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(129, 140, 248, 0.2)' }}>
+                                                <Award size={24} color="#818cf8" />
+                                            </div>
+                                            <div>
+                                                <h4 style={{ color: '#fff', fontSize: '1.1rem', fontWeight: 800, margin: 0 }}>{exam.examName}</h4>
+                                                <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)' }}>Issued on {new Date(exam.dateRun).toLocaleDateString()}</span>
+                                            </div>
+                                        </div>
+
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
+                                            <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)' }}>
+                                                Score: <span style={{ color: '#34d399', fontWeight: 800 }}>{exam.score}/{exam.totalMarks}</span>
+                                            </div>
+                                            <button
+                                                onClick={() => handleDownloadCertificate(exam)}
+                                                style={{
+                                                    background: 'rgba(129, 140, 248, 0.1)', border: '1px solid rgba(129, 140, 248, 0.2)',
+                                                    color: '#818cf8', padding: '0.6rem 1.2rem', borderRadius: '12px',
+                                                    fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer', transition: '0.3s',
+                                                    display: 'flex', alignItems: 'center', gap: '0.5rem'
+                                                }}
+                                                onMouseEnter={e => { e.currentTarget.style.background = '#818cf8'; e.currentTarget.style.color = '#fff'; }}
+                                                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(129, 140, 248, 0.1)'; e.currentTarget.style.color = '#818cf8'; }}
+                                            >
+                                                <Download size={16} /> Download
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div style={{
+                                    gridColumn: '1 / -1', textAlign: 'center', padding: '4rem 2rem',
+                                    background: 'rgba(255,255,255,0.02)', borderRadius: '32px', border: '1px dashed rgba(255,255,255,0.1)'
+                                }}>
+                                    <div style={{ width: '80px', height: '80px', margin: '0 auto 1.5rem', background: 'rgba(255,255,255,0.03)', borderRadius: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.2)' }}>
+                                        <Award size={40} />
+                                    </div>
+                                    <h3 style={{ color: '#fff', fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.5rem' }}>No Certificates Earned Yet</h3>
+                                    <p style={{ color: 'rgba(255,255,255,0.4)', maxWidth: '400px', margin: '0 auto 2rem' }}>
+                                        Don't worry! Keep practicing and pass your Assessments/Mock Exams to earn official certifications for your profile.
+                                    </p>
+                                    <button
+                                        onClick={() => navigate('/problems')}
+                                        style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)', color: '#fff', border: 'none', padding: '1rem 2rem', borderRadius: '16px', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' }}
+                                    >
+                                        Start Learning & Earning
+                                    </button>
+                                </div>
+                            )}
                         </div>
-                    </div>
+                    )}
                 </main>
             </div>
 

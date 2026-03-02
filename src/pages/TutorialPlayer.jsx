@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Play, CheckCircle, Clock, ChevronLeft, Lock, BookOpen, Share2, Award, Zap, Loader2 } from 'lucide-react';
 import axios from 'axios';
 import Loader from '../components/Loader';
+import { generateCertificate, isEligibleForCertificate } from '../utils/certificateGenerator';
 
 const TutorialPlayer = () => {
     const { id } = useParams();
@@ -98,6 +99,20 @@ const TutorialPlayer = () => {
             console.error("Error initiating checkout:", error);
             alert("Could not initiate checkout. Please try again.");
         }
+    };
+
+    const handleDownloadCertificate = () => {
+        if (!tutorial) return;
+
+        const userStr = localStorage.getItem('user');
+        const user = userStr ? JSON.parse(userStr) : { name: 'DevElevator' };
+
+        generateCertificate(user, {
+            examName: tutorial.title,
+            score: 'Passed',
+            totalMarks: 'Complete',
+            dateRun: new Date()
+        }, 'TUTORIAL');
     };
 
     if (loading) return <Loader text="Loading tutorial content..." />;
@@ -308,9 +323,32 @@ const TutorialPlayer = () => {
                             <Award size={16} color="#f59e0b" /> Certificate
                         </h4>
                         <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', lineHeight: 1.5, marginBottom: '1rem' }}>
-                            Complete all {tutorial.lessons.length} lessons to download your certificate of completion.
+                            {isEligibleForCertificate(tutorial.title)
+                                ? "You've unlocked this professional series. Download your certificate of completion."
+                                : "This series does not provide an official certificate. Focus on learning!"}
                         </p>
-                        <button style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: 'none', padding: '0.6rem', borderRadius: '10px', color: '#fff', fontSize: '0.8rem', fontWeight: 600, cursor: 'not-allowed' }}>Claim Certificate</button>
+                        {isEligibleForCertificate(tutorial.title) ? (
+                            <button
+                                onClick={handleDownloadCertificate}
+                                disabled={!isUnlocked && tutorial.isPremium}
+                                style={{
+                                    width: '100%',
+                                    background: (!isUnlocked && tutorial.isPremium) ? 'rgba(255,255,255,0.05)' : 'linear-gradient(135deg, #6366f1, #a855f7)',
+                                    border: 'none',
+                                    padding: '0.8rem',
+                                    borderRadius: '12px',
+                                    color: '#fff',
+                                    fontSize: '0.9rem',
+                                    fontWeight: 700,
+                                    cursor: (!isUnlocked && tutorial.isPremium) ? 'not-allowed' : 'pointer',
+                                    transition: '0.3s'
+                                }}
+                            >
+                                {(!isUnlocked && tutorial.isPremium) ? 'Unlock to Claim' : 'Claim Certificate'}
+                            </button>
+                        ) : (
+                            <button style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.6rem', borderRadius: '10px', color: 'rgba(255,255,255,0.2)', fontSize: '0.8rem', fontWeight: 600, cursor: 'not-allowed' }}>No Certificate</button>
+                        )}
                     </div>
                 </aside>
             </div>

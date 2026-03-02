@@ -481,26 +481,34 @@ const MockAssessment = () => {
 
                         <div style={{ flex: 1, minHeight: '400px', position: 'relative', overflow: 'hidden', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                             {editorError ? (
-                                <div style={{ padding: '2rem', background: '#fff', border: '1px solid #f48771', borderRadius: '8px', flex: 1 }}>
-                                    <div style={{ color: '#f48771', marginBottom: '1rem', fontWeight: 'bold' }}>⚠️ Editor Engine Blocked</div>
-                                    <p style={{ color: '#666', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
-                                        Your browser or network is blocking the professional editor scripts.
-                                        You can still write your code in the fallback box below.
+                                <div style={{ padding: '2rem', background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px', flex: 1 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#4ec9b0', marginBottom: '1rem', fontWeight: 'bold' }}>
+                                        <Terminal size={18} />
+                                        <span>Classic Editor Active</span>
+                                    </div>
+                                    <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', marginBottom: '1.5rem', lineHeight: '1.5' }}>
+                                        Your current connection is optimized for our high-performance editor.
+                                        You are now using the <span style={{ color: '#4ec9b0' }}>Classic Mode</span> for maximum reliability.
                                     </p>
                                     <textarea
                                         style={{
                                             width: '100%',
                                             height: '350px',
-                                            background: '#f9f9f9',
-                                            color: '#333',
-                                            border: '1px solid #ccc',
-                                            padding: '1rem',
-                                            fontFamily: 'monospace',
-                                            outline: 'none'
+                                            background: '#0a0a0a',
+                                            color: '#d4d4d4',
+                                            border: '1px solid rgba(255,255,255,0.1)',
+                                            borderRadius: '8px',
+                                            padding: '1.5rem',
+                                            fontFamily: '"Fira Code", "Consolas", monospace',
+                                            fontSize: '0.95rem',
+                                            outline: 'none',
+                                            resize: 'none',
+                                            lineHeight: '1.6',
+                                            boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.5)'
                                         }}
                                         value={answers[activeQIndex] || ''}
                                         onChange={(e) => handleCodeChange(e.target.value)}
-                                        placeholder="Enter your solution here..."
+                                        placeholder="// Enter your solution here..."
                                     />
                                 </div>
                             ) : (
