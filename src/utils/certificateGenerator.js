@@ -144,36 +144,9 @@ export const generateCertificate = (userData, examData, type = 'EXAM') => {
 };
 
 /**
- * Checks if a given exam or tutorial title is eligible for an official certificate.
- * 
- * @param {string} title - The title of the exam or tutorial.
- * @returns {boolean} - True if eligible, false otherwise.
+ * All tutorials are certificate-eligible — the gate is now enforced by
+ * completing all lessons, not by a title whitelist.
  */
 export const isEligibleForCertificate = (title) => {
-    if (!title) return false;
-
-    const lowercaseTitle = title.toLowerCase();
-
-    // Keywords for Certification Exams & Premium Mocks
-    const certificationKeywords = [
-        '100 questions exam',
-        'certification exam',
-        'comprehensive technical exam',
-        'master certification exam',
-        'premium mock'
-    ];
-
-    // Premium Tutorial Titles (Exact or containment)
-    const premiumTutorials = [
-        'aptitude & quantitative reasoning',
-        'devops mastery series'
-    ];
-
-    // Check if title contains any certification keywords
-    const isCertification = certificationKeywords.some(keyword => lowercaseTitle.includes(keyword));
-
-    // Check if title matches premium tutorials
-    const isPremiumTutorial = premiumTutorials.some(tutorial => lowercaseTitle.includes(tutorial));
-
-    return isCertification || isPremiumTutorial;
+    return !!title;
 };

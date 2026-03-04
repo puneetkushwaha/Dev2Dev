@@ -402,7 +402,7 @@ const Profile = () => {
                         >
                             Certificates
                             <div style={{ background: 'rgba(129, 140, 248, 0.2)', color: '#818cf8', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '100px' }}>
-                                {((userData.examScores || []).filter(e => e.passed && isEligibleForCertificate(e.examName)).length) + (isDomainMaster ? 1 : 0)}
+                                {((userData.examScores || []).filter(e => e.passed && isEligibleForCertificate(e.examName)).length) + (isDomainMaster ? 1 : 0) + (userData.earnedCertificates || []).length}
                             </div>
                             {activeTab === 'certificates' && <div style={{ position: 'absolute', bottom: '-1rem', left: 0, right: 0, height: '3px', background: '#818cf8', borderRadius: '10px' }}></div>}
                         </button>
@@ -553,7 +553,53 @@ const Profile = () => {
                                         </div>
                                     </div>
                                 ))
-                            ) : (
+                            ) : null}
+
+                            {/* Tutorial Completion Certificates */}
+                            {(userData.earnedCertificates || []).map((cert, i) => (
+                                <div key={`tut-${i}`} style={{
+                                    background: 'rgba(168,85,247,0.04)', padding: '2rem', borderRadius: '24px',
+                                    border: '1px solid rgba(168,85,247,0.15)', position: 'relative', overflow: 'hidden',
+                                    transition: '0.3s'
+                                }}
+                                    onMouseEnter={e => e.currentTarget.style.border = '1px solid rgba(168,85,247,0.4)'}
+                                    onMouseLeave={e => e.currentTarget.style.border = '1px solid rgba(168,85,247,0.15)'}
+                                >
+                                    <div style={{ position: 'absolute', bottom: 0, right: 0, opacity: 0.05 }}><Award size={120} /></div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+                                        <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: 'rgba(168,85,247,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(168,85,247,0.3)' }}>
+                                            <Trophy size={24} color="#a855f7" />
+                                        </div>
+                                        <div>
+                                            <h4 style={{ color: '#fff', fontSize: '1.05rem', fontWeight: 800, margin: 0 }}>{cert.tutorialTitle}</h4>
+                                            <span style={{ fontSize: '0.75rem', color: '#a855f7', fontWeight: 600 }}>TUTORIAL COMPLETION</span>
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <span style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)' }}>
+                                            Completed on {new Date(cert.earnedAt).toLocaleDateString()}
+                                        </span>
+                                        <button
+                                            onClick={() => generateCertificate(userData, { examName: cert.tutorialTitle, score: 'Complete', totalMarks: 'All Lessons', dateRun: cert.earnedAt }, 'TUTORIAL')}
+                                            style={{
+                                                background: 'rgba(168,85,247,0.1)', border: '1px solid rgba(168,85,247,0.25)',
+                                                color: '#a855f7', padding: '0.6rem 1.2rem', borderRadius: '12px',
+                                                fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer', transition: '0.3s',
+                                                display: 'flex', alignItems: 'center', gap: '0.5rem'
+                                            }}
+                                            onMouseEnter={e => { e.currentTarget.style.background = '#a855f7'; e.currentTarget.style.color = '#fff'; }}
+                                            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(168,85,247,0.1)'; e.currentTarget.style.color = '#a855f7'; }}
+                                        >
+                                            <Download size={16} /> Download
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+
+                            {/* Empty state — only if truly nothing earned */}
+                            {(userData.examScores || []).filter(e => e.passed && isEligibleForCertificate(e.examName)).length === 0 &&
+                             !isDomainMaster &&
+                             (userData.earnedCertificates || []).length === 0 && (
                                 <div style={{
                                     gridColumn: '1 / -1', textAlign: 'center', padding: '4rem 2rem',
                                     background: 'rgba(255,255,255,0.02)', borderRadius: '32px', border: '1px dashed rgba(255,255,255,0.1)'
@@ -563,13 +609,13 @@ const Profile = () => {
                                     </div>
                                     <h3 style={{ color: '#fff', fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.5rem' }}>No Certificates Earned Yet</h3>
                                     <p style={{ color: 'rgba(255,255,255,0.4)', maxWidth: '400px', margin: '0 auto 2rem' }}>
-                                        Don't worry! Keep practicing and pass your Assessments/Mock Exams to earn official certifications for your profile.
+                                        Complete tutorials or pass assessments to earn official certificates.
                                     </p>
                                     <button
-                                        onClick={() => navigate('/problems')}
+                                        onClick={() => navigate('/tutorials')}
                                         style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)', color: '#fff', border: 'none', padding: '1rem 2rem', borderRadius: '16px', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' }}
                                     >
-                                        Start Learning & Earning
+                                        Browse Tutorials
                                     </button>
                                 </div>
                             )}

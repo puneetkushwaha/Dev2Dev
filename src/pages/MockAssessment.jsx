@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
     ChevronLeft, Send, Loader2, Brain, CheckCircle,
-    AlertCircle, Maximize2, FileText, Lock, ChevronDown, Clock, MoveLeft, History, RotateCcw, Settings, FileCode
+    AlertCircle, Maximize2, FileText, Lock, ChevronDown, Clock, MoveLeft, History, RotateCcw, Settings, FileCode, Terminal
 } from 'lucide-react';
 import Editor from '@monaco-editor/react';
 import ReactMarkdown from 'react-markdown';
@@ -169,13 +169,7 @@ const MockAssessment = () => {
             setActiveTestCaseTab(0);
             setLoading(false);
 
-            try {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.log(`Fullscreen error: ${err.message}`);
-                });
-            } catch (e) {
-                console.error("Fullscreen API not supported.", e);
-            }
+            // Fullscreen is requested via a dedicated user-gesture handler (see below)
         };
 
         fetchQuestions();
@@ -634,7 +628,19 @@ const MockAssessment = () => {
                             <div style={{ display: 'flex', gap: '15px', color: 'rgba(255,255,255,0.4)', paddingRight: '0.5rem' }}>
                                 <RotateCcw size={14} style={{ cursor: 'pointer' }} onClick={() => handleCodeChange(currentQ?.starterCodes?.[selectedLang.id] || selectedLang.boilerplate)} />
                                 <Settings size={14} style={{ cursor: 'pointer' }} />
-                                <Maximize2 size={14} style={{ cursor: 'pointer' }} />
+                                <Maximize2
+                                    size={14}
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => {
+                                        if (!document.fullscreenElement) {
+                                            document.documentElement.requestFullscreen().catch(err => {
+                                                console.log(`Fullscreen error: ${err.message}`);
+                                            });
+                                        } else {
+                                            document.exitFullscreen();
+                                        }
+                                    }}
+                                />
                             </div>
                         </div>
 
