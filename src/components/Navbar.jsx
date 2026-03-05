@@ -74,7 +74,7 @@ const Navbar = () => {
                     </button>
 
                     <Link to="/dashboard" className="flex-center" style={{ textDecoration: 'none', color: '#fff', minWidth: 'fit-content' }}>
-                        <img src="/logo.png" alt="Dev2Dev" style={{ height: '32px', filter: 'brightness(1.1) drop-shadow(0 0 10px rgba(99,102,241,0.3))' }} />
+                        <img src="/logo.webp" width="120" height="32" alt="Dev2Dev" style={{ height: '32px', filter: 'brightness(1.1) drop-shadow(0 0 10px rgba(99,102,241,0.3))' }} />
                     </Link>
 
                     <div className="nav-search-container hide-mobile">
@@ -126,7 +126,7 @@ const Navbar = () => {
                     <div className="mobile-menu-content">
                         <div className="mobile-menu-header">
                             <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                <img src="/logo.png" alt="Dev2Dev" style={{ height: '24px' }} />
+                                <img src="/logo.webp" width="90" height="24" alt="Dev2Dev" style={{ height: '24px' }} />
                                 <span style={{ color: '#fff', fontWeight: 800, fontSize: '1.2rem', letterSpacing: '1px' }}>DEV</span>
                             </Link>
                             <button

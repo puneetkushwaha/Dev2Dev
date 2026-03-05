@@ -70,7 +70,7 @@ const Landing = () => {
             <nav className="minimal-nav">
                 <div className="nav-left">
                     <Link to="/" className="logo-link">
-                        <img src="/logo.png" alt="Dev2Dev logo" />
+                        <img src="/logo.webp" width="120" height="40" alt="Dev2Dev logo" />
                     </Link>
                 </div>
 
@@ -196,7 +196,7 @@ const Landing = () => {
                 <div className="footer-grid">
                     <div className="footer-col-brand">
                         <div className="footer-logo-container">
-                            <img src="/logo.png" alt="Dev2Dev logo" className="footer-logo" />
+                            <img src="/logo.webp" width="120" height="40" alt="Dev2Dev logo" className="footer-logo" />
                             <span className="footer-brand-text">Dev2Dev</span>
                         </div>
                         <p className="footer-tagline">

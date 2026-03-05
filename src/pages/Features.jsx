@@ -48,7 +48,7 @@ const Features = () => {
             <nav className="minimal-nav">
                 <div className="nav-left">
                     <Link to="/" className="logo-link">
-                        <img src="/logo.png" alt="Dev2Dev logo" style={{ height: '32px' }} />
+                        <img src="/logo.webp" width="96" height="32" alt="Dev2Dev logo" style={{ height: '32px' }} />
                     </Link>
                 </div>
                 <div className="nav-right">

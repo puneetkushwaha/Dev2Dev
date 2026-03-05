@@ -68,7 +68,7 @@ const ForgotPassword = () => {
             <div className="auth-side-form">
                 <div className="auth-form-card">
                     <header className="auth-header">
-                        <img src="/logo.png" alt="Dev2Dev" className="auth-logo" />
+                        <img src="/logo.webp" width="120" height="40" alt="Dev2Dev" className="auth-logo" />
                         <h2>Recover Access</h2>
                         <p>Enter your registered Vault ID</p>
                     </header>
