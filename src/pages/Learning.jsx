@@ -6,7 +6,7 @@ import {
     ChevronRight, Play, FileText, Layout, List, Search,
     Flame, Target, Star, Trophy, Activity, ArrowRight,
     MessageSquare, Send, Sparkles, Loader2, HelpCircle, ArrowLeft,
-    Check
+    Check, History
 } from 'lucide-react';
 import { getApiUrl } from '../api/config';
 import ReactMarkdown from 'react-markdown';
