@@ -147,6 +147,22 @@ export const generateCertificate = (userData, examData, type = 'EXAM') => {
  * All tutorials are certificate-eligible — the gate is now enforced by
  * completing all lessons, not by a title whitelist.
  */
-export const isEligibleForCertificate = (title) => {
-    return !!title;
+export const isEligibleForCertificate = (exam) => {
+    if (!exam || !exam.examName) return false;
+
+    // Explicitly exclude DSA questions if flagged
+    if (exam.isDSA) return false;
+
+    // Fallback for legacy data/unflagged data:
+    // 1. Exclude titles that look like LeetCode problems (starting with numbers like "1. Two Sum")
+    if (/^\d+\.\s/.test(exam.examName)) return false;
+
+    // 2. Exclude common individual DSA problem names if they appear alone
+    const individualProblems = [
+        'Two Sum', 'Median of Two Sorted Arrays', 'Container With Most Water',
+        'Longest Common Prefix', 'Reverse Integer', 'Roman to Integer'
+    ];
+    if (individualProblems.includes(exam.examName)) return false;
+
+    return true;
 };

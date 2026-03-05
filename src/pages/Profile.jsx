@@ -404,7 +404,7 @@ const Profile = () => {
                         >
                             Certificates
                             <div style={{ background: 'rgba(129, 140, 248, 0.2)', color: '#818cf8', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '100px' }}>
-                                {((userData.examScores || []).filter(e => e.passed && isEligibleForCertificate(e.examName)).length) + (isDomainMaster ? 1 : 0) + (userData.earnedCertificates || []).length}
+                                {((userData.examScores || []).filter(e => e.passed && isEligibleForCertificate(e)).length) + (isDomainMaster ? 1 : 0) + (userData.earnedCertificates || []).length}
                             </div>
                             {activeTab === 'certificates' && <div style={{ position: 'absolute', bottom: '-1rem', left: 0, right: 0, height: '3px', background: '#818cf8', borderRadius: '10px' }}></div>}
                         </button>
@@ -516,8 +516,8 @@ const Profile = () => {
                                 </div>
                             )}
 
-                            {(userData.examScores || []).filter(e => e.passed && isEligibleForCertificate(e.examName)).length > 0 || isDomainMaster ? (
-                                (userData.examScores || []).filter(e => e.passed && isEligibleForCertificate(e.examName)).reverse().map((exam, i) => (
+                            {(userData.examScores || []).filter(e => e.passed && isEligibleForCertificate(e)).length > 0 || isDomainMaster ? (
+                                (userData.examScores || []).filter(e => e.passed && isEligibleForCertificate(e)).reverse().map((exam, i) => (
                                     <div key={i} style={{
                                         background: 'rgba(255,255,255,0.02)', padding: '2rem', borderRadius: '24px',
                                         border: '1px solid rgba(255,255,255,0.05)', position: 'relative', overflow: 'hidden',
@@ -599,7 +599,7 @@ const Profile = () => {
                             ))}
 
                             {/* Empty state — only if truly nothing earned */}
-                            {(userData.examScores || []).filter(e => e.passed && isEligibleForCertificate(e.examName)).length === 0 &&
+                            {(userData.examScores || []).filter(e => e.passed && isEligibleForCertificate(e)).length === 0 &&
                                 !isDomainMaster &&
                                 (userData.earnedCertificates || []).length === 0 && (
                                     <div style={{
