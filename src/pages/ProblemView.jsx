@@ -111,8 +111,8 @@ const ProblemView = () => {
     useEffect(() => {
         const fetchProblem = async () => {
             try {
-                const res = await axios.get(getApiUrl(`/ api / users / problems / ${id} `), {
-                    headers: { Authorization: `Bearer ${localStorage.getItem('token')} ` }
+                const res = await axios.get(getApiUrl(`/api/users/problems/${id}`), {
+                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                 });
 
                 const data = res.data;
