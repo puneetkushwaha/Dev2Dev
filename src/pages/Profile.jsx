@@ -142,6 +142,7 @@ const Profile = () => {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     name: editData.name,
@@ -703,8 +704,8 @@ const EditField = ({ label, value, onChange, type = 'text', options = [] }) => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
         <label style={{ fontSize: '0.85rem', fontWeight: 700, opacity: 0.4, textTransform: 'uppercase', letterSpacing: '1px' }}>{label}</label>
         {type === 'select' ? (
-            <select value={value} onChange={e => onChange(e.target.value)} style={{ padding: '1.2rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', color: '#fff', fontSize: '1rem', outline: 'none' }}>
-                {options.map(o => <option key={o} value={o}>{o}</option>)}
+            <select value={value} onChange={e => onChange(e.target.value)} style={{ padding: '1.2rem', background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', color: '#fff', fontSize: '1rem', outline: 'none' }}>
+                {options.map(o => <option key={o} value={o} style={{ background: '#1a1a2e', color: '#fff' }}>{o}</option>)}
             </select>
         ) : type === 'textarea' ? (
             <textarea value={value} onChange={e => onChange(e.target.value)} style={{ padding: '1.2rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', color: '#fff', fontSize: '1rem', outline: 'none', minHeight: '120px', resize: 'vertical' }} />
