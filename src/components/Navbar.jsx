@@ -8,7 +8,7 @@ const Navbar = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchQuery, setSearchQuery] = useState(new URLSearchParams(location.search).get('search') || '');
     const [scrolled, setScrolled] = useState(false);
     const [showAptitudeDropdown, setShowAptitudeDropdown] = useState(false);
     const [notificationCount, setNotificationCount] = useState(0);
@@ -53,12 +53,35 @@ const Navbar = () => {
     // Close mobile menu on route change
     useEffect(() => {
         setMobileMenuOpen(false);
-    }, [location.pathname]);
+        // Sync search query state with URL on navigation
+        const urlSearch = new URLSearchParams(location.search).get('search') || '';
+        setSearchQuery(urlSearch);
+    }, [location.pathname, location.search]);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('userRole');
         navigate('/login');
+    };
+
+    const handleSearch = (e) => {
+        const val = e.target.value;
+        setSearchQuery(val);
+
+        // Update URL with search param
+        const params = new URLSearchParams(location.search);
+        if (val) {
+            params.set('search', val);
+        } else {
+            params.delete('search');
+        }
+
+        // Navigate to exams page if not already there, otherwise just update params
+        if (location.pathname !== '/exams') {
+            navigate(`/exams?${params.toString()}`);
+        } else {
+            navigate({ search: params.toString() }, { replace: true });
+        }
     };
 
     const userRole = localStorage.getItem('userRole');
@@ -83,6 +106,8 @@ const Navbar = () => {
                             type="text"
                             placeholder="Search"
                             className="nav-search-input"
+                            value={searchQuery}
+                            onChange={handleSearch}
                         />
                         <Search size={18} className="search-icon" />
                     </div>
@@ -139,7 +164,13 @@ const Navbar = () => {
                         </div>
 
                         <div className="mobile-search">
-                            <input type="text" placeholder="Search problems..." className="mobile-search-input" />
+                            <input
+                                type="text"
+                                placeholder="Search problems..."
+                                className="mobile-search-input"
+                                value={searchQuery}
+                                onChange={handleSearch}
+                            />
                             <Search size={18} className="mobile-search-icon" />
                         </div>
                         <div className="mobile-links">

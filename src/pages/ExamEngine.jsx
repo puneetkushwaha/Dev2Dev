@@ -14,6 +14,7 @@ const ExamEngine = () => {
     const [searchParams] = useSearchParams();
     const typeQuery = searchParams.get('type');
     const idQuery = searchParams.get('id');
+    const searchTerm = searchParams.get('search') || '';
 
     const [availableExams, setAvailableExams] = useState([]);
     const [loadingExams, setLoadingExams] = useState(true);
@@ -446,129 +447,137 @@ const ExamEngine = () => {
 
                 {loadingExams ? (
                     <Loader text="Fetching certification exams..." />
-                ) : availableExams.length === 0 ? (
+                ) : availableExams.filter(ex =>
+                    ex.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    (ex.type && ex.type.toLowerCase().includes(searchTerm.toLowerCase()))
+                ).length === 0 ? (
                     <div style={{ padding: '100px', textAlign: 'center', border: '1px dashed rgba(255,255,255,0.05)', borderRadius: '32px', color: 'rgba(255,255,255,0.3)' }}>
                         <Brain size={48} style={{ marginBottom: '1rem', opacity: 0.2 }} />
-                        <p>No certification exams are currently available for your profile.</p>
+                        <p>{searchTerm ? `No exams found matching "${searchTerm}"` : "No certification exams are currently available for your profile."}</p>
                     </div>
                 ) : (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem', width: '100%', maxWidth: '1100px', margin: '0 auto' }}>
-                        {availableExams.map(ex => {
-                            const isFullLength = ex.type === 'Full-length Mock';
-                            const isTopicWise = ex.type === 'Topic-wise';
+                        {availableExams
+                            .filter(ex =>
+                                ex.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                (ex.type && ex.type.toLowerCase().includes(searchTerm.toLowerCase()))
+                            )
+                            .map(ex => {
+                                const isFullLength = ex.type === 'Full-length Mock';
+                                const isTopicWise = ex.type === 'Topic-wise';
 
-                            // Define visual themes
-                            const themeColor = isFullLength ? 'var(--primary)' : (isTopicWise ? '#818cf8' : '#F59E0B');
-                            const themeGradient = isFullLength
-                                ? 'linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(99,102,241,0.02) 100%)'
-                                : (isTopicWise ? 'linear-gradient(135deg, rgba(129, 140, 248,0.15) 0%, rgba(129, 140, 248,0.02) 100%)'
-                                    : 'linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(245,158,11,0.02) 100%)');
+                                // Define visual themes
+                                const themeColor = isFullLength ? 'var(--primary)' : (isTopicWise ? '#818cf8' : '#F59E0B');
+                                const themeGradient = isFullLength
+                                    ? 'linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(99,102,241,0.02) 100%)'
+                                    : (isTopicWise ? 'linear-gradient(135deg, rgba(129, 140, 248,0.15) 0%, rgba(129, 140, 248,0.02) 100%)'
+                                        : 'linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(245,158,11,0.02) 100%)');
 
-                            return (
-                                <div key={ex._id} className="card glass-panel group"
-                                    style={{
-                                        display: 'flex', flexDirection: 'column', textAlign: 'left',
-                                        padding: '2rem',
-                                        border: `1px solid rgba(255,255,255,0.08)`,
-                                        background: 'rgba(20,20,30,0.6)',
-                                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                        boxShadow: '0 10px 30px -10px rgba(0,0,0,0.5)',
-                                        borderRadius: '24px',
-                                        position: 'relative',
-                                        overflow: 'hidden'
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.transform = 'translateY(-6px)';
-                                        e.currentTarget.style.borderColor = themeColor;
-                                        e.currentTarget.style.boxShadow = `0 20px 40px -10px ${themeColor}40`;
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.transform = 'none';
-                                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
-                                        e.currentTarget.style.boxShadow = '0 10px 30px -10px rgba(0,0,0,0.5)';
-                                    }}
-                                >
-                                    {/* Glow Background */}
-                                    <div style={{
-                                        position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                                        background: themeGradient,
-                                        zIndex: 0, pointerEvents: 'none'
-                                    }} />
-
-                                    {/* Top Badge */}
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem', zIndex: 1 }}>
-                                        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                                            {isFullLength && <span style={{ background: themeColor, color: '#fff', fontSize: '0.7rem', fontWeight: 'bold', padding: '0.3rem 0.8rem', borderRadius: '12px', textTransform: 'uppercase', letterSpacing: '0.5px', boxShadow: `0 0 10px ${themeColor}80` }}><Award size={12} style={{ display: 'inline', marginRight: '4px', marginBottom: '-2px' }} /> PREMIUM MOCK</span>}
-                                            {!isFullLength && <span style={{ background: 'rgba(255,255,255,0.1)', color: 'var(--text)', fontSize: '0.7rem', fontWeight: 'bold', padding: '0.3rem 0.8rem', borderRadius: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{ex.type}</span>}
-                                        </div>
-                                        {ex.domainId && (
-                                            <span style={{ fontSize: '0.8rem', color: themeColor, display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: '600' }}>
-                                                <Cpu size={14} /> {ex.domainId.name}
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    {/* Title */}
-                                    <h3 style={{ margin: '0 0 0.8rem 0', fontSize: '1.5rem', fontWeight: '800', color: 'var(--text)', zIndex: 1, lineHeight: '1.3', letterSpacing: '-0.5px' }}>
-                                        {ex.title}
-                                    </h3>
-
-                                    {/* Description placeholder */}
-                                    <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '1.5rem', zIndex: 1, lineHeight: '1.6', flexGrow: 1 }}>
-                                        {isFullLength
-                                            ? "Comprehensive simulation to test your complete readiness. Includes theoretical and practical coding concepts to evaluate your domain knowledge."
-                                            : "Targeted practice session designed to strengthen your foundational concepts and problem-solving speed."}
-                                    </p>
-
-                                    {/* Meta details */}
-                                    <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', zIndex: 1, padding: '1rem 0', borderTop: '1px solid rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flex: 1 }}>
-                                            <div style={{ padding: '0.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', color: themeColor }}><Timer size={16} /></div>
-                                            <div><div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Duration</div><div style={{ color: 'var(--text)', fontWeight: 700 }}>{ex.durationMinutes} Mins</div></div>
-                                        </div>
-                                        <div style={{ width: '1px', background: 'rgba(255,255,255,0.05)' }}></div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flex: 1, paddingLeft: '0.5rem' }}>
-                                            <div style={{ padding: '0.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', color: themeColor }}><CheckSquare size={16} /></div>
-                                            <div><div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Questions</div><div style={{ color: 'var(--text)', fontWeight: 700 }}>{ex.questions?.length || 0} Qs</div></div>
-                                        </div>
-                                    </div>
-
-                                    {/* Action button */}
-                                    <button
-                                        className="btn"
-                                        onClick={() => startExam(ex)}
+                                return (
+                                    <div key={ex._id} className="card glass-panel group"
                                         style={{
-                                            width: '100%',
-                                            zIndex: 1,
-                                            background: (!ex.questions || ex.questions.length === 0) ? 'rgba(255,255,255,0.05)' : themeColor,
-                                            color: (!ex.questions || ex.questions.length === 0) ? 'var(--text-muted)' : '#fff',
-                                            border: 'none',
-                                            padding: '1rem',
-                                            fontWeight: '700',
-                                            fontSize: '1rem',
-                                            transition: 'all 0.2s ease',
-                                            borderRadius: '12px',
-                                            boxShadow: (!ex.questions || ex.questions.length === 0) ? 'none' : `0 4px 15px -5px ${themeColor}80`
+                                            display: 'flex', flexDirection: 'column', textAlign: 'left',
+                                            padding: '2rem',
+                                            border: `1px solid rgba(255,255,255,0.08)`,
+                                            background: 'rgba(20,20,30,0.6)',
+                                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                            boxShadow: '0 10px 30px -10px rgba(0,0,0,0.5)',
+                                            borderRadius: '24px',
+                                            position: 'relative',
+                                            overflow: 'hidden'
                                         }}
                                         onMouseEnter={(e) => {
-                                            if (ex.questions && ex.questions.length > 0) {
-                                                e.currentTarget.style.filter = 'brightness(1.1)';
-                                                e.currentTarget.style.transform = 'translateY(-2px)';
-                                            }
+                                            e.currentTarget.style.transform = 'translateY(-6px)';
+                                            e.currentTarget.style.borderColor = themeColor;
+                                            e.currentTarget.style.boxShadow = `0 20px 40px -10px ${themeColor}40`;
                                         }}
                                         onMouseLeave={(e) => {
-                                            if (ex.questions && ex.questions.length > 0) {
-                                                e.currentTarget.style.filter = 'none';
-                                                e.currentTarget.style.transform = 'none';
-                                            }
+                                            e.currentTarget.style.transform = 'none';
+                                            e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+                                            e.currentTarget.style.boxShadow = '0 10px 30px -10px rgba(0,0,0,0.5)';
                                         }}
-                                        disabled={!ex.questions || ex.questions.length === 0}
                                     >
-                                        {(!ex.questions || ex.questions.length === 0) ? 'No Questions Yet' : 'Start Assessment'}
-                                    </button>
-                                </div>
-                            );
-                        })}
+                                        {/* Glow Background */}
+                                        <div style={{
+                                            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                                            background: themeGradient,
+                                            zIndex: 0, pointerEvents: 'none'
+                                        }} />
+
+                                        {/* Top Badge */}
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem', zIndex: 1 }}>
+                                            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                                {isFullLength && <span style={{ background: themeColor, color: '#fff', fontSize: '0.7rem', fontWeight: 'bold', padding: '0.3rem 0.8rem', borderRadius: '12px', textTransform: 'uppercase', letterSpacing: '0.5px', boxShadow: `0 0 10px ${themeColor}80` }}><Award size={12} style={{ display: 'inline', marginRight: '4px', marginBottom: '-2px' }} /> PREMIUM MOCK</span>}
+                                                {!isFullLength && <span style={{ background: 'rgba(255,255,255,0.1)', color: 'var(--text)', fontSize: '0.7rem', fontWeight: 'bold', padding: '0.3rem 0.8rem', borderRadius: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{ex.type}</span>}
+                                            </div>
+                                            {ex.domainId && (
+                                                <span style={{ fontSize: '0.8rem', color: themeColor, display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: '600' }}>
+                                                    <Cpu size={14} /> {ex.domainId.name}
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        {/* Title */}
+                                        <h3 style={{ margin: '0 0 0.8rem 0', fontSize: '1.5rem', fontWeight: '800', color: 'var(--text)', zIndex: 1, lineHeight: '1.3', letterSpacing: '-0.5px' }}>
+                                            {ex.title}
+                                        </h3>
+
+                                        {/* Description placeholder */}
+                                        <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '1.5rem', zIndex: 1, lineHeight: '1.6', flexGrow: 1 }}>
+                                            {isFullLength
+                                                ? "Comprehensive simulation to test your complete readiness. Includes theoretical and practical coding concepts to evaluate your domain knowledge."
+                                                : "Targeted practice session designed to strengthen your foundational concepts and problem-solving speed."}
+                                        </p>
+
+                                        {/* Meta details */}
+                                        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', zIndex: 1, padding: '1rem 0', borderTop: '1px solid rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flex: 1 }}>
+                                                <div style={{ padding: '0.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', color: themeColor }}><Timer size={16} /></div>
+                                                <div><div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Duration</div><div style={{ color: 'var(--text)', fontWeight: 700 }}>{ex.durationMinutes} Mins</div></div>
+                                            </div>
+                                            <div style={{ width: '1px', background: 'rgba(255,255,255,0.05)' }}></div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flex: 1, paddingLeft: '0.5rem' }}>
+                                                <div style={{ padding: '0.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', color: themeColor }}><CheckSquare size={16} /></div>
+                                                <div><div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Questions</div><div style={{ color: 'var(--text)', fontWeight: 700 }}>{ex.questions?.length || 0} Qs</div></div>
+                                            </div>
+                                        </div>
+
+                                        {/* Action button */}
+                                        <button
+                                            className="btn"
+                                            onClick={() => startExam(ex)}
+                                            style={{
+                                                width: '100%',
+                                                zIndex: 1,
+                                                background: (!ex.questions || ex.questions.length === 0) ? 'rgba(255,255,255,0.05)' : themeColor,
+                                                color: (!ex.questions || ex.questions.length === 0) ? 'var(--text-muted)' : '#fff',
+                                                border: 'none',
+                                                padding: '1rem',
+                                                fontWeight: '700',
+                                                fontSize: '1rem',
+                                                transition: 'all 0.2s ease',
+                                                borderRadius: '12px',
+                                                boxShadow: (!ex.questions || ex.questions.length === 0) ? 'none' : `0 4px 15px -5px ${themeColor}80`
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                if (ex.questions && ex.questions.length > 0) {
+                                                    e.currentTarget.style.filter = 'brightness(1.1)';
+                                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                                }
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                if (ex.questions && ex.questions.length > 0) {
+                                                    e.currentTarget.style.filter = 'none';
+                                                    e.currentTarget.style.transform = 'none';
+                                                }
+                                            }}
+                                            disabled={!ex.questions || ex.questions.length === 0}
+                                        >
+                                            {(!ex.questions || ex.questions.length === 0) ? 'No Questions Yet' : 'Start Assessment'}
+                                        </button>
+                                    </div>
+                                );
+                            })}
                     </div>
                 )}
             </div>
