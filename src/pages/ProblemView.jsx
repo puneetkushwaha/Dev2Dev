@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-    ChevronLeft, Play, Send, Loader2, Brain, CheckCircle,
-    AlertCircle, Maximize2, FileText, MessageSquare, History,
-    Terminal, Info, ChevronDown, Book, Lock, Tag, Building2, Lightbulb, RotateCcw, Settings, FileCode
-} from 'lucide-react';
+import { Code2, Brain, CheckCircle2, AlertCircle, Clock, Trophy, ChevronRight, Play, Check, X, Copy, Share2, MessageSquare, BookOpen, Lightbulb, FileCode, User, Terminal, Loader2, Sparkles, AlertTriangle, ShieldCheck, Zap, Info, ArrowLeft, Maximize, Minimize, Settings, Keyboard, MousePointer2, Monitor, Layout, PanelLeft, PanelRight, Smartphone, RefreshCw, Send, HelpCircle, Star, Target, Activity } from 'lucide-react';
+import { getApiUrl } from '../api/config';
 import Editor from '@monaco-editor/react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
@@ -56,12 +53,12 @@ const ProblemView = () => {
         // Global styles to force no selection while assessment is active
         const style = document.createElement('style');
         style.innerHTML = `
-            *:not(.monaco-editor):not(.monaco-editor *) {
-                -webkit-user-select: none !important;
-                -ms-user-select: none !important;
-                user-select: none !important;
-            }
-        `;
+    *: not(.monaco - editor): not(.monaco - editor *) {
+    -webkit - user - select: none!important;
+    -ms - user - select: none!important;
+    user - select: none!important;
+}
+`;
         document.head.appendChild(style);
 
         return () => {
@@ -114,8 +111,8 @@ const ProblemView = () => {
     useEffect(() => {
         const fetchProblem = async () => {
             try {
-                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/problems/${id}`, {
-                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                const res = await axios.get(getApiUrl(`/ api / users / problems / ${id} `), {
+                    headers: { Authorization: `Bearer ${localStorage.getItem('token')} ` }
                 });
 
                 const data = res.data;
@@ -153,7 +150,7 @@ const ProblemView = () => {
                     let smartCode = selectedLang.boilerplate;
 
                     if (selectedLang.id === 'python') {
-                        smartCode = `class Solution:\n    def ${funcName}(self, ${params}):\n        \n        pass`;
+                        smartCode = `class Solution: \n    def ${funcName} (self, ${params}): \n        \n        pass`;
                     } else if (selectedLang.id === 'cpp') {
                         smartCode = `// Update Return Type as needed\nvoid ${funcName}(${params.split(',').map(p => 'auto ' + p.trim()).join(', ')}) {\n     \n       \n    }`;
                     } else if (selectedLang.id === 'java') {
@@ -266,14 +263,14 @@ const ProblemView = () => {
         }
 
         try {
-            console.log(`🚀 Sending submission to: ${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/submit-exam`);
+            console.log(`🚀 Sending submission to: ${getApiUrl('/api/users/submit-exam')}`);
             console.log(`📦 Payload:`, {
                 examName: problem.title,
                 language: selectedLang.id,
                 isRun
             });
 
-            const res = await axios.post(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/submit-exam`, {
+            const res = await axios.post(getApiUrl('/api/users/submit-exam'), {
                 examName: problem.title,
                 language: selectedLang.id,
                 answers: { 0: code },

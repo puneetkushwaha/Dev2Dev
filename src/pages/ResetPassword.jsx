@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Lock, Loader2, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
 import Loader from '../components/Loader';
+import { getApiUrl } from '../api/config';
 import './Auth.css';
 
 const ResetPassword = () => {
@@ -24,7 +25,7 @@ const ResetPassword = () => {
         setError('');
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/auth/reset-password/${token}`, {
+            const res = await fetch(getApiUrl(`/api/auth/reset-password/${token}`), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ password })

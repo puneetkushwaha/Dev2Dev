@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getApiUrl } from '../api/config';
 import { ChevronDown, Target, Clock, Activity, DivideCircle, Percent, FlaskConical, Hash, Calculator, Scale, BookOpen, CircleDollarSign, Info, Loader2 } from 'lucide-react';
 import Loader from '../components/Loader';
 
@@ -12,7 +13,7 @@ const Aptitude = () => {
     useEffect(() => {
         const fetchTopics = async () => {
             try {
-                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains/topics/name/Aptitude & Reasoning`);
+                const res = await axios.get(getApiUrl('/api/domains/topics/name/Aptitude & Reasoning'));
                 const qt = res.data.filter(t => t.topicGroup === 'Quantitative Aptitude');
                 // Format them to match the UI expectation
                 const formatted = qt.map(t => ({

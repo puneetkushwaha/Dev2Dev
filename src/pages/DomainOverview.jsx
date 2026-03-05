@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Briefcase, DollarSign, Activity, CheckCircle, ShieldCheck, Cpu, Code2, Cloud, Database, Smartphone, ChevronRight, Loader2 } from 'lucide-react';
 import axios from 'axios';
+import { getApiUrl } from '../api/config';
 import Loader from '../components/Loader';
 import { domainDetails, defaultDomain } from '../data/domainData';
 
@@ -21,10 +22,10 @@ const DomainOverview = () => {
         const fetchTopics = async () => {
             setTopicsLoading(true);
             try {
-                const domainsRes = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains`);
+                const domainsRes = await axios.get(getApiUrl('/api/domains'));
                 const domain = domainsRes.data.find(d => d.name === decodedName);
                 if (!domain) { setDbTopics([]); return; }
-                const topicsRes = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains/topics/by-domain/${domain._id}`);
+                const topicsRes = await axios.get(getApiUrl(`/api/domains/topics/by-domain/${domain._id}`));
                 setDbTopics(topicsRes.data || []);
             } catch (err) {
                 console.warn('Could not load topics from DB', err.message);
@@ -40,7 +41,7 @@ const DomainOverview = () => {
         setLoading(true);
         const token = localStorage.getItem('token');
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/select-domain`, {
+            const res = await fetch(getApiUrl('/api/users/select-domain'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

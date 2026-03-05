@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Search, Play, Lock, ChevronRight } from 'lucide-react';
+import { getApiUrl } from '../api/config';
 import Loader from '../components/Loader';
 
 const Tutorials = () => {
@@ -15,7 +16,7 @@ const Tutorials = () => {
         const fetchTutorials = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/tutorials`, {
+                const res = await axios.get(getApiUrl('/api/tutorials'), {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setTutorials(res.data);

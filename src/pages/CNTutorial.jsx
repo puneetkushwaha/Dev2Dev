@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getApiUrl } from '../api/config';
 import { ChevronDown, Target, Clock, Activity, MessageSquare, BookOpen, Search, Star, Languages, Info, FileText, Loader2, Sparkles, Network, TerminalSquare } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -16,7 +17,7 @@ const CNTutorial = () => {
     useEffect(() => {
         const fetchTopics = async () => {
             try {
-                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains/topics/corecs?subject=CN&lessonType=theory`);
+                const res = await axios.get(getApiUrl('/api/domains/topics/corecs?subject=CN&lessonType=theory'));
                 if (res.data && res.data.length > 0) {
                     setTopic(res.data[0]);
                 }

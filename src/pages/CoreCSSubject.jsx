@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import Loader from '../components/Loader';
 import axios from 'axios';
+import { getApiUrl } from '../api/config';
 
 const subjects = [
     { id: 'dsa', name: 'Data Structures & Algorithms', dbKey: 'DSA', icon: Layers, color: '#6366f1' },
@@ -35,7 +36,7 @@ const CoreCSSubject = () => {
             try {
                 const token = localStorage.getItem('token');
                 if (!token) return;
-                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/profile`, {
+                const res = await axios.get(getApiUrl('/api/users/profile'), {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 setCompletedTopics(res.data.completedTopics || []);
@@ -59,7 +60,7 @@ const CoreCSSubject = () => {
         const fetchProblems = async () => {
             setLoading(true);
             try {
-                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains/topics/corecs`);
+                const res = await axios.get(getApiUrl('/api/domains/topics/corecs'));
                 const mappedProblems = res.data
                     .filter(t => t.topicGroup)
                     .map(topic => ({

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Star, Zap, Swords, Target, Crown, Flame, BrainCircuit, Diamond, Award, Medal } from 'lucide-react';
 import axios from 'axios';
+import { getApiUrl } from '../api/config';
 import './Leaderboard.css';
 
 const getBadgeIcon = (iconName) => {
@@ -30,7 +31,7 @@ const Leaderboard = () => {
                 const token = localStorage.getItem('token');
                 if (!token) return;
 
-                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/leaderboard`, {
+                const res = await axios.get(getApiUrl('/api/leaderboard'), {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setLeaderboard(res.data);

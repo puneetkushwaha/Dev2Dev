@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Search, Bell, User, LogOut, Code2, BookOpen, UserCircle, Settings, FileText, BarChart2, Briefcase, PlusCircle, MonitorPlay, ChevronDown, Menu, X, Trophy } from 'lucide-react';
-import axios from 'axios';
+import { getApiUrl } from '../api/config';
 
 const Navbar = () => {
     const navigate = useNavigate();
@@ -21,7 +21,7 @@ const Navbar = () => {
             const token = localStorage.getItem('token');
             if (token) {
                 try {
-                    const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/notifications`, {
+                    const res = await axios.get(getApiUrl('/api/notifications'), {
                         headers: { Authorization: `Bearer ${token}` }
                     });
                     setNotificationCount(res.data.length);

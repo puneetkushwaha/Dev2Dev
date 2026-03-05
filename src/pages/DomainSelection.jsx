@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../components/Loader';
 import { Brain, Sparkles, Clock, Target, ArrowRight, Code2, Database, Shield, Cloud, Smartphone, Cpu } from 'lucide-react';
+import { getApiUrl } from '../api/config';
 import './DomainSelection.css';
 
 // Helper to map domain names to specific icons and gradient colors
@@ -66,11 +67,11 @@ const DomainSelection = () => {
             if (!token) return navigate('/login');
 
             try {
-                const domRes = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains`);
+                const domRes = await fetch(getApiUrl('/api/domains'));
                 const domData = await domRes.json();
                 setDomains(Array.isArray(domData) ? domData.filter(d => d.name !== 'Core Computer Science' && d.name !== 'CoreCS') : []);
 
-                const userRes = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/profile`, {
+                const userRes = await fetch(getApiUrl('/api/users/profile'), {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const userData = await userRes.json();
@@ -100,7 +101,7 @@ const DomainSelection = () => {
         setAiLoading(true);
         try {
             const domainNames = availableDomains.map(d => d.name);
-            const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/recommend-domain`, {
+            const res = await fetch(getApiUrl('/api/users/recommend-domain'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -114,7 +115,7 @@ const DomainSelection = () => {
             setRecommendation(data);
 
             // Save recommendation to backend for future caching
-            await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/save-recommendation`, {
+            await fetch(getApiUrl('/api/users/save-recommendation'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

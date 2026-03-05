@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Filter, Book, Zap, Clock, CheckCircle2, Trophy, Lock, ArrowLeftRight, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Tag, Building2, HelpCircle } from 'lucide-react';
+import { Search, Filter, BookOpen, Clock, Target, CheckCircle, ChevronRight, Activity, Trophy, Star, TrendingUp, Brain, Code2, ArrowUpRight, Loader2, Info, Layout, ShieldCheck, Sparkles } from 'lucide-react';
+import { getApiUrl } from '../api/config';
 import axios from 'axios';
 import Loader from '../components/Loader';
 import './Problems.css';
@@ -74,11 +75,11 @@ const Problems = () => {
             try {
                 const token = localStorage.getItem('token');
                 const [problemsRes, profileRes] = await Promise.all([
-                    axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/problems`, {
-                        headers: { Authorization: `Bearer ${token}` }
+                    axios.get(getApiUrl('/api/users/problems'), {
+                        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                     }),
-                    axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/profile`, {
-                        headers: { Authorization: `Bearer ${token}` }
+                    axios.get(getApiUrl('/api/users/profile'), {
+                        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                     })
                 ]);
                 setProblems(problemsRes.data);

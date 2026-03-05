@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mic, MicOff, Video, VideoOff, Square, FileText, CheckCircle, UploadCloud, User, Briefcase, Loader2, Play, Volume2, ArrowRight, AlertCircle, RefreshCw, Cpu, AlertTriangle, BookOpen, Zap, Lock, Trophy } from 'lucide-react';
+import { Mic, MicOff, Video, VideoOff, Square, FileText, CheckCircle, UploadCloud, User, Briefcase, Loader2, Play, Volume2, ArrowRight, AlertCircle, RefreshCw, Cpu, AlertTriangle, BookOpen, Zap, Lock, Trophy, MessageSquare, Brain, Target, Sparkles, Bot, Clock, Award, CheckCircle2, Send, Shield, Info, Layout, History, Star, ArrowRightLeft, Settings } from 'lucide-react';
+import { getApiUrl } from '../api/config';
 import axios from 'axios';
 import './MockInterview.css';
 
@@ -79,7 +80,7 @@ const MockInterview = () => {
                 const token = localStorage.getItem('token');
                 if (!token) return;
 
-                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/profile`, {
+                const res = await axios.get(getApiUrl('/api/users/profile'), {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
@@ -163,7 +164,7 @@ const MockInterview = () => {
     const handleCheckout = async () => {
         try {
             const token = localStorage.getItem('token');
-            const { data: order } = await axios.post(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/payment/create-order`,
+            const { data: order } = await axios.post(getApiUrl('/api/payment/create-order'),
                 { type: 'pro', amount: 99 },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -177,7 +178,7 @@ const MockInterview = () => {
                 order_id: order.id,
                 handler: async function (response) {
                     try {
-                        const verifyRes = await axios.post(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/payment/verify-payment`, {
+                        const verifyRes = await axios.post(getApiUrl('/api/payment/verify-payment'), {
                             razorpay_order_id: response.razorpay_order_id,
                             razorpay_payment_id: response.razorpay_payment_id,
                             razorpay_signature: response.razorpay_signature,
@@ -227,7 +228,7 @@ const MockInterview = () => {
         formData.append('file', file);
 
         try {
-            const res = await axios.post(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/parse-resume`, formData);
+            const res = await axios.post(getApiUrl('/api/users/parse-resume'), formData);
             setResumeText(res.data.text);
         } catch (err) {
             setError('Failed to parse resume. Please try again.');
@@ -309,7 +310,7 @@ const MockInterview = () => {
 
         try {
             // Get AI Response from Python Backend
-            const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/interview-chat`, {
+            const response = await fetch(getApiUrl('/api/users/interview-chat'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -356,7 +357,7 @@ const MockInterview = () => {
         setStage('analysing');
         try {
             // 1. Get AI Evaluation from Python Service
-            const res = await axios.post(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/mock-interview-eval`, {
+            const res = await axios.post(getApiUrl('/api/users/mock-interview-eval'), {
                 domain: jobProfile,
                 role: jobProfile,
                 transcript: transcript
@@ -366,7 +367,7 @@ const MockInterview = () => {
 
             // 2. Save result to Node.js Backend for persistence
             try {
-                await axios.post(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/interviews`, {
+                await axios.post(getApiUrl('/api/interviews'), {
                     role: jobProfile,
                     domain: jobProfile,
                     score: evalData.score,

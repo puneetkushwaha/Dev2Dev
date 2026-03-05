@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MessageSquare, X, Send, Bot } from 'lucide-react';
 import axios from 'axios';
+import { getApiUrl } from '../api/config';
 
 const AITeacherWidget = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -20,7 +21,7 @@ const AITeacherWidget = () => {
 
         try {
             // Connect to Python AI microservice
-            const res = await axios.post(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/ai-chat`, { message: userMsg, domain: 'Software Engineering' });
+            const res = await axios.post(getApiUrl('/api/users/ai-chat'), { message: userMsg, domain: 'Software Engineering' });
             setMessages(prev => [...prev, { role: 'ai', text: res.data.reply }]);
         } catch (error) {
             setMessages(prev => [...prev, { role: 'ai', text: 'Sorry, I am having trouble connecting to the Dev2Dev AI service.' }]);

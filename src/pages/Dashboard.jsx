@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, BookOpen, Target, FileText, Cpu, Brain, Award, ChevronRight, Sparkles, Terminal, Filter, Play } from 'lucide-react';
 import axios from 'axios';
 import './Dashboard.css';
+import { getApiUrl } from '../api/config';
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -44,7 +45,7 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const profileRes = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/profile`, {
+                const profileRes = await axios.get(getApiUrl('/api/users/profile'), {
                     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                 });
                 setUserData(profileRes.data);
@@ -53,8 +54,8 @@ const Dashboard = () => {
                 localStorage.setItem('userRole', profileRes.data.role);
 
                 const [domainsRes, tutorialsRes] = await Promise.all([
-                    axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains`),
-                    axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/tutorials`, {
+                    axios.get(getApiUrl('/api/domains')),
+                    axios.get(getApiUrl('/api/tutorials'), {
                         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                     })
                 ]);

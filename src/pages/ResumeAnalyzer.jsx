@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { UploadCloud, FileText, CheckCircle, AlertTriangle } from 'lucide-react';
 import Loader from '../components/Loader';
+import { getApiUrl } from '../api/config';
 import './ResumeAnalyzer.css';
 
 const ResumeAnalyzer = () => {
@@ -20,7 +21,7 @@ const ResumeAnalyzer = () => {
                 const formData = new FormData();
                 formData.append('file', selectedFile);
 
-                const parseResponse = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/parse-resume`, {
+                const parseResponse = await fetch(getApiUrl('/api/users/parse-resume'), {
                     method: 'POST',
                     body: formData,
                 });
@@ -28,7 +29,7 @@ const ResumeAnalyzer = () => {
                 if (!parseResponse.ok) throw new Error('Failed to parse resume');
                 const { text } = await parseResponse.json();
 
-                const analyzeResponse = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/analyze-resume`, {
+                const analyzeResponse = await fetch(getApiUrl('/api/users/analyze-resume'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ resume_text: text, target_role: targetRole }),

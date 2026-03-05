@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import Loader from '../components/Loader';
+import { getApiUrl } from '../api/config';
 import CoreCSManager from './CoreCSManager';
 import {
     Plus, Edit, Trash2, ChevronRight, ChevronDown,
@@ -1044,14 +1045,14 @@ const AdminDashboard = () => {
             catch (e) { console.warn('Fetch failed:', url, e.response?.status); return null; }
         };
         const [s, d, u, e, cs, t, iv, n] = await Promise.all([
-            safeGet(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/stats`, authConfig()),
-            safeGet(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/domains`, authConfig()),
-            safeGet(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/users`, authConfig()),
-            safeGet(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/exams`, authConfig()),
-            safeGet(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/corecs`, authConfig()),
-            safeGet(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/tutorials`, authConfig()),
-            safeGet(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/interviews/all`, authConfig()),
-            safeGet(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/notifications`, authConfig()),
+            safeGet(getApiUrl('/api/admin/stats'), authConfig()),
+            safeGet(getApiUrl('/api/admin/domains'), authConfig()),
+            safeGet(getApiUrl('/api/admin/users'), authConfig()),
+            safeGet(getApiUrl('/api/admin/exams'), authConfig()),
+            safeGet(getApiUrl('/api/admin/corecs'), authConfig()),
+            safeGet(getApiUrl('/api/admin/tutorials'), authConfig()),
+            safeGet(getApiUrl('/api/interviews/all'), authConfig()),
+            safeGet(getApiUrl('/api/notifications'), authConfig()),
         ]);
         if (s) setStats(s);
         if (d) setDomains(d);
@@ -1067,7 +1068,7 @@ const AdminDashboard = () => {
     useEffect(() => { fetchAllData(); }, []);
 
     const fetchTopics = async (domainId) => {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/topics/domain/${domainId}`, authConfig());
+        const res = await axios.get(getApiUrl(`/api/admin/topics/domain/${domainId}`), authConfig());
         setTopics(res.data);
         return res.data;
     };
@@ -1082,15 +1083,15 @@ const AdminDashboard = () => {
     // ── CRUD helpers ──
     const saveDomain = async (data) => {
         try {
-            if (data._id) await axios.put(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/domains/${data._id}`, data, authConfig());
-            else await axios.post(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/domains`, data, authConfig());
+            if (data._id) await axios.put(getApiUrl(`/api/admin/domains/${data._id}`), data, authConfig());
+            else await axios.post(getApiUrl('/api/admin/domains'), data, authConfig());
             fetchAllData();
         } catch (err) { alert(err.response?.data?.message || err.message); }
     };
 
     const deleteDomain = async (id) => {
         if (!window.confirm('Delete this domain and all its topics?')) return;
-        await axios.delete(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/domains/${id}`, authConfig());
+        await axios.delete(getApiUrl(`/api/admin/domains/${id}`), authConfig());
         setUniversalEditor(null);
         fetchAllData();
     };
@@ -1098,9 +1099,9 @@ const AdminDashboard = () => {
     const saveTopic = async (data) => {
         try {
             if (data._id) {
-                await axios.put(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/topics/${data._id}`, data, authConfig());
+                await axios.put(getApiUrl(`/api/admin/topics/${data._id}`), data, authConfig());
             } else {
-                await axios.post(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/topics`, data, authConfig());
+                await axios.post(getApiUrl('/api/admin/topics'), data, authConfig());
             }
             await fetchTopics(universalEditor.domain._id);
             fetchAllData();
@@ -1109,7 +1110,7 @@ const AdminDashboard = () => {
 
     const addTopic = async (defaults) => {
         try {
-            const res = await axios.post(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/topics`, defaults, authConfig());
+            const res = await axios.post(getApiUrl('/api/admin/topics'), defaults, authConfig());
             await fetchTopics(universalEditor.domain._id);
             fetchAllData();
             return res.data;
@@ -1118,7 +1119,7 @@ const AdminDashboard = () => {
 
     const deleteTopic = async (id) => {
         if (!window.confirm('Delete this topic?')) return;
-        await axios.delete(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/topics/${id}`, authConfig());
+        await axios.delete(getApiUrl(`/api/admin/topics/${id}`), authConfig());
         await fetchTopics(universalEditor.domain._id);
         fetchAllData();
     };
@@ -1126,9 +1127,9 @@ const AdminDashboard = () => {
     const saveExam = async (data) => {
         try {
             if (data._id) {
-                await axios.put(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/exams/${data._id}`, data, authConfig());
+                await axios.put(getApiUrl(`/api/admin/exams/${data._id}`), data, authConfig());
             } else {
-                await axios.post(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/exams`, data, authConfig());
+                await axios.post(getApiUrl('/api/admin/exams'), data, authConfig());
             }
             setEditingExam(null);
             fetchAllData();
@@ -1138,9 +1139,9 @@ const AdminDashboard = () => {
     const saveTutorial = async (data) => {
         try {
             if (data._id) {
-                await axios.put(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/tutorials/${data._id}`, data, authConfig());
+                await axios.put(getApiUrl(`/api/admin/tutorials/${data._id}`), data, authConfig());
             } else {
-                await axios.post(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/tutorials`, data, authConfig());
+                await axios.post(getApiUrl('/api/admin/tutorials'), data, authConfig());
             }
             setEditingTutorial(null);
             fetchAllData();
@@ -1149,17 +1150,17 @@ const AdminDashboard = () => {
 
     const handleDelete = async (type, id) => {
         if (!window.confirm(`Delete this ${type}?`)) return;
-        await axios.delete(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/${type}s/${id}`, authConfig());
+        await axios.delete(getApiUrl(`/api/admin/${type}s/${id}`), authConfig());
         fetchAllData();
     };
 
     const handleToggleRole = async (userId) => {
-        await axios.put(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/users/role/${userId}`, {}, authConfig());
+        await axios.put(getApiUrl(`/api/admin/users/role/${userId}`), {}, authConfig());
         fetchAllData();
     };
 
     const handleTogglePremium = async (userId) => {
-        await axios.put(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/users/premium/${userId}`, {}, authConfig());
+        await axios.put(getApiUrl(`/api/admin/users/premium/${userId}`), {}, authConfig());
         fetchAllData();
     };
 
@@ -1170,7 +1171,7 @@ const AdminDashboard = () => {
         }
         setCreatingUser(true);
         try {
-            await axios.post(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/users`, newUser, authConfig());
+            await axios.post(getApiUrl('/api/admin/users'), newUser, authConfig());
             setShowAddUserModal(false);
             setNewUser({ name: '', email: '', password: '', isPremium: false });
             fetchAllData();
@@ -1510,7 +1511,7 @@ const AdminDashboard = () => {
     const handleCreateNotification = async () => {
         if (!newNotification.title || !newNotification.message) return alert('Title and message required');
         try {
-            await axios.post(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/notifications`, newNotification, authConfig());
+            await axios.post(getApiUrl('/api/admin/notifications'), newNotification, authConfig());
             setNewNotification({ title: '', message: '', type: 'info' });
             fetchAllData();
         } catch (err) { alert(err.response?.data?.message || err.message); }
@@ -1664,7 +1665,7 @@ const AdminDashboard = () => {
                                 <CoreCSManager
                                     coreCSTopics={coreCSTopics}
                                     onTopicsRefresh={async () => {
-                                        const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/admin/corecs`, authConfig());
+                                        const res = await axios.get(getApiUrl('/api/admin/corecs'), authConfig());
                                         setCoreCSTopics(res.data);
                                     }}
                                 />

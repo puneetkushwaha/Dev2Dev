@@ -2,12 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import Loader from '../components/Loader';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
-    Activity, AlertCircle, ArrowLeft, BookOpen, Bot, Brain, Briefcase,
-    Check, CheckCircle, ChevronDown, ChevronLeft, ChevronRight, Code,
-    Cpu, DollarSign, FileCode, FileText, History, Layers, Layout,
-    Loader2, MessageCircle, MessageSquare, Play, RotateCcw, Save,
-    Send, Settings, Sparkles, Target, Terminal, Trophy, X
+    BookOpen, Code, Terminal, Brain, CheckCircle2, AlertCircle,
+    ChevronRight, Play, FileText, Layout, List, Search,
+    Flame, Target, Star, Trophy, Activity, ArrowRight,
+    MessageSquare, Send, Sparkles, Loader2, HelpCircle, ArrowLeft,
+    Check
 } from 'lucide-react';
+import { getApiUrl } from '../api/config';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { domainDetails, defaultDomain } from '../data/domainData';
@@ -74,7 +75,7 @@ const Learning = () => {
         const fetchUserData = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const userRes = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/profile`, {
+                const userRes = await fetch(getApiUrl('/api/users/profile'), {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await userRes.json();
@@ -142,11 +143,11 @@ const Learning = () => {
         const fetchDomainTopics = async () => {
             setTopicsLoading(true);
             try {
-                const domainsRes = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains`);
+                const domainsRes = await axios.get(getApiUrl('/api/domains'));
                 const domain = domainsRes.data.find(d => d.name === selectedDomain);
                 if (!domain) { setDbTopics([]); return; }
                 const topicsRes = await axios.get(
-                    `${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains/topics/by-domain/${domain._id}`
+                    getApiUrl(`/api/domains/topics/by-domain/${domain._id}`)
                 );
                 setDbTopics(topicsRes.data || []);
             } catch (err) {
@@ -176,10 +177,10 @@ const Learning = () => {
         // (This handles the case where dbTopics hasn't loaded yet on first page mount/refresh)
         if (!topicId) {
             try {
-                const domainsRes = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains`);
+                const domainsRes = await axios.get(getApiUrl('/api/domains'));
                 const domainDoc = domainsRes.data.find(d => d.name === domain);
                 if (domainDoc) {
-                    const tRes = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains/topics/${domainDoc._id}`);
+                    const tRes = await axios.get(getApiUrl(`/api/domains/topics/${domainDoc._id}`));
                     const dbT = (tRes.data || []).find(t => t.title === topicTitle);
                     if (dbT) topicId = dbT._id;
                 }
@@ -201,7 +202,7 @@ const Learning = () => {
         }
 
         // Update URL for persistence
-        window.history.replaceState(null, '', `?topic=${encodeURIComponent(topicTitle)}`);
+        window.history.replaceState(null, '', `? topic = ${encodeURIComponent(topicTitle)} `);
 
         // Save to localStorage for refresh persistence
         localStorage.setItem('selectedDomain', domain);
@@ -213,15 +214,12 @@ const Learning = () => {
         setExecutionResult(null);
         setQuizResult(null);
         setQuizAnswers({});
-        setChatMessages([{
-            role: 'ai',
-            text: `Welcome! Today we are mastering **${topicTitle}**. Read through the theory, or ask me anything if you get stuck!`
-        }]);
+        text: `Welcome! Today we are mastering **${topicTitle}**. Read through the theory, or ask me anything if you get stuck!`
 
         try {
             // 1. Try fetching stored content from MongoDB first (FAST - no AI needed)
             if (topicId) {
-                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains/topics/detail/${String(topicId)}`);
+                const res = await axios.get(getApiUrl(`/api/domains/topics/detail/${String(topicId)}`));
                 const t = res.data;
                 // Map DB content fields to lessonContent shape
                 const content = {
@@ -242,14 +240,15 @@ const Learning = () => {
                 // If there's at least some content, use DB data
                 if (content.theory || content.description) {
                     setLessonContent(content);
-                    setUserCode(content.solution_stub || `function solution() {\n  // Write your code here\n}`);
+                    setUserCode(content.solution_stub || `function solution() {
+\n  // Write your code here\n}`);
                     setLessonLoading(false);
                     return;
                 }
             }
 
             // 2. Fallback: call AI service if no stored content
-            const aiRes = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/generate-lesson`, {
+            const aiRes = await fetch(getApiUrl('/api/users/generate-lesson'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ domain, topic: topicTitle })
@@ -272,7 +271,7 @@ const Learning = () => {
 
             // 3. Cache generated content to backend for future consistency
             try {
-                await axios.post(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains/topics/cache-content`, {
+                await axios.post(getApiUrl('/api/domains/topics/cache-content'), {
                     domainName: domain,
                     topicTitle: topicTitle,
                     content: mappedContent,
@@ -431,7 +430,7 @@ const Learning = () => {
         setChatMessages(prev => [...prev, { role: 'ai', text: '' }]);
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/ai-chat`, {
+            const response = await fetch(getApiUrl('/api/users/ai-chat'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -497,7 +496,7 @@ const Learning = () => {
     const saveProgress = async (topic) => {
         const token = localStorage.getItem('token');
         try {
-            await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/complete-topic`, {
+            await fetch(getApiUrl('/api/users/complete-topic'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

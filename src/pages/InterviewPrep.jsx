@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { getApiUrl } from '../api/config';
 import { Target, MonitorPlay, ChevronRight, Activity, Users, FileText, Code2, Briefcase, Loader2, Lock, Sparkles, Trophy, Star, Search, LogIn, Clock, Zap, ArrowRight } from 'lucide-react';
 import Loader from '../components/Loader';
 
@@ -19,10 +20,10 @@ const InterviewPrep = () => {
                 if (!token) return;
 
                 const [statsRes, profileRes] = await Promise.all([
-                    axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/mock-stats`, {
+                    axios.get(getApiUrl('/api/users/mock-stats'), {
                         headers: { Authorization: `Bearer ${token}` }
                     }),
-                    axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/profile`, {
+                    axios.get(getApiUrl('/api/users/profile'), {
                         headers: { Authorization: `Bearer ${token}` }
                     })
                 ]);
@@ -106,7 +107,7 @@ const InterviewPrep = () => {
     const handleCheckout = async () => {
         try {
             const token = localStorage.getItem('token');
-            const { data: order } = await axios.post(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/payment/create-order`,
+            const { data: order } = await axios.post(getApiUrl('/api/payment/create-order'),
                 { type: 'pro', amount: 49 }, // e.g. 49 INR for Pro
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -120,7 +121,7 @@ const InterviewPrep = () => {
                 order_id: order.id,
                 handler: async function (response) {
                     try {
-                        const verifyRes = await axios.post(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/payment/verify-payment`, {
+                        const verifyRes = await axios.post(getApiUrl('/api/payment/verify-payment'), {
                             razorpay_order_id: response.razorpay_order_id,
                             razorpay_payment_id: response.razorpay_payment_id,
                             razorpay_signature: response.razorpay_signature,

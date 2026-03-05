@@ -4,6 +4,7 @@ import { Mail, Lock, Loader2, ArrowRight, Sparkles, Target, Zap, ShieldCheck } f
 import Loader from '../components/Loader';
 import { GoogleLogin } from '@react-oauth/google';
 import './Auth.css';
+import { getApiUrl } from '../api/config';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -17,7 +18,7 @@ const Login = () => {
         setLoading(true);
         setError('');
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/auth/login`, {
+            const res = await fetch(getApiUrl('/api/auth/login'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
@@ -41,7 +42,7 @@ const Login = () => {
     const handleGoogleSuccess = async (credentialResponse) => {
         setLoading(true);
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/auth/google`, {
+            const res = await fetch(getApiUrl('/api/auth/google'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token: credentialResponse.credential })

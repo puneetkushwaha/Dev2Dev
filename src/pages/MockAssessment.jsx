@@ -4,6 +4,7 @@ import {
     ChevronLeft, Send, Loader2, Brain, CheckCircle,
     AlertCircle, Maximize2, FileText, Lock, ChevronDown, Clock, MoveLeft, History, RotateCcw, Settings, FileCode, Terminal
 } from 'lucide-react';
+import { getApiUrl } from '../api/config';
 import Editor from '@monaco-editor/react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -119,7 +120,7 @@ const MockAssessment = () => {
                 // Fetch randomized set from API
                 try {
                     const token = localStorage.getItem('token');
-                    const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/mock-set?type=${type}`, {
+                    const res = await axios.get(getApiUrl(`/api/users/mock-set?type=${type}`), {
                         headers: { Authorization: `Bearer ${token}` }
                     });
 
@@ -292,7 +293,7 @@ const MockAssessment = () => {
             });
 
             const type = searchParams.get('type');
-            const res = await axios.post(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/submit-mock`, {
+            const res = await axios.post(getApiUrl('/api/users/submit-mock'), {
                 mockId: type || mockId || '1',
                 title: type ? `${type} Assessment` : mockId === '1' ? "SDE Mock Assessment I" : mockId === '2' ? "SDE Mock Assessment II" : "SDE Mock Assessment III",
                 answers: answersArray,

@@ -16,6 +16,7 @@ import LanguageStats from '../components/profile/LanguageStats';
 import SkillBreakdown from '../components/profile/SkillBreakdown';
 import ProfileBadges from '../components/profile/ProfileBadges';
 import { generateCertificate, isEligibleForCertificate } from '../utils/certificateGenerator';
+import { getApiUrl } from '../api/config';
 
 const Profile = () => {
     const [userData, setUserData] = useState(null);
@@ -43,10 +44,10 @@ const Profile = () => {
 
             try {
                 const [profileRes, domainsRes] = await Promise.all([
-                    fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/profile`, {
+                    fetch(getApiUrl('/api/users/profile'), {
                         headers: { 'Authorization': `Bearer ${token}` }
                     }),
-                    fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains`)
+                    fetch(getApiUrl('/api/domains'))
                 ]);
 
                 if (profileRes.ok && domainsRes.ok) {
@@ -99,13 +100,13 @@ const Profile = () => {
 
             try {
                 // 1. Get Domain ID
-                const domainsRes = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains`);
+                const domainsRes = await fetch(getApiUrl('/api/domains'));
                 const domainsData = await domainsRes.json();
                 const domain = domainsData.find(d => d.name === userData.selectedDomain);
 
                 if (domain) {
                     // 2. Get All Topics for this Domain
-                    const topicsRes = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains/topics/by-domain/${domain._id}`);
+                    const topicsRes = await fetch(getApiUrl(`/api/domains/topics/by-domain/${domain._id}`));
                     const allTopics = await topicsRes.json();
                     setDomainTopics(allTopics);
 
@@ -137,7 +138,7 @@ const Profile = () => {
         const token = localStorage.getItem('token');
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/update-profile`, {
+            const response = await fetch(getApiUrl('/api/users/update-profile'), {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -176,7 +177,7 @@ const Profile = () => {
     const handleDomainChange = async (domainName) => {
         const token = localStorage.getItem('token');
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/select-domain`, {
+            const response = await fetch(getApiUrl('/api/users/select-domain'), {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -598,27 +599,27 @@ const Profile = () => {
 
                             {/* Empty state — only if truly nothing earned */}
                             {(userData.examScores || []).filter(e => e.passed && isEligibleForCertificate(e.examName)).length === 0 &&
-                             !isDomainMaster &&
-                             (userData.earnedCertificates || []).length === 0 && (
-                                <div style={{
-                                    gridColumn: '1 / -1', textAlign: 'center', padding: '4rem 2rem',
-                                    background: 'rgba(255,255,255,0.02)', borderRadius: '32px', border: '1px dashed rgba(255,255,255,0.1)'
-                                }}>
-                                    <div style={{ width: '80px', height: '80px', margin: '0 auto 1.5rem', background: 'rgba(255,255,255,0.03)', borderRadius: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.2)' }}>
-                                        <Award size={40} />
+                                !isDomainMaster &&
+                                (userData.earnedCertificates || []).length === 0 && (
+                                    <div style={{
+                                        gridColumn: '1 / -1', textAlign: 'center', padding: '4rem 2rem',
+                                        background: 'rgba(255,255,255,0.02)', borderRadius: '32px', border: '1px dashed rgba(255,255,255,0.1)'
+                                    }}>
+                                        <div style={{ width: '80px', height: '80px', margin: '0 auto 1.5rem', background: 'rgba(255,255,255,0.03)', borderRadius: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.2)' }}>
+                                            <Award size={40} />
+                                        </div>
+                                        <h3 style={{ color: '#fff', fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.5rem' }}>No Certificates Earned Yet</h3>
+                                        <p style={{ color: 'rgba(255,255,255,0.4)', maxWidth: '400px', margin: '0 auto 2rem' }}>
+                                            Complete tutorials or pass assessments to earn official certificates.
+                                        </p>
+                                        <button
+                                            onClick={() => navigate('/tutorials')}
+                                            style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)', color: '#fff', border: 'none', padding: '1rem 2rem', borderRadius: '16px', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' }}
+                                        >
+                                            Browse Tutorials
+                                        </button>
                                     </div>
-                                    <h3 style={{ color: '#fff', fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.5rem' }}>No Certificates Earned Yet</h3>
-                                    <p style={{ color: 'rgba(255,255,255,0.4)', maxWidth: '400px', margin: '0 auto 2rem' }}>
-                                        Complete tutorials or pass assessments to earn official certificates.
-                                    </p>
-                                    <button
-                                        onClick={() => navigate('/tutorials')}
-                                        style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)', color: '#fff', border: 'none', padding: '1rem 2rem', borderRadius: '16px', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' }}
-                                    >
-                                        Browse Tutorials
-                                    </button>
-                                </div>
-                            )}
+                                )}
                         </div>
                     )}
 

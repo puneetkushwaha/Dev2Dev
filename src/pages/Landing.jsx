@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { PlayCircle, Code2, UserCheck, FileText, Search, Linkedin, Twitter, MessageSquare, ExternalLink } from 'lucide-react';
 import './Landing.css';
+import { getApiUrl } from '../api/config';
 
 const Landing = () => {
     const [domain, setDomain] = React.useState('');
@@ -16,7 +17,7 @@ const Landing = () => {
         if (domain.trim()) {
             setLoading(true);
             try {
-                const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/generate-roadmap`, {
+                const response = await fetch(getApiUrl('/api/users/generate-roadmap'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ domain })

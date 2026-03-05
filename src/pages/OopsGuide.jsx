@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { ChevronDown, Code, BookOpen, TerminalSquare, Info, Loader2, Sparkles, Target } from 'lucide-react';
+import {
+    ChevronDown, Code, BookOpen, TerminalSquare, Info, Loader2, Sparkles, Target,
+    Terminal, Brain, CheckCircle2, AlertCircle, ChevronRight, Play, FileText, Layout, Lightbulb, Box, Layers, ArrowLeft, ArrowRight, Star
+} from 'lucide-react';
+import { getApiUrl } from '../api/config';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Loader from '../components/Loader';
@@ -16,7 +20,7 @@ const OopsGuide = () => {
     useEffect(() => {
         const fetchTopics = async () => {
             try {
-                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/domains/topics/corecs?subject=OOP&lessonType=theory`);
+                const res = await axios.get(getApiUrl('/api/domains/topics/corecs?subject=OOP&lessonType=theory'));
                 if (res.data && res.data.length > 0) {
                     setTopic(res.data[0]);
                 }

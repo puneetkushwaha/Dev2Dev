@@ -4,6 +4,7 @@ import { User, Mail, Lock, BookOpen, Briefcase, Loader2, ArrowRight, CheckCircle
 import Loader from '../components/Loader';
 import { GoogleLogin } from '@react-oauth/google';
 import './Auth.css';
+import { getApiUrl } from '../api/config';
 
 const allSkills = [
     "JavaScript", "Python", "React", "Node.js", "Docker", "AWS", "ML/AI", "SQL", "Java", "CS Fundamentals"
@@ -33,7 +34,7 @@ const Register = () => {
         setLoading(true);
         setError('');
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/auth/register`, {
+            const res = await fetch(getApiUrl('/api/auth/register'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)

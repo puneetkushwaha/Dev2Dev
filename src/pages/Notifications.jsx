@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Bell, Info, AlertCircle, CheckCircle, AlertTriangle } from 'lucide-react';
+import { getApiUrl } from '../api/config';
 import Loader from '../components/Loader';
 import './Notifications.css';
 
@@ -11,7 +12,7 @@ const Notifications = () => {
     useEffect(() => {
         const fetchNotifications = async () => {
             try {
-                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/notifications`, {
+                const res = await axios.get(getApiUrl('/api/notifications'), {
                     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                 });
                 setNotifications(res.data);

@@ -3,6 +3,7 @@ import { Timer, CheckCircle, AlertCircle, ChevronLeft, ChevronRight, SkipForward
 import Editor from '@monaco-editor/react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+import { getApiUrl } from '../api/config';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import { generateCertificate, isEligibleForCertificate } from '../utils/certificateGenerator';
@@ -119,7 +120,7 @@ const ExamEngine = () => {
 
         const fetchExams = async () => {
             try {
-                const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/exams`, {
+                const res = await axios.get(getApiUrl('/api/users/exams'), {
                     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                 });
                 setAvailableExams(res.data);
@@ -254,7 +255,7 @@ const ExamEngine = () => {
         const token = localStorage.getItem('token');
         if (token) {
             try {
-                const response = await axios.post(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/users/submit-exam`, {
+                const response = await axios.post(getApiUrl('/api/users/submit-exam'), {
                     examName: activeExam.title,
                     answers: answers
                 }, {

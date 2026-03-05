@@ -7,8 +7,8 @@ import {
 import axios from 'axios';
 import Loader from '../components/Loader';
 import { generateCertificate } from '../utils/certificateGenerator';
+import { getApiUrl } from '../api/config';
 
-const API = import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com';
 
 // ── Confetti particle component ───────────────────────────────────────────────
 const Confetti = () => {
@@ -152,11 +152,11 @@ const TutorialPlayer = () => {
         const fetchAll = async () => {
             try {
                 const [tutRes, progressRes] = await Promise.all([
-                    axios.get(`${API}/api/tutorials/${id}`, {
+                    axios.get(getApiUrl(`/api/tutorials/${id}`), {
                         headers: { Authorization: `Bearer ${token}` }
                     }),
                     token
-                        ? axios.get(`${API}/api/tutorials/${id}/progress`, {
+                        ? axios.get(getApiUrl(`/api/tutorials/${id}/progress`), {
                             headers: { Authorization: `Bearer ${token}` }
                         }).catch(() => ({ data: { completedLessonIds: [], isCompleted: false, alreadyCertified: false } }))
                         : { data: { completedLessonIds: [], isCompleted: false, alreadyCertified: false } }
@@ -223,7 +223,7 @@ const TutorialPlayer = () => {
         setMarkingComplete(true);
         try {
             const res = await axios.post(
-                `${API}/api/tutorials/${id}/complete-lesson`,
+                getApiUrl(`/api/tutorials/${id}/complete-lesson`),
                 { lessonId: activeVideo._id?.toString() },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -263,7 +263,7 @@ const TutorialPlayer = () => {
     const handleCheckout = async () => {
         try {
             const { data: order } = await axios.post(
-                `${API}/api/payment/create-order`,
+                getApiUrl('/api/payment/create-order'),
                 { type: 'tutorial', tutorialId: tutorial._id, amount: tutorial.price },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -275,7 +275,7 @@ const TutorialPlayer = () => {
                 order_id: order.id,
                 handler: async (response) => {
                     try {
-                        await axios.post(`${API}/api/payment/verify-payment`, {
+                        await axios.post(getApiUrl('/api/payment/verify-payment'), {
                             ...response, type: 'tutorial', tutorialId: tutorial._id
                         }, { headers: { Authorization: `Bearer ${token}` } });
                         setIsUnlocked(true);

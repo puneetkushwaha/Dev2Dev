@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Loader2, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
+import { getApiUrl } from '../api/config';
 import Loader from '../components/Loader';
 import './Auth.css';
 
@@ -17,7 +18,7 @@ const ForgotPassword = () => {
         setMessage('');
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://dev2dev-backend.onrender.com'}/api/auth/forgot-password`, {
+            const res = await fetch(getApiUrl('/api/auth/forgot-password'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email })
