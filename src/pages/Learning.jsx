@@ -6,7 +6,7 @@ import {
     ChevronRight, Play, FileText, Layout, List, Search,
     Flame, Target, Star, Trophy, Activity, ArrowRight,
     MessageSquare, Send, Sparkles, Loader2, HelpCircle, ArrowLeft,
-    Check, Layers
+    Check
 } from 'lucide-react';
 import { getApiUrl } from '../api/config';
 import ReactMarkdown from 'react-markdown';
@@ -1168,7 +1168,7 @@ const Learning = () => {
                         <section>
                             <div className="card glass-panel" style={{ padding: '2.5rem', borderRadius: '32px' }}>
                                 <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem', fontSize: '1.5rem' }}>
-                                    <Layers size={22} color={details.color} /> Curriculum Modules
+                                    <Layout size={22} color={details.color} /> Curriculum Modules
                                 </h2>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
                                     {topicsLoading ? (
@@ -1334,7 +1334,7 @@ const Learning = () => {
                                         })()
                                     ) : (
                                         <div style={{ padding: '3rem', textAlign: 'center', opacity: 0.35 }}>
-                                            <Layers size={32} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
+                                            <Layout size={32} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
                                             <p style={{ fontSize: '0.95rem' }}>No topics added yet.</p>
                                             <p style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>Add topics via Admin Panel → Course Data → {selectedDomain}</p>
                                         </div>
