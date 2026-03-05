@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
-    BookOpen, Code, Terminal, Brain, CheckCircle2, AlertCircle,
-    ChevronRight, Play, FileText, Layout, Cpu, Database, Network,
-    Info, Loader2, ArrowLeft, ArrowRight, Star, Sparkles
+    BookOpen, Code, Terminal, Brain, CheckCircle2, AlertCircle, ChevronRight, Play, FileText, Layout, Cpu, Database, Network, Info, Loader2, ArrowLeft, ArrowRight, Star, Sparkles, ChevronDown, TerminalSquare, Target
 } from 'lucide-react';
 import { getApiUrl } from '../api/config';
 import ReactMarkdown from 'react-markdown';

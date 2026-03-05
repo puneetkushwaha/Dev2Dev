@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Code2, Brain, CheckCircle2, AlertCircle, Clock, Trophy, ChevronRight, Play, Check, X, Copy, Share2, MessageSquare, BookOpen, Lightbulb, FileCode, User, Terminal, Loader2, Sparkles, AlertTriangle, ShieldCheck, Zap, Info, ArrowLeft, Maximize, Minimize, Settings, Keyboard, MousePointer2, Monitor, Layout, PanelLeft, PanelRight, Smartphone, RefreshCw, Send, HelpCircle, Star, Target, Activity, History } from 'lucide-react';
+import {
+    Code2, Brain, CheckCircle2, AlertCircle, Clock, Trophy, ChevronRight, Play, Check, X, Copy, Share2, MessageSquare, BookOpen, Lightbulb, FileCode, User, Terminal, Loader2, Sparkles, AlertTriangle, ShieldCheck, Zap, Info, ArrowLeft, Maximize, Minimize, Settings, Keyboard, MousePointer2, Monitor, Layout, PanelLeft, PanelRight, Smartphone, RefreshCw, Send, HelpCircle, Star, Target, Activity, History, FileText, Book, ChevronLeft, Tag, Building2, Lock, ChevronDown, RotateCcw, Maximize2, CheckCircle
+} from 'lucide-react';
 import { getApiUrl } from '../api/config';
 import Editor from '@monaco-editor/react';
 import axios from 'axios';

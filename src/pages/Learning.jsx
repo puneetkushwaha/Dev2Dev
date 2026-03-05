@@ -2,11 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Loader from '../components/Loader';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
-    BookOpen, Code, Terminal, Brain, CheckCircle2, AlertCircle,
-    ChevronRight, Play, FileText, Layout, List, Search,
-    Flame, Target, Star, Trophy, Activity, ArrowRight,
-    MessageSquare, Send, Sparkles, Loader2, HelpCircle, ArrowLeft,
-    Check, History
+    BookOpen, Code, Terminal, Brain, CheckCircle2, AlertCircle, ChevronRight, Play, FileText, Layout, List, Search, Flame, Target, Star, Trophy, Activity, ArrowRight, MessageSquare, Send, Sparkles, Loader2, HelpCircle, ArrowLeft, Check, History, MessageCircle, Briefcase, Bot, ChevronDown, Settings, RotateCcw, CheckCircle, Cpu, FileCode, X
 } from 'lucide-react';
 import { getApiUrl } from '../api/config';
 import ReactMarkdown from 'react-markdown';

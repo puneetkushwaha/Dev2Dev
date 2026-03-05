@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Loader2, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
+import {
+    Mail, Loader2, ArrowRight, ShieldCheck, Zap, Lock, Sparkles, ArrowLeft
+} from 'lucide-react';
 import { getApiUrl } from '../api/config';
 import Loader from '../components/Loader';
 import './Auth.css';

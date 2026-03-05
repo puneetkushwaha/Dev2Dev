@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Filter, BookOpen, Clock, Target, CheckCircle, ChevronRight, Activity, Trophy, Star, TrendingUp, Brain, Code2, ArrowUpRight, Loader2, Info, Layout, ShieldCheck, Sparkles, Book, Zap, ChevronLeft, Lock, HelpCircle } from 'lucide-react';
+import {
+    Search, Filter, BookOpen, Clock, Target, CheckCircle, ChevronRight, Activity, Trophy, Star, TrendingUp, Brain, Code2, ArrowUpRight, Loader2, Info, Layout, ShieldCheck, Sparkles, Book, Zap, ChevronLeft, Lock, HelpCircle, Tag, CheckCircle2
+} from 'lucide-react';
 import { getApiUrl } from '../api/config';
 import axios from 'axios';
 import Loader from '../components/Loader';
