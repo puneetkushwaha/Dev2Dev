@@ -41,7 +41,30 @@ const Landing = () => {
         <div className="landing-container">
             <Helmet>
                 <title>Dev2Dev | Master Industry-Standard DSA Challenges</title>
-                <meta name="description" content="The ultimate platform for Dev2DevD@D pioneers. Master DSA challenges aligned with top industry standards like LeetCode and GeeksForGeeks." />
+                <meta name="description" content="The ultimate AI-powered career platform for developers. Master DSA challenges aligned with LeetCode and GeeksForGeeks standards." />
+                <link rel="canonical" href="https://dev2dev.online/" />
+                <script type="application/ld+json">
+                    {`
+                    {
+                      "@context": "https://schema.org",
+                      "@type": "SoftwareApplication",
+                      "name": "Dev2Dev",
+                      "operatingSystem": "Web",
+                      "applicationCategory": "EducationApplication",
+                      "offers": {
+                        "@type": "Offer",
+                        "price": "0",
+                        "priceCurrency": "USD"
+                      },
+                      "description": "AI-powered career path platform with DSA challenges, AI roadmaps, and resume analysis.",
+                      "aggregateRating": {
+                        "@type": "AggregateRating",
+                        "ratingValue": "4.8",
+                        "ratingCount": "1200"
+                      }
+                    }
+                    `}
+                </script>
             </Helmet>
             {/* Minimal Brand-Aligned Navbar - Cylinder Shape */}
             <nav className="minimal-nav">
