@@ -656,7 +656,7 @@ const Profile = () => {
 
                         <div style={{ marginTop: '3rem', display: 'flex', gap: '1.5rem' }}>
                             <button onClick={handleSave} disabled={saveLoading} style={{ flex: 1, padding: '1.2rem', borderRadius: '20px', background: 'linear-gradient(135deg, #6366f1, #a855f7)', color: '#fff', fontWeight: 800, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                {saveLoading ? <GlobalLoader text="Updating profile parameters..." /> : 'Save Profiles'}
+                                {saveLoading ? <GlobalLoader text="Saving..." inline={true} /> : 'Save Changes'}
                             </button>
                             <button onClick={() => setIsEditing(false)} style={{ flex: 1, padding: '1.2rem', borderRadius: '20px', background: 'rgba(255,255,255,0.05)', color: '#fff', fontWeight: 700, border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer' }}>Cancel</button>
                         </div>
