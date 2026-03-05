@@ -3,7 +3,7 @@ import axios from 'axios';
 import {
     BookOpen, Code, Terminal, Brain, CheckCircle2, AlertCircle,
     ChevronRight, Play, FileText, Layout, Cpu, Database, Network,
-    Info, Loader2, ArrowLeft, ArrowRight, Star
+    Info, Loader2, ArrowLeft, ArrowRight, Star, Sparkles
 } from 'lucide-react';
 import { getApiUrl } from '../api/config';
 import ReactMarkdown from 'react-markdown';
