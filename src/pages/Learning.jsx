@@ -967,7 +967,7 @@ const Learning = () => {
                     </button>
                     <div style={{ width: '1px', height: '24px', background: 'rgba(255,255,255,0.1)' }}></div>
                     <div onClick={() => setActiveTopic(null)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <img src="/logo.webp" width="96" height="32" alt="Dev2Dev" style={{ height: '32px' }} />
+                        <img src="/logo.png" width="96" height="32" alt="Dev2Dev" style={{ height: '32px' }} />
                         <span style={{ fontWeight: 800, fontSize: '1.1rem', letterSpacing: '1px' }}>Dev2Dev</span>
                     </div>
                     <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.1)' }}></div>

@@ -71,7 +71,7 @@ const ResetPassword = () => {
             <div className="auth-side-form">
                 <div className="auth-form-card">
                     <header className="auth-header">
-                        <img src="/logo.webp" width="120" height="40" alt="Dev2Dev" className="auth-logo" />
+                        <img src="/logo.png" width="120" height="40" alt="Dev2Dev" className="auth-logo" />
                         <h2>Reset Vault</h2>
                         <p>Establish a specialized new access key</p>
                     </header>

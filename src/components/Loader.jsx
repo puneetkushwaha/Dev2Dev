@@ -17,7 +17,7 @@ const Loader = ({ text = "", inline = false }) => {
             <div className="elite-logo-platform">
                 <div className="elite-aura"></div>
                 <div className="elite-logo-wrapper">
-                    <img src="/logo.webp" width="100" height="100" alt="Dev2Dev" className="elite-logo" />
+                    <img src="/logo.png" width="100" height="100" alt="Dev2Dev" className="elite-logo" />
                     <div className="elite-shimmer"></div>
                 </div>
             </div>

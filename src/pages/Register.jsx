@@ -86,7 +86,7 @@ const Register = () => {
             <div className="auth-side-form" style={{ overflowY: 'auto' }}>
                 <div className="auth-form-card" style={{ margin: '2rem 0', maxWidth: '480px' }}>
                     <header className="auth-header">
-                        <img src="/logo.webp" width="120" height="40" alt="Dev2Dev" className="auth-logo" />
+                        <img src="/logo.png" width="120" height="40" alt="Dev2Dev" className="auth-logo" />
                         <h2>Identity Genesis</h2>
                         <p>Initialize your global developer profile</p>
                     </header>
