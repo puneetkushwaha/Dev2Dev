@@ -122,11 +122,6 @@ const About = () => {
                     </div>
                 </div>
             </section>
-
-
-            <footer className="about-footer">
-                <p>© 2026 Dev2Dev Engine. Precision-engineered for Pioneers.</p>
-            </footer>
         </div>
     );
 };

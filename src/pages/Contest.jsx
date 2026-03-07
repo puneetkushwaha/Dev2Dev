@@ -212,10 +212,6 @@ const Contest = () => {
                 )}
             </main>
 
-            <footer className="refined-footer">
-                <p>© 2026 Dev2Dev Engine. Precision-engineered for Pioneers.</p>
-            </footer>
-
             <style>{`
                 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
 

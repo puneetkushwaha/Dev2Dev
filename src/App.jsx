@@ -37,6 +37,7 @@ import Leaderboard from './pages/Leaderboard';
 import Contest from './pages/Contest';
 import { HelmetProvider } from 'react-helmet-async';
 import ScrollToTop from './components/ScrollToTop';
+import Footer from './components/Footer';
 
 
 
@@ -89,6 +90,7 @@ function App() {
           {/* Catch-all route to redirect back to landing */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        <Footer />
       </Router>
     </HelmetProvider>
   );
