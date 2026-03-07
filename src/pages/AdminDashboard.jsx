@@ -1426,9 +1426,13 @@ const AdminDashboard = () => {
     const handleVerifyEmail = async () => {
         try {
             const res = await axios.get(getApiUrl('/api/admin/verify-email-config'), authConfig());
-            alert(res.data.message);
+            if (res.data.success) {
+                alert(res.data.message);
+            } else {
+                alert(res.data.message + "\n\nDetails: " + (res.data.error || 'Unknown Error'));
+            }
         } catch (err) {
-            alert("Email config verification failed: " + (err.response?.data?.message || err.message));
+            alert("Email config verification request failed: " + (err.response?.data?.message || err.message));
         }
     };
 
