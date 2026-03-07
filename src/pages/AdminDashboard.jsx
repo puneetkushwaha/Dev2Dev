@@ -1379,14 +1379,32 @@ const AdminDashboard = () => {
     };
 
     const handleToggleRole = async (userId) => {
-        await axios.put(getApiUrl(`/api/admin/users/role/${userId}`), {}, authConfig());
-        fetchAllData();
+        try {
+            const res = await axios.put(getApiUrl(`/api/admin/users/role/${userId}`), {}, authConfig());
+            alert(res.data.message || "Role updated successfully");
+            fetchAllData();
+        } catch (err) {
+            alert("Role Update Failed: " + (err.response?.data?.message || err.message));
+        }
     };
 
     const handleTogglePremium = async (userId) => {
-        await axios.put(getApiUrl(`/api/admin/users/premium/${userId}`), {}, authConfig());
-        fetchAllData();
+        try {
+            const res = await axios.put(getApiUrl(`/api/admin/users/premium/${userId}`), {}, authConfig());
+            
+            let msg = res.data.message || "Premium status updated";
+            if (res.data.emailError) {
+                msg += `\n\n⚠️ Email Warning: ${res.data.emailError} (${res.data.emailCode || 'N/A'})`;
+            }
+            
+            alert(msg);
+            fetchAllData();
+        } catch (err) {
+            console.error("Premium Toggle Error", err);
+            alert("Premium Update Failed: " + (err.response?.data?.message || err.message));
+        }
     };
+ pocket
 
     const handleCreateUser = async () => {
         if (!newUser.name || !newUser.email || !newUser.password) {
