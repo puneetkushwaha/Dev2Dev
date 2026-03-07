@@ -16,7 +16,7 @@
 .cs-root {
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 80px);
+    height: calc(100vh - 110px); /* Aligned with dashboard offset */
     background: transparent;
     font-family: 'Inter', sans-serif;
     color: var(--text-primary);
@@ -215,4 +215,96 @@
 .qe-opt.on {
     border-color: #34d399;
     background: rgba(52, 211, 153, 0.05);
+}
+
+/* Problem List Items */
+.cs-prob-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-glass);
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 0.5rem;
+    text-align: left;
+}
+
+.cs-prob-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.cs-prob-item.on {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: var(--accent-indigo);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.1);
+}
+
+.cs-pi-num {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    width: 24px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.cs-pi-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    flex: 1;
+}
+
+.cs-pi-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.4;
+}
+
+.cs-pi-diff {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.cs-mini-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-glass);
+    color: var(--text-muted);
+    padding: 0.35rem;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.cs-mini-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.cs-no-sel {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    gap: 1rem;
 }
