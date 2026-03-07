@@ -5,7 +5,7 @@ import {
     Briefcase, Award, Loader2, ArrowRight, Edit3, Save, X, LogOut, CheckCircle,
     Trophy, ChevronDown, ChevronUp, Sparkles, AlertCircle, Mail, AtSign, MapPin,
     Building2, Hash, School, Globe, ShieldAlert,
-    Info, Code, FileText, Download, Github, Linkedin, Twitter, Youtube, Instagram, HelpCircle
+    Info, Code, FileText, Download, Github, Linkedin, Twitter, Youtube, Instagram, HelpCircle, Zap
 } from 'lucide-react';
 import GlobalLoader from '../components/Loader';
 import { jsPDF } from 'jspdf';
