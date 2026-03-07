@@ -1206,6 +1206,21 @@ const AdminDashboard = () => {
     const [newUser, setNewUser] = useState({ name: '', email: '', password: '', isPremium: false });
     const [creatingUser, setCreatingUser] = useState(false);
 
+    const handleNotifyPremium = async () => {
+        if (!window.confirm("Send 'Welcome Premium' email to all active premium users?")) return;
+        try {
+            const res = await fetch(getApiUrl('/api/admin/users/notify-premium'), {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            const data = await res.json();
+            alert(data.message);
+        } catch (e) {
+            console.error("Notify Error", e);
+            alert("Failed to send notifications.");
+        }
+    };
+
     const fetchAllData = async () => {
         setLoading(true);
         const safeGet = async (url, cfg) => {
@@ -1466,6 +1481,9 @@ const AdminDashboard = () => {
                         <Search size={15} />
                         <input type="text" placeholder="Search users..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
                     </div>
+                    <button className="btn-secondary" onClick={handleNotifyPremium} title="Email all active premium users">
+                        <Mail size={18} /> Notify All Premium
+                    </button>
                     <button className="btn-primary" onClick={() => setShowAddUserModal(true)}>
                         <Plus size={18} /> Add User
                     </button>
@@ -1492,6 +1510,23 @@ const AdminDashboard = () => {
                                     >
                                         <Zap size={16} fill={u.isPremium ? "currentColor" : "none"} />
                                     </button>
+                                    {u.isPremium && (
+                                        <button 
+                                            onClick={() => {
+                                                if(window.confirm(`Resend Welcome email to ${u.name}?`)) {
+                                                    fetch(getApiUrl(`/api/admin/users/resend-premium-email/${u._id}`), {
+                                                        method: 'POST',
+                                                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                                                    }).then(res => res.json()).then(data => alert(data.message));
+                                                }
+                                            }}
+                                            className="icon-only"
+                                            title="Resend Welcome Email"
+                                            style={{ color: '#818cf8', marginLeft: '0.3rem' }}
+                                        >
+                                            <Mail size={14} />
+                                        </button>
+                                    )}
                                 </td>
                                 <td className="table-actions">
                                     <button onClick={() => setSelectedUserDetails(u)} className="btn-sm"><Info size={12} /> View</button>

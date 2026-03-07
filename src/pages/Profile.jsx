@@ -262,7 +262,25 @@ const Profile = () => {
                             }}>
                                 <UserIcon size={64} color="#fff" />
                             </div>
-                            <h1 style={{ fontSize: '1.8rem', fontWeight: 900, color: '#fff', margin: '0 0 0.2rem 0' }}>{userData.name}</h1>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.8rem', marginBottom: '0.2rem' }}>
+                                <h1 style={{ fontSize: '1.8rem', fontWeight: 900, color: '#fff', margin: 0 }}>{userData.name}</h1>
+                                {userData.isPremium && (
+                                    <div style={{
+                                        background: 'linear-gradient(135deg, #f59e0b, #fbbf24)',
+                                        color: '#000',
+                                        padding: '2px 8px',
+                                        borderRadius: '6px',
+                                        fontSize: '0.7rem',
+                                        fontWeight: 900,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '4px',
+                                        boxShadow: '0 0 15px rgba(245, 158, 11, 0.4)'
+                                    }}>
+                                        <Zap size={10} fill="currentColor" /> PRO
+                                    </div>
+                                )}
+                            </div>
                             <p style={{ opacity: 0.4, fontSize: '0.95rem', margin: 0 }}>{userData.username || `@${userData.name.toLowerCase().replace(/\s/g, '')}`}</p>
                         </div>
 
