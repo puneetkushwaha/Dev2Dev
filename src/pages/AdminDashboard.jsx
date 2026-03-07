@@ -503,6 +503,29 @@ const ContestEditorModal = ({ contest, onSave, onClose, onAIUpload, structuring 
                             <input type="datetime-local" value={data.endTime ? new Date(data.endTime).toISOString().slice(0, 16) : ''} onChange={e => setData({ ...data, endTime: e.target.value })} />
                         </div>
                     </div>
+                    <div className="form-row">
+                        <div className="form-group">
+                            <label>Contest Type</label>
+                            <select value={data.contestType || 'special'} onChange={e => setData({ ...data, contestType: e.target.value })}>
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="special">Special / Company Specific</option>
+                            </select>
+                        </div>
+                        <div className="form-group" style={{ flex: 1.5 }}>
+                            <label>Company Tags (comma separated)</label>
+                            <input 
+                                value={data.tags ? data.tags.join(', ') : ''} 
+                                onChange={e => setData({ ...data, tags: e.target.value.split(',').map(t => t.trim()) })} 
+                                placeholder="e.g. Microsoft, Google"
+                            />
+                        </div>
+                    </div>
+                    <div className="form-group">
+                        <label>Image/Logo URL</label>
+                        <input value={data.image || ''} onChange={e => setData({ ...data, image: e.target.value })} placeholder="https://logo-url.com/google.png" />
+                    </div>
                     <div>
                         <h3 style={{ fontSize: '1rem', marginTop: 0, marginBottom: '1rem' }}>Questions</h3>
                         <div className="quiz-editor">
@@ -1720,6 +1743,12 @@ const AdminDashboard = () => {
                         </div>
                         <div style={{ fontSize: '0.7rem', opacity: 0.4, marginTop: '0.5rem' }}>
                             Starts: {new Date(c.startTime).toLocaleString()}
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.3rem', marginTop: '0.75rem' }}>
+                            <span className="badge" style={{ background: 'rgba(99,102,241,0.05)', color: '#818cf8', fontSize: '0.65rem' }}>{c.contestType || 'special'}</span>
+                            {c.tags?.map((tag, idx) => (
+                                <span key={idx} className="badge" style={{ background: 'rgba(52, 211, 153, 0.05)', color: '#34d399', fontSize: '0.65rem' }}>{tag}</span>
+                            ))}
                         </div>
                     </div>
                 ))}
