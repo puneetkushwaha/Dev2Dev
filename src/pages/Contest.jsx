@@ -35,7 +35,7 @@ const Contest = () => {
         fetchContests();
     }, []);
 
-    const activeContests = contests.filter(c => c.isActive && new Date(c.endTime) > new Date());
+    const activeContests = contests.filter(c => c.isActive && (!c.endTime || new Date(c.endTime) > new Date()));
     const pastContests = contests.filter(c => !c.isActive || new Date(c.endTime) <= new Date());
 
     const dailyContests = activeContests.filter(c => c.contestType === 'daily');
@@ -205,7 +205,7 @@ const Contest = () => {
                 .dot.live { background: #10b981; box-shadow: 0 0 15px #10b981; animation: pulse 2s infinite; }
                 @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
-                .categorized-contests { display: flex; flexDirection: column; gap: 4rem; }
+                .categorized-contests { display: flex; flex-direction: column; gap: 4rem; }
                 .contests-section { margin-bottom: 2rem; }
                 
                 .contest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 2rem; }
