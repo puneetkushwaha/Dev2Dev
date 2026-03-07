@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { Trophy, Clock, Users, Calendar, ArrowRight, Brain, Zap, Bell } from 'lucide-react';
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 
 const Contest = () => {
     const [contests, setContests] = useState([]);
@@ -125,7 +124,9 @@ const Contest = () => {
                     </section>
                 )}
             </main>
-            <Footer />
+            <footer style={{ padding: '2rem 1rem', textAlign: 'center', opacity: 0.3, fontSize: '0.8rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                <p>© 2026 Dev2Dev Engine. Precision-engineered for Pioneers.</p>
+            </footer>
 
             <style>{`
                 .contest-page-root {
