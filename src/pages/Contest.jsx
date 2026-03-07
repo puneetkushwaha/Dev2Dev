@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Trophy, Clock, Users, Calendar, ArrowRight, Zap } from 'lucide-react';
+import { Trophy, Clock, Users, Calendar, ArrowRight, Zap, Target, Star, Award } from 'lucide-react';
 
 const Contest = () => {
     const [contests, setContests] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState('global');
 
     const getApiUrl = (path) => {
         const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -15,9 +16,7 @@ const Contest = () => {
     const authConfig = () => {
         const token = localStorage.getItem('token');
         return {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+            headers: { Authorization: `Bearer ${token}` }
         };
     };
 
@@ -35,11 +34,8 @@ const Contest = () => {
         fetchContests();
     }, []);
 
-    const [activeTab, setActiveTab] = useState('global'); // 'global' or 'company'
-
     const activeContests = contests.filter(c => c.isActive && (!c.endTime || new Date(c.endTime) > new Date()));
     const pastContests = contests.filter(c => !c.isActive || new Date(c.endTime) <= new Date());
-
     const featuredContest = activeContests.find(c => c.contestType === 'daily') || activeContests[0];
     
     const dailyContests = activeContests.filter(c => c.contestType === 'daily');
@@ -47,21 +43,36 @@ const Contest = () => {
     const monthlyContests = activeContests.filter(c => c.contestType === 'monthly');
     const companyContests = activeContests.filter(c => c.tags && c.tags.length > 0);
 
-    const getCompanyColor = (tags) => {
-        if (!tags || tags.length === 0) return '#6366f1';
-        const tag = tags[0].toLowerCase();
-        if (tag.includes('microsoft')) return '#00a4ef';
-        if (tag.includes('google')) return '#ea4335';
-        if (tag.includes('amazon')) return '#ff9900';
-        if (tag.includes('meta') || tag.includes('facebook')) return '#0668E1';
-        return '#34d399';
+    const handleMouseMove = (e) => {
+        const card = e.currentTarget;
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
     };
 
-    const renderContestCard = (c, isCompact = false) => {
-        const accentColor = getCompanyColor(c.tags);
+    const getCompanyColor = (tags) => {
+        if (!tags || tags.length === 0) return { main: '#6366f1', rgb: '99, 102, 241' };
+        const tag = tags[0].toLowerCase();
+        if (tag.includes('microsoft')) return { main: '#00a4ef', rgb: '0, 164, 239' };
+        if (tag.includes('google')) return { main: '#ea4335', rgb: '234, 67, 53' };
+        if (tag.includes('amazon')) return { main: '#ff9900', rgb: '255, 153, 0' };
+        if (tag.includes('meta')) return { main: '#0668E1', rgb: '6, 104, 225' };
+        return { main: '#34d399', rgb: '52, 211, 153' };
+    };
+
+    const renderContestCard = (c) => {
+        const colors = getCompanyColor(c.tags);
         return (
-            <div key={c._id} className={`contest-card-premium ${isCompact ? 'compact' : ''}`} style={{ '--accent': accentColor }}>
+            <div 
+                key={c._id} 
+                className="contest-card-premium" 
+                style={{ '--accent': colors.main, '--accent-rgb': colors.rgb }}
+                onMouseMove={handleMouseMove}
+            >
                 <div className="card-inner">
+                    <div className="card-glow"></div>
                     {c.image && (
                         <div className="card-brand">
                             <img src={c.image} alt="" />
@@ -70,19 +81,19 @@ const Contest = () => {
                     <div className="card-content">
                         <div className="card-header-meta">
                             <span className="type-tag">{c.contestType?.toUpperCase() || 'OFFICIAL'}</span>
-                            <span className="duration-tag"><Clock size={12} /> {c.durationMinutes}m</span>
+                            <span className="duration-tag"><Clock size={14} /> {c.durationMinutes}M</span>
                         </div>
                         <h3>{c.title}</h3>
-                        {!isCompact && <p className="desc">{c.description || "Challenge your limits in this high-stakes arena."}</p>}
+                        <p className="desc">{c.description || "The ultimate test for elite developers. Compete now."}</p>
                         
                         <div className="card-footer-meta">
-                            <div className="meta-pill"><Calendar size={12} /> {new Date(c.startTime).toLocaleDateString()}</div>
-                            <div className="meta-pill"><Users size={12} /> {c.participants?.length || 0}</div>
+                            <div className="meta-pill"><Calendar size={14} /> {new Date(c.startTime).toLocaleDateString()}</div>
+                            <div className="meta-pill"><Users size={14} /> {c.participants?.length || 0}</div>
                         </div>
 
                         <Link to={`/exams?contestId=${c._id}`} className="action-button">
-                            <span>{isCompact ? 'Join' : 'Enter Arena'}</span>
-                            <ArrowRight size={16} />
+                            <span>ENTER ARENA</span>
+                            <ArrowRight size={18} />
                         </Link>
                     </div>
                 </div>
@@ -93,32 +104,41 @@ const Contest = () => {
     if (loading) return (
         <div style={{ background: '#020204', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
             <div className="loader-mesh"></div>
-            <p style={{ opacity: 0.5, fontWeight: 800, letterSpacing: '2px' }}>INITIALIZING ARENA...</p>
+            <p style={{ opacity: 0.5, fontWeight: 900, letterSpacing: '4px', textTransform: 'uppercase' }}>Synchronizing Arena...</p>
         </div>
     );
 
     return (
         <div className="contest-p-root">
             <div className="mesh-gradient"></div>
+            <div className="vignette"></div>
             
             <main className="contest-p-content">
                 {featuredContest && (
                     <section className="hero-section animate-slide-up">
-                        <div className="hero-badge"><Zap size={16} /> FEATURED CHALLENGE</div>
-                        <div className="hero-card elite-glass">
+                        <div className="hero-badge"><Zap size={16} /> LIVE CHALLENGE ACTIVE</div>
+                        <div className="hero-card elite-glass" onMouseMove={handleMouseMove}>
+                            <div className="card-glow"></div>
                             <div className="hero-info">
                                 <h1>{featuredContest.title}</h1>
-                                <p>{featuredContest.description || "The ultimate test for elite developers. Compete now."}</p>
+                                <p>{featuredContest.description || "Rise to the top of the global leaderboard. Solve complex algorithms in real-time."}</p>
                                 <div className="hero-meta">
-                                    <div className="h-m-item"><Trophy size={20} /> <span>Rank Up</span></div>
-                                    <div className="h-m-item"><Users size={20} /> <span>{featuredContest.participants?.length || 0} Competing</span></div>
-                                    <div className="h-m-item"><Clock size={20} /> <span>{featuredContest.durationMinutes} Mins</span></div>
+                                    <div className="h-m-item"><Trophy size={24} /> <span>Rank Up</span></div>
+                                    <div className="h-m-item"><Users size={24} /> <span>{featuredContest.participants?.length || 0} DEVS</span></div>
+                                    <div className="h-m-item"><Target size={24} /> <span>ELITE XP</span></div>
                                 </div>
-                                <Link to={`/exams?contestId=${featuredContest._id}`} className="hero-button">
-                                    Claim Your Spot <ArrowRight size={20} />
-                                </Link>
+                                <div className="hero-actions">
+                                    <Link to={`/exams?contestId=${featuredContest._id}`} className="hero-button">
+                                        JOIN NOW <ArrowRight size={22} />
+                                    </Link>
+                                    <div className="live-indicator">
+                                        <div className="pulse-dot"></div>
+                                        <span>SYSTEMS ONLINE</span>
+                                    </div>
+                                </div>
                             </div>
                             <div className="hero-visual">
+                                <div className="trophy-halo"></div>
                                 <Trophy size={180} className="floating-trophy" />
                             </div>
                         </div>
@@ -128,10 +148,10 @@ const Contest = () => {
                 <div className="contest-nav-container animate-fade-in delay-1">
                     <nav className="p-tabs">
                         <button className={activeTab === 'global' ? 'active' : ''} onClick={() => setActiveTab('global')}>
-                            Global Contests
+                            Global Arena
                         </button>
                         <button className={activeTab === 'company' ? 'active' : ''} onClick={() => setActiveTab('company')}>
-                            Company Prep Tracks
+                            Company Tracks
                         </button>
                     </nav>
                     
@@ -145,27 +165,28 @@ const Contest = () => {
                     {activeTab === 'global' ? (
                         <div className="global-tracks">
                             <div className="track-row">
-                                <div className="track-label"><Zap size={18} color="#fbbf24" /> Daily Challenges</div>
+                                <div className="track-label"><Zap size={20} color="#fbbf24" /> Daily Sprints</div>
                                 <div className="p-grid">
-                                    {dailyContests.length > 0 ? dailyContests.map(c => renderContestCard(c)) : <div className="empty-mini">No daily challenges scheduled.</div>}
+                                    {dailyContests.length > 0 ? dailyContests.map(c => renderContestCard(c)) : <div className="empty-mini">No daily sprints available.</div>}
                                 </div>
                             </div>
                             <div className="track-row">
-                                <div className="track-label"><Calendar size={18} color="#818cf8" /> Weekly & Monthly</div>
+                                <div className="track-label"><Award size={20} color="#818cf8" /> Major Events</div>
                                 <div className="p-grid">
                                     {[...weeklyContests, ...monthlyContests].length > 0 ? 
                                         [...weeklyContests, ...monthlyContests].map(c => renderContestCard(c)) : 
-                                        <div className="empty-mini">Check back later for major events.</div>
+                                        <div className="empty-mini">Scanning for upcoming majors...</div>
                                     }
                                 </div>
                             </div>
                         </div>
                     ) : (
                         <div className="company-tracks">
-                            <div className="p-grid wide">
+                            <div className="track-label"><Star size={20} color="#34d399" /> Elite Prep Tracks</div>
+                            <div className="p-grid">
                                 {companyContests.length > 0 ? 
                                     companyContests.map(c => renderContestCard(c)) : 
-                                    <div className="empty-mini">No company-specific tracks available yet.</div>
+                                    <div className="empty-mini">No active company tracks found.</div>
                                 }
                             </div>
                         </div>
@@ -174,7 +195,7 @@ const Contest = () => {
 
                 {pastContests.length > 0 && (
                     <section className="past-sec animate-fade-in delay-3">
-                        <div className="sec-h"><h2>Legacy Hall</h2> <p>Past results and leaderboards</p></div>
+                        <div className="sec-h"><h2>Legacy Hall</h2> <p>Archive of historic competitions</p></div>
                         <div className="past-grid">
                             {pastContests.slice(0, 8).map(c => (
                                 <div key={c._id} className="past-item-glass">
@@ -182,7 +203,7 @@ const Contest = () => {
                                         <h4>{c.title}</h4>
                                         <span>{new Date(c.startTime).toLocaleDateString()}</span>
                                     </div>
-                                    <Link to={`/leaderboard?contestId=${c._id}`} className="p-link">View Stats <ArrowRight size={14} /></Link>
+                                    <Link to={`/leaderboard?contestId=${c._id}`} className="p-link">VIEW RESULTS <ArrowRight size={16} /></Link>
                                 </div>
                             ))}
                         </div>
@@ -190,191 +211,225 @@ const Contest = () => {
                 )}
             </main>
 
-            <footer style={{ padding: '4rem 1rem', textAlign: 'center', opacity: 0.2, fontSize: '0.8rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                <p>© 2026 Dev2Dev Engine. Precision-engineered for Pioneers.</p>
+            <footer style={{ padding: '6rem 1.5rem 4rem', textAlign: 'center', opacity: 0.2, fontSize: '0.9rem', borderTop: '1px solid rgba(255,255,255,0.05)', letterSpacing: '2px' }}>
+                <p>DEV2DEV QUANTUM ENGINE V2.0 // 2026</p>
             </footer>
 
             <style>{`
+                @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;900&family=Space+Mono:wght@700&display=swap');
+
                 .contest-p-root {
                     background: #020204;
                     min-height: 100vh;
                     color: #fff;
                     position: relative;
                     overflow-x: hidden;
-                    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+                    font-family: 'Outfit', sans-serif;
+                }
+                .vignette {
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.8) 100%);
+                    pointer-events: none; z-index: 10;
                 }
                 .mesh-gradient {
                     position: fixed;
-                    top: 0; left: 0; width: 100%; height: 100%;
+                    top: -50%; left: -50%; width: 200%; height: 200%;
                     background: 
-                        radial-gradient(circle at 10% 10%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
-                        radial-gradient(circle at 90% 90%, rgba(168, 85, 247, 0.08) 0%, transparent 40%);
+                        radial-gradient(circle at 30% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                        radial-gradient(circle at 70% 70%, rgba(168, 85, 247, 0.12) 0%, transparent 40%),
+                        radial-gradient(circle at 50% 50%, rgba(52, 211, 153, 0.05) 0%, transparent 50%);
                     pointer-events: none;
+                    animation: meshMove 20s ease-in-out infinite alternate;
+                    filter: blur(80px);
                 }
+                @keyframes meshMove {
+                    0% { transform: rotate(0deg) scale(1); }
+                    100% { transform: rotate(15deg) scale(1.1); }
+                }
+                
                 .contest-p-content {
                     max-width: 1200px;
                     margin: 0 auto;
-                    padding: 60px 1.5rem 80px;
+                    padding: 100px 1.5rem 100px;
                     position: relative;
                     z-index: 1;
                 }
 
-                .hero-section { margin-bottom: 4rem; }
+                .hero-section { margin-bottom: 6rem; }
                 .hero-badge {
                     display: inline-flex;
                     align-items: center;
-                    gap: 0.4rem;
+                    gap: 0.6rem;
                     background: rgba(251, 191, 36, 0.1);
+                    border: 1px solid rgba(251, 191, 36, 0.3);
                     color: #fbbf24;
-                    padding: 0.5rem 1rem;
+                    padding: 0.6rem 1.4rem;
                     border-radius: 99px;
-                    font-size: 0.7rem;
-                    font-weight: 800;
-                    letter-spacing: 1px;
-                    margin-bottom: 1.5rem;
+                    font-size: 0.75rem;
+                    font-weight: 950;
+                    letter-spacing: 2px;
+                    margin-bottom: 2rem;
                 }
                 .hero-card {
-                    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
-                    border: 1px solid rgba(255,255,255,0.08);
-                    border-radius: 32px;
-                    padding: 3rem;
+                    background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.01) 100%);
+                    border: 1px solid rgba(255,255,255,0.1);
+                    border-radius: 40px;
+                    padding: 4.5rem;
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-                    backdrop-filter: blur(20px);
-                    box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+                    backdrop-filter: blur(30px);
+                    box-shadow: 0 40px 100px rgba(0,0,0,0.7);
+                    position: relative;
+                    overflow: hidden;
                 }
-                .hero-info { max-width: 600px; }
-                .hero-info h1 { font-size: 3rem; font-weight: 900; margin-bottom: 1rem; line-height: 1; letter-spacing: -2px; }
-                .hero-info p { font-size: 1.1rem; opacity: 0.5; margin-bottom: 2.5rem; line-height: 1.5; }
-                .hero-meta { display: flex; gap: 3rem; margin-bottom: 3rem; }
-                .h-m-item { display: flex; flex-direction: column; gap: 0.3rem; }
-                .h-m-item span { font-size: 0.65rem; text-transform: uppercase; opacity: 0.4; font-weight: 800; letter-spacing: 1px; }
-                .h-m-item svg { color: #818cf8; width: 18px; height: 18px; }
+                .hero-info { max-width: 650px; z-index: 2; }
+                .hero-info h1 { 
+                    font-size: 4.5rem; font-weight: 950; margin-bottom: 1.5rem; line-height: 0.9; letter-spacing: -3px; 
+                    background: linear-gradient(to right, #fff, #818cf8, #fff);
+                    background-size: 200% auto;
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    animation: shine 5s linear infinite;
+                }
+                @keyframes shine { to { background-position: 200% center; } }
+                .hero-info p { font-size: 1.25rem; opacity: 0.6; margin-bottom: 3.5rem; line-height: 1.6; }
+                .hero-meta { display: flex; gap: 4rem; margin-bottom: 4rem; }
+                .h-m-item { display: flex; flex-direction: column; gap: 0.5rem; }
+                .h-m-item span { font-size: 0.7rem; text-transform: uppercase; opacity: 0.4; font-weight: 900; letter-spacing: 2px; }
+                .h-m-item svg { color: #818cf8; }
+                
+                .hero-actions { display: flex; align-items: center; gap: 3rem; }
                 .hero-button {
                     display: inline-flex;
                     align-items: center;
-                    gap: 1rem;
+                    gap: 1.5rem;
                     background: #fff;
                     color: #000;
-                    padding: 1.2rem 2.5rem;
-                    border-radius: 16px;
+                    padding: 1.5rem 3.5rem;
+                    border-radius: 20px;
                     font-weight: 900;
                     text-decoration: none;
-                    transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-                    font-size: 1rem;
+                    transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+                    font-size: 1.1rem;
+                    box-shadow: 0 20px 40px rgba(255,255,255,0.15);
                 }
-                .hero-button:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(255,255,255,0.1); }
+                .hero-button:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 30px 60px rgba(255,255,255,0.25); }
                 
-                .floating-trophy { width: 120px; height: 120px; filter: drop-shadow(0 0 40px rgba(99,102,241,0.4)); animation: float 6s ease-in-out infinite; color: #fbbf24; }
-                @keyframes float { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-15px) rotate(3deg); } }
+                .live-indicator { display: flex; align-items: center; gap: 0.75rem; font-size: 0.7rem; font-weight: 900; color: #34d399; letter-spacing: 1px; }
+                .pulse-dot { width: 8px; height: 8px; background: #34d399; border-radius: 50%; box-shadow: 0 0 10px #34d399; animation: pulse 2s infinite; }
+                @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
+
+                .trophy-halo { position: absolute; width: 300px; height: 300px; background: radial-gradient(circle, rgba(99,102,241,0.2), transparent 70%); top: 50%; left: 50%; transform: translate(-50%, -50%); animation: haloScale 4s infinite alternate; }
+                @keyframes haloScale { from { transform: translate(-50%, -50%) scale(0.8); } to { transform: translate(-50%, -50%) scale(1.2); } }
+                .floating-trophy { filter: drop-shadow(0 0 50px rgba(251,191,36,0.6)); animation: float 6s ease-in-out infinite; color: #fbbf24; position: relative; z-index: 2; }
+                @keyframes float { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-30px) rotate(5deg); } }
 
                 .contest-nav-container {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: flex-end;
-                    margin-bottom: 3.5rem;
-                    border-bottom: 1px solid rgba(255,255,255,0.08);
-                    padding-bottom: 2rem;
+                    display: flex; justify-content: space-between; align-items: flex-end;
+                    margin-bottom: 4rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 2.5rem;
                 }
-                .p-tabs { display: flex; gap: 3rem; }
+                .p-tabs { display: flex; gap: 4rem; }
                 .p-tabs button {
                     background: none; border: none; color: #fff;
-                    font-size: 1.3rem; font-weight: 800; opacity: 0.3;
-                    cursor: pointer; transition: 0.3s;
-                    position: relative; padding: 0;
+                    font-size: 1.4rem; font-weight: 950; opacity: 0.3;
+                    cursor: pointer; transition: 0.4s; position: relative; padding: 0;
                 }
-                .p-tabs button.active { opacity: 1; }
+                .p-tabs button.active { opacity: 1; transform: scale(1.1); }
                 .p-tabs button.active::after {
-                    content: ''; position: absolute; bottom: -33px; left: 0;
-                    width: 100%; height: 4px; background: #6366f1;
-                    box-shadow: 0 0 20px rgba(99,102,241,0.6);
-                    border-radius: 4px;
+                    content: ''; position: absolute; bottom: -2.6rem; left: 0;
+                    width: 100%; height: 5px; background: #6366f1;
+                    box-shadow: 0 5px 20px rgba(99,102,241,0.8); border-radius: 5px;
                 }
-                .stats-strip { display: flex; gap: 2rem; opacity: 0.3; font-weight: 800; letter-spacing: 1px; font-size: 0.85rem; }
-                .s-bit strong { color: #fff; font-size: 1.1rem; margin-right: 0.4rem; }
+                .stats-strip { display: flex; gap: 3rem; opacity: 0.3; font-weight: 900; letter-spacing: 2px; font-size: 0.85rem; font-family: 'Space Mono', monospace; }
+                .s-bit strong { color: #fff; font-size: 1.2rem; margin-right: 0.4rem; }
 
-                .p-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; }
-                .track-row { margin-bottom: 6rem; }
-                .track-label { font-size: 1.4rem; font-weight: 900; margin-bottom: 2.5rem; display: flex; align-items: center; gap: 0.8rem; color: #fff; letter-spacing: -0.5px; }
+                .p-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 2.5rem; }
+                .track-row { margin-bottom: 8rem; }
+                .track-label { font-size: 1.6rem; font-weight: 950; margin-bottom: 3.5rem; display: flex; align-items: center; gap: 1rem; color: #fff; letter-spacing: -1px; text-transform: uppercase; }
 
-                .contest-card-premium { --accent: #6366f1; }
+                .contest-card-premium { --accent: #6366f1; --accent-rgb: 99, 102, 241; perspective: 1000px; }
                 .card-inner {
-                    background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
-                    border: 1px solid rgba(255,255,255,0.08);
-                    border-radius: 28px;
-                    padding: 2rem;
-                    height: 100%;
-                    display: flex;
-                    flex-direction: column;
-                    transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-                    backdrop-filter: blur(15px);
+                    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+                    border: 1px solid rgba(255,255,255,0.1); border-radius: 36px;
+                    padding: 2.5rem; height: 100%; display: flex; flex-direction: column;
+                    transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+                    backdrop-filter: blur(20px); position: relative; overflow: hidden;
                 }
+                .card-glow {
+                    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                    background: radial-gradient(400px circle at var(--mouse-x, 0) var(--mouse-y, 0), rgba(var(--accent-rgb), 0.15), transparent 40%);
+                    pointer-events: none; opacity: 0; transition: opacity 0.5s;
+                }
+                .contest-card-premium:hover .card-glow { opacity: 1; }
                 .contest-card-premium:hover .card-inner {
-                    background: rgba(255,255,255,0.06);
+                    transform: translateY(-15px) rotateX(4deg) rotateY(2deg);
                     border-color: var(--accent);
-                    transform: translateY(-10px);
-                    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+                    box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 30px rgba(var(--accent-rgb), 0.2);
+                    background: rgba(255,255,255,0.07);
                 }
 
-                .card-brand { height: 32px; margin-bottom: 1.5rem; }
-                .card-brand img { max-height: 100%; opacity: 0.4; filter: brightness(0) invert(1); transition: 0.4s; }
+                .card-brand { height: 40px; margin-bottom: 2rem; }
+                .card-brand img { max-height: 100%; opacity: 0.4; filter: contrast(0) brightness(2); transition: 0.5s; }
                 .contest-card-premium:hover .card-brand img { opacity: 1; filter: none; }
 
-                .card-header-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
-                .type-tag { font-size: 0.65rem; font-weight: 900; color: var(--accent); background: rgba(255,255,255,0.06); padding: 0.4rem 0.8rem; border-radius: 8px; letter-spacing: 1px; }
-                .duration-tag { font-size: 0.75rem; opacity: 0.3; display: flex; align-items: center; gap: 0.4rem; font-weight: 800; }
+                .card-header-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+                .type-tag { font-size: 0.7rem; font-weight: 950; color: var(--accent); background: rgba(var(--accent-rgb), 0.1); padding: 0.5rem 1rem; border-radius: 10px; border: 1px solid rgba(var(--accent-rgb), 0.2); letter-spacing: 1px; }
+                .duration-tag { font-size: 0.8rem; opacity: 0.3; display: flex; align-items: center; gap: 0.5rem; font-weight: 900; }
                 
-                .contest-card-premium h3 { font-size: 1.35rem; font-weight: 900; margin-bottom: 0.75rem; line-height: 1.2; letter-spacing: -0.5px; }
-                .desc { font-size: 0.9rem; opacity: 0.5; line-height: 1.5; margin-bottom: 2rem; flex: 1; font-weight: 500; }
+                .contest-card-premium h3 { font-size: 1.6rem; font-weight: 950; margin-bottom: 1.25rem; line-height: 1.1; letter-spacing: -0.5px; }
+                .desc { font-size: 1rem; opacity: 0.5; line-height: 1.6; margin-bottom: 3rem; flex: 1; font-weight: 500; }
 
-                .card-footer-meta { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.06); }
-                .meta-pill { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; opacity: 0.3; font-weight: 800; }
+                .card-footer-meta { display: flex; gap: 2.5rem; margin-bottom: 2.5rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.08); }
+                .meta-pill { display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem; opacity: 0.4; font-weight: 900; }
                 
                 .action-button {
-                    width: 100%; background: #6366f1; color: #fff;
-                    padding: 1rem; border-radius: 14px; text-decoration: none;
+                    width: 100%; background: var(--accent); color: #fff;
+                    padding: 1.4rem; border-radius: 20px; text-decoration: none;
                     display: flex; align-items: center; justify-content: center;
-                    gap: 0.75rem; font-weight: 900; transition: 0.3s; font-size: 0.95rem;
+                    gap: 1rem; font-weight: 950; transition: 0.4s; font-size: 1.05rem;
+                    box-shadow: 0 10px 20px rgba(var(--accent-rgb), 0.3);
                 }
-                .contest-card-premium:hover .action-button { background: #fff; color: #000; }
+                .contest-card-premium:hover .action-button { background: #fff; color: #000; box-shadow: 0 20px 40px rgba(255,255,255,0.3); transform: scale(1.02); }
 
-                .past-sec { margin-top: 8rem; }
-                .sec-h { margin-bottom: 3rem; }
-                .sec-h h2 { font-size: 1.8rem; font-weight: 950; letter-spacing: -1px; margin-bottom: 0.75rem; }
-                .sec-h p { font-size: 1rem; opacity: 0.4; }
-                .past-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+                .past-sec { margin-top: 12rem; }
+                .sec-h { margin-bottom: 5rem; }
+                .sec-h h2 { font-size: 2.6rem; font-weight: 950; letter-spacing: -2px; margin-bottom: 1rem; }
+                .sec-h p { font-size: 1.2rem; opacity: 0.4; }
+                .past-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2.5rem; }
                 .past-item-glass {
-                    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
-                    padding: 2rem; border-radius: 24px; transition: 0.3s;
+                    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08);
+                    padding: 3rem; border-radius: 36px; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
                 }
-                .past-item-glass:hover { background: rgba(255,255,255,0.04); transform: translateY(-5px); }
-                .p-i-top h4 { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.5rem; }
-                .p-i-top span { font-size: 0.75rem; opacity: 0.25; display: block; margin-bottom: 1.5rem; font-weight: 800; }
-                .p-link { font-size: 0.85rem; font-weight: 900; color: #818cf8; text-decoration: none; display: flex; align-items: center; gap: 0.75rem; }
+                .past-item-glass:hover { background: rgba(255,255,255,0.06); transform: translateY(-8px); border-color: #818cf8; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+                .p-i-top h4 { font-size: 1.3rem; font-weight: 900; margin-bottom: 0.8rem; letter-spacing: -0.5px; }
+                .p-i-top span { font-size: 0.9rem; opacity: 0.3; display: block; margin-bottom: 2.5rem; font-weight: 900; }
+                .p-link { font-size: 0.95rem; font-weight: 950; color: #818cf8; text-decoration: none; display: flex; align-items: center; gap: 0.75rem; letter-spacing: 1px; }
 
-                .empty-mini { padding: 4rem; background: rgba(255,255,255,0.01); border-radius: 28px; border: 1px dashed rgba(255,255,255,0.1); opacity: 0.3; font-weight: 800; font-size: 1rem; text-align: center; }
+                .empty-mini { padding: 6rem; background: rgba(255,255,255,0.02); border-radius: 40px; border: 1px dashed rgba(255,255,255,0.15); opacity: 0.3; font-weight: 950; font-size: 1.25rem; text-align: center; letter-spacing: 2px; text-transform: uppercase; }
 
-                .animate-slide-up { animation: slideUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-                .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; opacity: 0; }
-                .delay-1 { animation-delay: 0.2s; }
-                .delay-2 { animation-delay: 0.4s; }
-                .delay-3 { animation-delay: 0.6s; }
+                .animate-slide-up { animation: slideUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+                .animate-fade-in { animation: fadeIn 1s ease-out forwards; opacity: 0; }
+                .delay-1 { animation-delay: 0.3s; }
+                .delay-2 { animation-delay: 0.6s; }
+                .delay-3 { animation-delay: 0.9s; }
 
-                @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+                @keyframes slideUp { from { opacity: 0; transform: translateY(80px); } to { opacity: 1; transform: translateY(0); } }
                 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
                 @media (max-width: 1200px) {
+                    .hero-info h1 { font-size: 3.5rem; }
                     .p-grid { grid-template-columns: 1fr 1fr; }
                     .past-grid { grid-template-columns: 1fr 1fr; }
                 }
                 @media (max-width: 768px) {
-                    .hero-card { padding: 2rem; flex-direction: column; text-align: center; border-radius: 24px; }
+                    .hero-card { padding: 3.5rem 2rem; flex-direction: column; text-align: center; border-radius: 36px; }
                     .hero-visual { display: none; }
-                    .hero-info h1 { font-size: 2.2rem; }
-                    .hero-meta { justify-content: center; gap: 2rem; }
-                    .p-tabs { gap: 2rem; width: 100%; overflow-x: auto; padding-bottom: 1.5rem; }
-                    .p-tabs button { font-size: 1.1rem; white-space: nowrap; }
+                    .hero-info h1 { font-size: 2.8rem; }
+                    .hero-meta { justify-content: center; gap: 2.5rem; flex-wrap: wrap; }
+                    .hero-actions { flex-direction: column; gap: 2rem; }
+                    .p-tabs { gap: 2.5rem; width: 100%; overflow-x: auto; padding-bottom: 2rem; }
+                    .p-tabs button { font-size: 1.2rem; white-space: nowrap; }
                     .stats-strip { display: none; }
                     .past-grid { grid-template-columns: 1fr; }
                 }
