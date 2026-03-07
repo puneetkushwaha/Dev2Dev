@@ -163,14 +163,12 @@ const Navbar = () => {
                                     <Trophy size={16} />
                                     Leaderboard
                                 </Link>
-                                <div className="dropdown-divider"></div>
-                                <button onClick={handleLogout} className="dropdown-item text-danger">
-                                    <LogOut size={16} />
-                                    Logout
-                                </button>
                             </div>
                         )}
                     </div>
+                    <button onClick={handleLogout} className="nav-logout-btn hide-mobile" title="Logout" style={{ marginLeft: '1rem' }}>
+                        <LogOut size={20} color="#ef4444" />
+                    </button>
                 </div>
             </nav>
 
