@@ -1214,7 +1214,15 @@ const AdminDashboard = () => {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
             const data = await res.json();
-            alert(data.message);
+            
+            let message = data.message;
+            if (data.errors && data.errors.length > 0) {
+                 message += "\n\nFailed Deliveries:\n";
+                 data.errors.forEach(err => {
+                     message += `- ${err.user} (${err.email}): ${err.error}\n`;
+                 });
+            }
+            alert(message);
         } catch (e) {
             console.error("Notify Error", e);
             alert("Failed to send notifications.");
