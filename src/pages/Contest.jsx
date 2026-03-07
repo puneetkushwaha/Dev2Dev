@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Trophy, Clock, Users, Calendar, ArrowRight, Brain, Zap, Bell } from 'lucide-react';
+import { Trophy, Clock, Users, Calendar, ArrowRight, Zap } from 'lucide-react';
 
 const Contest = () => {
     const [contests, setContests] = useState([]);
@@ -35,283 +35,358 @@ const Contest = () => {
         fetchContests();
     }, []);
 
+    const [activeTab, setActiveTab] = useState('global'); // 'global' or 'company'
+
     const activeContests = contests.filter(c => c.isActive && (!c.endTime || new Date(c.endTime) > new Date()));
     const pastContests = contests.filter(c => !c.isActive || new Date(c.endTime) <= new Date());
 
+    const featuredContest = activeContests.find(c => c.contestType === 'daily') || activeContests[0];
+    
     const dailyContests = activeContests.filter(c => c.contestType === 'daily');
     const weeklyContests = activeContests.filter(c => c.contestType === 'weekly');
     const monthlyContests = activeContests.filter(c => c.contestType === 'monthly');
     const companyContests = activeContests.filter(c => c.tags && c.tags.length > 0);
-    const otherContests = activeContests.filter(c => !c.contestType || (c.contestType === 'special' && (!c.tags || c.tags.length === 0)));
 
-    const renderContestCard = (c, isCompact = false) => (
-        <div key={c._id} className={`contest-card ${isCompact ? 'glass-mini' : 'elite-glass'} ${c.tags?.length > 0 ? 'company-card' : ''}`}>
-            {c.image && <div className="card-image"><img src={c.image} alt={c.title} /></div>}
-            <div className="card-top">
-                <div className="type-pill">{c.contestType ? c.contestType.toUpperCase() : 'OFFICIAL'}</div>
-                <div className="timer-pill"><Clock size={14} /> {c.durationMinutes} mins</div>
-            </div>
-            <h3>{c.title}</h3>
-            {!isCompact && <p>{c.description || "Test your skills in this coding challenge."}</p>}
-            
-            {c.tags?.length > 0 && (
-                <div className="company-tags">
-                    {c.tags.map((tag, idx) => (
-                        <span key={idx} className="company-tag">{tag}</span>
-                    ))}
-                </div>
-            )}
+    const getCompanyColor = (tags) => {
+        if (!tags || tags.length === 0) return '#6366f1';
+        const tag = tags[0].toLowerCase();
+        if (tag.includes('microsoft')) return '#00a4ef';
+        if (tag.includes('google')) return '#ea4335';
+        if (tag.includes('amazon')) return '#ff9900';
+        if (tag.includes('meta') || tag.includes('facebook')) return '#0668E1';
+        return '#34d399';
+    };
 
-            <div className="card-meta">
-                <div className="meta-item"><Calendar size={14} /> {new Date(c.startTime).toLocaleDateString()}</div>
-                <div className="meta-item"><Users size={14} /> {c.participants?.length || 0} Joined</div>
-            </div>
-            <Link to={`/exams?contestId=${c._id}`} className="join-btn">
-                {isCompact ? 'Join' : 'Enter Arena'} <ArrowRight size={16} />
-            </Link>
-        </div>
-    );
-
-    const renderSection = (title, icon, data, color) => {
-        if (data.length === 0) return null;
+    const renderContestCard = (c, isCompact = false) => {
+        const accentColor = getCompanyColor(c.tags);
         return (
-            <section className="contests-section animate-fade-in">
-                <div className="section-title">
-                    <div className="dot live" style={{ background: color, boxShadow: `0 0 15px ${color}` }}></div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        {icon}
-                        <h2>{title}</h2>
+            <div key={c._id} className={`contest-card-premium ${isCompact ? 'compact' : ''}`} style={{ '--accent': accentColor }}>
+                <div className="card-inner">
+                    {c.image && (
+                        <div className="card-brand">
+                            <img src={c.image} alt="" />
+                        </div>
+                    )}
+                    <div className="card-content">
+                        <div className="card-header-meta">
+                            <span className="type-tag">{c.contestType?.toUpperCase() || 'OFFICIAL'}</span>
+                            <span className="duration-tag"><Clock size={12} /> {c.durationMinutes}m</span>
+                        </div>
+                        <h3>{c.title}</h3>
+                        {!isCompact && <p className="desc">{c.description || "Challenge your limits in this high-stakes arena."}</p>}
+                        
+                        <div className="card-footer-meta">
+                            <div className="meta-pill"><Calendar size={12} /> {new Date(c.startTime).toLocaleDateString()}</div>
+                            <div className="meta-pill"><Users size={12} /> {c.participants?.length || 0}</div>
+                        </div>
+
+                        <Link to={`/exams?contestId=${c._id}`} className="action-button">
+                            <span>{isCompact ? 'Join' : 'Enter Arena'}</span>
+                            <ArrowRight size={16} />
+                        </Link>
                     </div>
                 </div>
-                <div className="contest-grid">
-                    {data.map(c => renderContestCard(c))}
-                </div>
-            </section>
+            </div>
         );
     };
 
+    if (loading) return (
+        <div style={{ background: '#020204', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+            <div className="loader-mesh"></div>
+            <p style={{ opacity: 0.5, fontWeight: 800, letterSpacing: '2px' }}>INITIALIZING ARENA...</p>
+        </div>
+    );
+
     return (
-        <div className="contest-page-root">
-            <main className="contest-main">
-                <header className="contest-header">
-                    <div className="header-content animate-fade-in">
-                        <div className="trophy-badge"><Trophy size={40} /></div>
-                        <h1>Elevate Coding Contests</h1>
-                        <p>Compete with the best developers, solve challenging problems, and climb the leaderboard.</p>
-                    </div>
-                    <div className="header-stats animate-fade-in delay-1">
-                        <div className="h-stat">
-                            <strong>{activeContests.length}</strong>
-                            <span>Live Now</span>
+        <div className="contest-p-root">
+            <div className="mesh-gradient"></div>
+            
+            <main className="contest-p-content">
+                {featuredContest && (
+                    <section className="hero-section animate-slide-up">
+                        <div className="hero-badge"><Zap size={16} /> FEATURED CHALLENGE</div>
+                        <div className="hero-card elite-glass">
+                            <div className="hero-info">
+                                <h1>{featuredContest.title}</h1>
+                                <p>{featuredContest.description || "The ultimate test for elite developers. Compete now."}</p>
+                                <div className="hero-meta">
+                                    <div className="h-m-item"><Trophy size={20} /> <span>Rank Up</span></div>
+                                    <div className="h-m-item"><Users size={20} /> <span>{featuredContest.participants?.length || 0} Competing</span></div>
+                                    <div className="h-m-item"><Clock size={20} /> <span>{featuredContest.durationMinutes} Mins</span></div>
+                                </div>
+                                <Link to={`/exams?contestId=${featuredContest._id}`} className="hero-button">
+                                    Claim Your Spot <ArrowRight size={20} />
+                                </Link>
+                            </div>
+                            <div className="hero-visual">
+                                <Trophy size={180} className="floating-trophy" />
+                            </div>
                         </div>
-                        <div className="h-stat">
-                            <strong>{contests.length}</strong>
-                            <span>Total Hosted</span>
-                        </div>
-                        <div className="h-stat">
-                            <strong>{contests.reduce((acc, c) => acc + (c.participants?.length || 0), 0)}</strong>
-                            <span>Participants</span>
-                        </div>
-                    </div>
-                </header>
-
-                <div className="categorized-contests">
-                    {renderSection("Daily Challenges", <Zap size={20} color="#fbbf24" />, dailyContests, "#fbbf24")}
-                    {renderSection("Weekly Marathons", <Clock size={20} color="#818cf8" />, weeklyContests, "#818cf8")}
-                    {renderSection("Monthly Grand", <Trophy size={20} color="#f472b6" />, monthlyContests, "#f472b6")}
-                    {renderSection("Company Specific Prep", <Brain size={20} color="#34d399" />, companyContests, "#34d399")}
-                    {renderSection("Other Contests", <Trophy size={20} color="#6366f1" />, otherContests, "#6366f1")}
-                </div>
-
-                {!loading && activeContests.length === 0 && dailyContests.length === 0 && (
-                    <div className="empty-state">
-                        <Bell size={48} opacity={0.2} />
-                        <h3>No Active Contests</h3>
-                        <p>Check back soon or follow our notifications for upcoming events.</p>
-                    </div>
+                    </section>
                 )}
 
-                {pastContests.length > 0 && (
-                    <section className="contests-section past-section animate-fade-in delay-3">
-                        <div className="section-title">
-                            <div className="dot"></div>
-                            <h2>Past Challenges</h2>
+                <div className="contest-nav-container animate-fade-in delay-1">
+                    <nav className="p-tabs">
+                        <button className={activeTab === 'global' ? 'active' : ''} onClick={() => setActiveTab('global')}>
+                            Global Contests
+                        </button>
+                        <button className={activeTab === 'company' ? 'active' : ''} onClick={() => setActiveTab('company')}>
+                            Company Prep Tracks
+                        </button>
+                    </nav>
+                    
+                    <div className="stats-strip">
+                        <div className="s-bit"><strong>{activeContests.length}</strong> LIVE</div>
+                        <div className="s-bit"><strong>{contests.length}</strong> TOTAL</div>
+                    </div>
+                </div>
+
+                <div className="tab-content animate-fade-in delay-2">
+                    {activeTab === 'global' ? (
+                        <div className="global-tracks">
+                            <div className="track-row">
+                                <div className="track-label"><Zap size={18} color="#fbbf24" /> Daily Challenges</div>
+                                <div className="p-grid">
+                                    {dailyContests.length > 0 ? dailyContests.map(c => renderContestCard(c)) : <div className="empty-mini">No daily challenges scheduled.</div>}
+                                </div>
+                            </div>
+                            <div className="track-row">
+                                <div className="track-label"><Calendar size={18} color="#818cf8" /> Weekly & Monthly</div>
+                                <div className="p-grid">
+                                    {[...weeklyContests, ...monthlyContests].length > 0 ? 
+                                        [...weeklyContests, ...monthlyContests].map(c => renderContestCard(c)) : 
+                                        <div className="empty-mini">Check back later for major events.</div>
+                                    }
+                                </div>
+                            </div>
                         </div>
-                        <div className="contest-grid mini">
-                            {pastContests.slice(0, 6).map(c => (
-                                <div key={c._id} className="contest-card glass-mini">
-                                    <h4>{c.title}</h4>
-                                    <div className="mini-meta">
+                    ) : (
+                        <div className="company-tracks">
+                            <div className="p-grid wide">
+                                {companyContests.length > 0 ? 
+                                    companyContests.map(c => renderContestCard(c)) : 
+                                    <div className="empty-mini">No company-specific tracks available yet.</div>
+                                }
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {pastContests.length > 0 && (
+                    <section className="past-sec animate-fade-in delay-3">
+                        <div className="sec-h"><h2>Legacy Hall</h2> <p>Past results and leaderboards</p></div>
+                        <div className="past-grid">
+                            {pastContests.slice(0, 8).map(c => (
+                                <div key={c._id} className="past-item-glass">
+                                    <div className="p-i-top">
+                                        <h4>{c.title}</h4>
                                         <span>{new Date(c.startTime).toLocaleDateString()}</span>
-                                        <span>{c.participants?.length || 0} dev2devs</span>
                                     </div>
-                                    <Link to={`/leaderboard?contestId=${c._id}`} className="view-results">Leaderboard</Link>
+                                    <Link to={`/leaderboard?contestId=${c._id}`} className="p-link">View Stats <ArrowRight size={14} /></Link>
                                 </div>
                             ))}
                         </div>
                     </section>
                 )}
             </main>
-            <footer style={{ padding: '2rem 1rem', textAlign: 'center', opacity: 0.3, fontSize: '0.8rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+
+            <footer style={{ padding: '4rem 1rem', textAlign: 'center', opacity: 0.2, fontSize: '0.8rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                 <p>© 2026 Dev2Dev Engine. Precision-engineered for Pioneers.</p>
             </footer>
 
             <style>{`
-                .contest-page-root {
-                    background: #050508;
+                .contest-p-root {
+                    background: #020204;
                     min-height: 100vh;
                     color: #fff;
-                }
-                .contest-main {
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    padding: 120px 2rem 60px;
-                }
-                .contest-header {
-                    text-align: center;
-                    margin-bottom: 5rem;
-                }
-                .trophy-badge {
-                    width: 80px;
-                    height: 80px;
-                    background: linear-gradient(135deg, #6366f1, #a855f7);
-                    border-radius: 20px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    margin: 0 auto 1.5rem;
-                    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
-                    color: #fff;
-                }
-                .contest-header h1 { font-size: 3rem; font-weight: 800; margin-bottom: 1rem; letter-spacing: -1px; }
-                .contest-header p { font-size: 1.1rem; opacity: 0.6; max-width: 600px; margin: 0 auto 3rem; }
-                
-                .header-stats {
-                    display: flex;
-                    justify-content: center;
-                    gap: 4rem;
-                    padding: 2rem;
-                    background: rgba(255,255,255,0.02);
-                    border-radius: 24px;
-                    border: 1px solid rgba(255,255,255,0.05);
-                }
-                .h-stat { display: flex; flex-direction: column; gap: 0.25rem; }
-                .h-stat strong { font-size: 2rem; font-weight: 800; color: #818cf8; }
-                .h-stat span { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.4; font-weight: 700; }
-
-                .section-title { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2rem; }
-                .section-title h2 { font-size: 1.5rem; font-weight: 700; }
-                .dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.2); }
-                .dot.live { background: #10b981; box-shadow: 0 0 15px #10b981; animation: pulse 2s infinite; }
-                @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-
-                .categorized-contests { display: flex; flex-direction: column; gap: 4rem; }
-                .contests-section { margin-bottom: 2rem; }
-                
-                .contest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 2rem; }
-                .contest-card.elite-glass {
-                    background: rgba(255,255,255,0.03);
-                    border: 1px solid rgba(255,255,255,0.08);
-                    border-radius: 24px;
-                    padding: 2rem;
-                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                     position: relative;
-                    overflow: hidden;
+                    overflow-x: hidden;
+                    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+                }
+                .mesh-gradient {
+                    position: fixed;
+                    top: 0; left: 0; width: 100%; height: 100%;
+                    background: 
+                        radial-gradient(circle at 10% 10%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 90%, rgba(168, 85, 247, 0.08) 0%, transparent 40%);
+                    pointer-events: none;
+                }
+                .contest-p-content {
+                    max-width: 1400px;
+                    margin: 0 auto;
+                    padding: 80px 2rem 100px;
+                    position: relative;
+                    z-index: 1;
+                }
+
+                .hero-section { margin-bottom: 6rem; }
+                .hero-badge {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    background: rgba(251, 191, 36, 0.1);
+                    color: #fbbf24;
+                    padding: 0.6rem 1.25rem;
+                    border-radius: 99px;
+                    font-size: 0.75rem;
+                    font-weight: 800;
+                    letter-spacing: 1.5px;
+                    margin-bottom: 2rem;
+                }
+                .hero-card {
+                    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+                    border: 1px solid rgba(255,255,255,0.08);
+                    border-radius: 48px;
+                    padding: 5rem;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    backdrop-filter: blur(30px);
+                    box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+                }
+                .hero-info { max-width: 700px; }
+                .hero-info h1 { font-size: 4.8rem; font-weight: 900; margin-bottom: 1.5rem; line-height: 0.95; letter-spacing: -3px; }
+                .hero-info p { font-size: 1.3rem; opacity: 0.5; margin-bottom: 4rem; line-height: 1.6; }
+                .hero-meta { display: flex; gap: 4rem; margin-bottom: 4.5rem; }
+                .h-m-item { display: flex; flex-direction: column; gap: 0.5rem; }
+                .h-m-item span { font-size: 0.7rem; text-transform: uppercase; opacity: 0.4; font-weight: 800; letter-spacing: 1.5px; }
+                .h-m-item svg { color: #818cf8; }
+                .hero-button {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 1.5rem;
+                    background: #fff;
+                    color: #000;
+                    padding: 1.6rem 3.5rem;
+                    border-radius: 24px;
+                    font-weight: 900;
+                    text-decoration: none;
+                    transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+                    font-size: 1.1rem;
+                }
+                .hero-button:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 20px 40px rgba(255,255,255,0.15); }
+                
+                .floating-trophy { filter: drop-shadow(0 0 60px rgba(99,102,241,0.5)); animation: float 6s ease-in-out infinite; color: #fbbf24; }
+                @keyframes float { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-30px) rotate(5deg); } }
+
+                .contest-nav-container {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-end;
+                    margin-bottom: 5rem;
+                    border-bottom: 1px solid rgba(255,255,255,0.08);
+                    padding-bottom: 3rem;
+                }
+                .p-tabs { display: flex; gap: 5rem; }
+                .p-tabs button {
+                    background: none; border: none; color: #fff;
+                    font-size: 1.65rem; font-weight: 800; opacity: 0.25;
+                    cursor: pointer; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+                    position: relative; padding: 0;
+                }
+                .p-tabs button.active { opacity: 1; transform: scale(1.05); }
+                .p-tabs button.active::after {
+                    content: ''; position: absolute; bottom: -49px; left: 0;
+                    width: 100%; height: 6px; background: #6366f1;
+                    box-shadow: 0 0 30px rgba(99,102,241,0.8);
+                    border-radius: 6px;
+                }
+                .stats-strip { display: flex; gap: 3.5rem; opacity: 0.25; font-weight: 800; letter-spacing: 1.5px; font-size: 0.95rem; }
+                .s-bit strong { color: #fff; font-size: 1.3rem; margin-right: 0.6rem; }
+
+                .p-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); gap: 3rem; }
+                .track-row { margin-bottom: 9rem; }
+                .track-label { font-size: 1.9rem; font-weight: 900; margin-bottom: 4rem; display: flex; align-items: center; gap: 1.25rem; color: #fff; letter-spacing: -1px; }
+
+                .contest-card-premium { --accent: #6366f1; perspective: 2000px; }
+                .card-inner {
+                    background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+                    border: 1px solid rgba(255,255,255,0.08);
+                    border-radius: 44px;
+                    padding: 3.5rem;
+                    height: 100%;
                     display: flex;
                     flex-direction: column;
+                    transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+                    backdrop-filter: blur(20px);
+                    position: relative;
                 }
-                .contest-card.elite-glass:hover {
-                    background: rgba(255,255,255,0.05);
-                    border-color: rgba(99, 102, 241, 0.4);
-                    transform: translateY(-8px);
-                }
-
-                .company-card {
-                    border-left: 4px solid #34d399 !important;
-                }
-                .card-image {
-                    width: 100%;
-                    height: 120px;
-                    margin: -2rem -2rem 1.5rem -2rem;
-                    width: calc(100% + 4rem);
-                    overflow: hidden;
-                    background: rgba(255,255,255,0.02);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-                .card-image img {
-                    max-width: 60%;
-                    max-height: 70%;
-                    object-fit: contain;
-                    filter: grayscale(1) brightness(2);
-                    opacity: 0.5;
-                }
-                .contest-card:hover .card-image img {
-                    filter: none;
-                    opacity: 1;
+                .contest-card-premium:hover .card-inner {
+                    background: rgba(255,255,255,0.07);
+                    border-color: var(--accent);
+                    transform: translateY(-20px) rotateX(4deg);
+                    box-shadow: 0 50px 100px rgba(0,0,0,0.5);
                 }
 
-                .company-tags {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 0.5rem;
-                    margin-bottom: 1.5rem;
-                }
-                .company-tag {
-                    font-size: 0.65rem;
-                    font-weight: 700;
-                    background: rgba(52, 211, 153, 0.1);
-                    color: #34d399;
-                    padding: 0.2rem 0.5rem;
-                    border-radius: 4px;
-                    text-transform: uppercase;
-                }
+                .card-brand { height: 50px; margin-bottom: 3rem; }
+                .card-brand img { max-height: 100%; opacity: 0.4; filter: brightness(0) invert(1); transition: 0.5s; }
+                .contest-card-premium:hover .card-brand img { opacity: 1; filter: none; }
 
-                .card-top { display: flex; justify-content: space-between; margin-bottom: 1.5rem; }
-                .type-pill { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; background: rgba(99, 102, 241, 0.1); color: #818cf8; padding: 0.3rem 0.7rem; border-radius: 8px; }
-                .timer-pill { font-size: 0.75rem; opacity: 0.5; display: flex; align-items: center; gap: 0.4rem; }
-                .contest-card h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.75rem; }
-                .contest-card p { font-size: 0.95rem; opacity: 0.5; line-height: 1.6; margin-bottom: 1.5rem; flex: 1; }
-                .card-meta { display: flex; gap: 1.5rem; margin-bottom: 2rem; }
-                .meta-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; opacity: 0.4; }
-                .join-btn {
-                    width: 100%;
-                    background: #6366f1;
-                    color: #fff;
-                    padding: 1rem;
-                    border-radius: 14px;
-                    text-decoration: none;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 0.75rem;
-                    font-weight: 700;
-                    transition: 0.2s;
+                .card-header-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+                .type-tag { font-size: 0.8rem; font-weight: 900; color: var(--accent); background: rgba(255,255,255,0.06); padding: 0.6rem 1.25rem; border-radius: 12px; letter-spacing: 1.5px; }
+                .duration-tag { font-size: 0.85rem; opacity: 0.3; display: flex; align-items: center; gap: 0.6rem; font-weight: 800; }
+                
+                .contest-card-premium h3 { font-size: 1.9rem; font-weight: 900; margin-bottom: 1.5rem; line-height: 1.2; letter-spacing: -0.8px; }
+                .desc { font-size: 1.1rem; opacity: 0.5; line-height: 1.7; margin-bottom: 3.5rem; flex: 1; font-weight: 500; }
+
+                .card-footer-meta { display: flex; gap: 3rem; margin-bottom: 3rem; padding-top: 2.5rem; border-top: 1px solid rgba(255,255,255,0.06); }
+                .meta-pill { display: flex; align-items: center; gap: 0.8rem; font-size: 0.95rem; opacity: 0.35; font-weight: 800; }
+                
+                .action-button {
+                    width: 100%; background: #6366f1; color: #fff;
+                    padding: 1.6rem; border-radius: 22px; text-decoration: none;
+                    display: flex; align-items: center; justify-content: center;
+                    gap: 1.25rem; font-weight: 950; transition: 0.4s; font-size: 1.15rem;
+                    box-shadow: 0 15px 30px rgba(99, 102, 241, 0.25);
                 }
-                .join-btn:hover { background: #4f46e5; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.25); }
+                .contest-card-premium:hover .action-button { background: #fff; color: #000; box-shadow: 0 25px 50px rgba(255,255,255,0.25); }
 
-                .past-section { margin-top: 6rem; opacity: 0.8; }
-                .contest-grid.mini { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
-                .glass-mini {
-                    background: rgba(255,255,255,0.015);
-                    border: 1px solid rgba(255,255,255,0.05);
-                    padding: 1.25rem;
-                    border-radius: 16px;
+                .past-sec { margin-top: 12rem; }
+                .sec-h { margin-bottom: 5rem; }
+                .sec-h h2 { font-size: 2.8rem; font-weight: 950; letter-spacing: -2px; margin-bottom: 1.25rem; }
+                .sec-h p { font-size: 1.2rem; opacity: 0.4; }
+                .past-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 2.5rem; }
+                .past-item-glass {
+                    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+                    padding: 3rem; border-radius: 36px; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
                 }
-                .glass-mini h4 { font-size: 1rem; margin-bottom: 0.5rem; opacity: 0.9; }
-                .mini-meta { display: flex; justify-content: space-between; font-size: 0.75rem; opacity: 0.4; margin-bottom: 1rem; }
-                .view-results { font-size: 0.8rem; font-weight: 700; color: #818cf8; text-decoration: none; }
+                .past-item-glass:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.15); transform: translateY(-8px); }
+                .p-i-top h4 { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.8rem; letter-spacing: -0.5px; }
+                .p-i-top span { font-size: 0.9rem; opacity: 0.25; display: block; margin-bottom: 2.5rem; font-weight: 800; }
+                .p-link { font-size: 1rem; font-weight: 900; color: #818cf8; text-decoration: none; display: flex; align-items: center; gap: 1rem; }
 
-                .empty-state { text-align: center; padding: 4rem; background: rgba(255,255,255,0.01); border-radius: 24px; border: 1px dashed rgba(255,255,255,0.1); }
-                .empty-state h3 { margin: 1.5rem 0 0.5rem; opacity: 0.6; }
-                .empty-state p { opacity: 0.3; }
+                .empty-mini { padding: 6rem; background: rgba(255,255,255,0.01); border-radius: 40px; border: 1px dashed rgba(255,255,255,0.1); opacity: 0.3; font-weight: 800; font-size: 1.25rem; text-align: center; }
 
-                .animate-fade-in { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-                .delay-1 { animation-delay: 0.1s; }
-                .delay-2 { animation-delay: 0.2s; }
-                .delay-3 { animation-delay: 0.3s; }
-                @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+                .animate-slide-up { animation: slideUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+                .animate-fade-in { animation: fadeIn 1s ease-out forwards; opacity: 0; }
+                .delay-1 { animation-delay: 0.3s; }
+                .delay-2 { animation-delay: 0.6s; }
+                .delay-3 { animation-delay: 0.9s; }
+
+                @keyframes slideUp { from { opacity: 0; transform: translateY(60px); } to { opacity: 1; transform: translateY(0); } }
+                @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+                @media (max-width: 1400px) {
+                    .hero-info h1 { font-size: 4rem; }
+                }
+                @media (max-width: 1200px) {
+                    .hero-card { padding: 4rem; }
+                    .p-grid { grid-template-columns: 1fr 1fr; }
+                    .past-grid { grid-template-columns: 1fr 1fr; }
+                }
+                @media (max-width: 850px) {
+                    .p-grid { grid-template-columns: 1fr; }
+                }
+                @media (max-width: 768px) {
+                    .hero-card { padding: 3.5rem 2.5rem; flex-direction: column; text-align: center; border-radius: 36px; }
+                    .hero-visual { display: none; }
+                    .hero-info h1 { font-size: 3.2rem; }
+                    .hero-meta { justify-content: center; gap: 3rem; flex-wrap: wrap; margin-bottom: 3.5rem; }
+                    .p-tabs { gap: 3rem; width: 100%; overflow-x: auto; padding-bottom: 2rem; }
+                    .p-tabs button { font-size: 1.3rem; white-space: nowrap; }
+                    .stats-strip { display: none; }
+                    .past-grid { grid-template-columns: 1fr; }
+                }
             `}</style>
         </div>
     );
