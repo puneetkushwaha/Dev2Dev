@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getApiUrl } from '../api/config';
+import './CoreCSManager.css';
 import {
     Plus, Trash2, Save, Loader2, Code,
     ChevronRight, Cpu, Database, Globe, Layers, GitBranch,
@@ -63,22 +64,6 @@ const QuizEditor = ({ quiz = [], onChange }) => {
                     </div>
                 ))}
             </div>
-            <style>{`
-                .qe-root { display: flex; flex-direction: column; gap: 0.75rem; }
-                .qe-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.7rem; font-weight: 800; opacity: 0.4; text-transform: uppercase; }
-                .qe-list { display: flex; flex-direction: column; gap: 1rem; }
-                .qe-q-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 0.85rem; }
-                .qe-q-row { display: flex; gap: 0.75rem; align-items: flex-start; margin-bottom: 0.75rem; }
-                .qe-num { font-size: 0.7rem; font-weight: 800; background: rgba(255,255,255,0.05); width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 4px; opacity: 0.4; }
-                .qe-input { flex: 1; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.1); color: #fff; font-size: 0.85rem; outline: none; padding-bottom: 0.2rem; }
-                .qe-input:focus { border-bottom-color: #6366f1; }
-                .qe-del { background: transparent; border: none; color: rgba(239,68,68,0.4); cursor: pointer; transition: 0.15s; }
-                .qe-del:hover { color: #f87171; }
-                .qe-opts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
-                .qe-opt { display: flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.03); padding: 0.4rem 0.6rem; border-radius: 6px; border: 1px solid transparent; }
-                .qe-opt.on { border-color: rgba(52,211,153,0.3); background: rgba(52,211,153,0.05); }
-                .qe-opt-input { flex: 1; background: transparent; border: none; color: rgba(255,255,255,0.8); font-size: 0.78rem; outline: none; }
-            `}</style>
         </div>
     );
 };
@@ -158,12 +143,6 @@ const TopicEditor = ({ topic, onSave, onDelete }) => {
                     <QuizEditor quiz={d.quiz} onChange={q => set('quiz', q)} />
                 )}
             </div>
-            <style>{`
-                .pe-tabs { display: flex; gap: 0.5rem; margin-right: auto; }
-                .pe-tab-btn { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: 0.15s; }
-                .pe-tab-btn:hover { background: rgba(255,255,255,0.06); }
-                .pe-tab-btn.on { background: rgba(99,102,241,0.1); border-color: rgba(99,102,241,0.3); color: #818cf8; }
-            `}</style>
         </div>
     );
 };
@@ -196,7 +175,6 @@ const CoreCSManager = ({ coreCSTopics, onTopicsRefresh }) => {
     // Reset problem when topic changes
     useEffect(() => { setSelectedProbId(null); }, [selectedTopic]);
 
-    // ── Get Core CS domainId
     const getCoreCSdomainId = async () => {
         const existing = coreCSTopics[0];
         if (existing?.domainId) return existing.domainId;
@@ -206,16 +184,14 @@ const CoreCSManager = ({ coreCSTopics, onTopicsRefresh }) => {
         return d._id;
     };
 
-    // ── Create a new topicGroup (no DB record, just UI state — actual topics created inside)
     const createTopic = async () => {
         const name = newTopicName.trim();
         if (!name) return;
         setNewTopicName('');
         setAddingTopic(false);
-        setSelectedTopic(name); // Switch to it immediately
+        setSelectedTopic(name);
     };
 
-    // ── Add a problem inside selected topic
     const addProblem = async () => {
         if (!selectedTopic) return;
         try {
@@ -263,7 +239,6 @@ const CoreCSManager = ({ coreCSTopics, onTopicsRefresh }) => {
 
     return (
         <div className="cs-root">
-            {/* Subject tabs */}
             <div className="cs-tab-bar">
                 {SUBJECTS.map(({ id, label, Icon, color }) => (
                     <button key={id} className={`cs-tab ${activeSubject === id ? 'on' : ''}`}
@@ -276,7 +251,6 @@ const CoreCSManager = ({ coreCSTopics, onTopicsRefresh }) => {
             </div>
 
             <div className="cs-body">
-                {/* ── Col 1: Topics (topic groups) */}
                 <div className="cs-col cs-topics-col">
                     <div className="cs-col-head">
                         <span className="cs-col-label">{subjMeta?.desc}</span>
@@ -315,17 +289,9 @@ const CoreCSManager = ({ coreCSTopics, onTopicsRefresh }) => {
                                 </div>
                             );
                         })}
-                        {topicGroups.length === 0 && !addingTopic && (
-                            <div className="cs-empty">
-                                <FolderOpen size={26} style={{ opacity: 0.1 }} />
-                                <p>No topics yet</p>
-                                <button className="cs-add-first" onClick={() => setAddingTopic(true)}>+ Create first topic</button>
-                            </div>
-                        )}
                     </div>
                 </div>
 
-                {/* ── Col 2: Problems in selected topic */}
                 <div className="cs-col cs-probs-col">
                     {selectedTopic ? (
                         <>
@@ -344,13 +310,6 @@ const CoreCSManager = ({ coreCSTopics, onTopicsRefresh }) => {
                                         <ChevronRight size={11} style={{ opacity: 0.2, marginLeft: 'auto', flexShrink: 0 }} />
                                     </button>
                                 ))}
-                                {problems.length === 0 && (
-                                    <div className="cs-empty">
-                                        <Code size={22} style={{ opacity: 0.1 }} />
-                                        <p>No problems yet</p>
-                                        <button className="cs-add-first" onClick={addProblem}>+ Add first problem</button>
-                                    </div>
-                                )}
                             </div>
                         </>
                     ) : (
@@ -361,7 +320,6 @@ const CoreCSManager = ({ coreCSTopics, onTopicsRefresh }) => {
                     )}
                 </div>
 
-                {/* ── Col 3: Topic editor */}
                 <div className="cs-col cs-editor-col">
                     {selectedProb ? (
                         <TopicEditor key={selectedProb._id} topic={selectedProb} onSave={saveProblem} onDelete={deleteProblem} />
@@ -373,94 +331,6 @@ const CoreCSManager = ({ coreCSTopics, onTopicsRefresh }) => {
                     )}
                 </div>
             </div>
-
-            <style>{`
-                .cs-root { display: flex; flex-direction: column; height: calc(100vh - 90px); background: #09090e; font-family: inherit; }
-
-                /* Subject tab bar */
-                .cs-tab-bar { display: flex; gap: 0.3rem; padding: 0.65rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.05); flex-shrink: 0; }
-                .cs-tab { display: flex; align-items: center; gap: 0.45rem; background: transparent; border: 1px solid rgba(255,255,255,0.06); color: rgba(255,255,255,0.38); padding: 0.4rem 0.85rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.8rem; transition: 0.15s; }
-                .cs-tab:hover { color: rgba(255,255,255,0.75); }
-                .cs-tab.on { background: rgba(255,255,255,0.04); }
-                .cs-count { background: rgba(255,255,255,0.06); border-radius: 100px; padding: 0.05rem 0.4rem; font-size: 0.6rem; }
-
-                /* 3-col body */
-                .cs-body { display: grid; grid-template-columns: 220px 240px 1fr; flex: 1; overflow: hidden; }
-                .cs-col { display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.05); overflow: hidden; }
-                .cs-editor-col { border-right: none; }
-
-                /* Col headers */
-                .cs-col-head { display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.04); flex-shrink: 0; }
-                .cs-col-label { font-size: 0.68rem; font-weight: 800; opacity: 0.3; text-transform: uppercase; letter-spacing: 0.7px; }
-
-                /* Buttons */
-                .cs-mini-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); width: 22px; height: 22px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: 0.15s; font-size: 0.75rem; }
-                .cs-mini-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
-                .cs-mini-btn.ok { color: #34d399; border-color: rgba(52,211,153,0.25); }
-
-                /* New topic input */
-                .cs-new-input-wrap { display: flex; gap: 0.3rem; padding: 0.5rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.04); flex-shrink: 0; }
-                .cs-new-input { flex: 1; background: rgba(255,255,255,0.04); border: 1px solid rgba(99,102,241,0.3); color: #fff; padding: 0.3rem 0.6rem; border-radius: 6px; outline: none; font-size: 0.8rem; font-family: inherit; }
-
-                /* List scroll */
-                .cs-list-scroll { flex: 1; overflow-y: auto; padding: 0.4rem; }
-
-                /* Topic item */
-                .cs-topic-item { display: flex; align-items: center; gap: 0.55rem; width: 100%; color: rgba(255,255,255,0.55); padding: 0.6rem 0.65rem; border-radius: 8px; cursor: pointer; transition: 0.12s; }
-                .cs-topic-item:hover { background: rgba(255,255,255,0.03); color: #fff; }
-                .cs-topic-item.on { background: rgba(99,102,241,0.1); color: #fff; }
-                .cs-ti-info { display: flex; flex-direction: column; min-width: 0; line-height: 1.3; }
-                .cs-ti-name { font-size: 0.82rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
-                .cs-ti-cnt { font-size: 0.62rem; opacity: 0.4; }
-                .cs-del-tiny { margin-left: auto; background: transparent; border: none; color: rgba(239,68,68,0.0); padding: 0.2rem; border-radius: 4px; cursor: pointer; display: flex; align-items: center; transition: 0.15s; flex-shrink: 0; }
-                .cs-topic-item:hover .cs-del-tiny { color: rgba(239,68,68,0.4); }
-                .cs-del-tiny:hover { color: #f87171 !important; background: rgba(239,68,68,0.08); }
-
-                /* Problem item */
-                .cs-prob-item { display: flex; align-items: center; gap: 0.6rem; width: 100%; background: transparent; border: none; color: rgba(255,255,255,0.55); padding: 0.6rem 0.65rem; border-radius: 8px; cursor: pointer; text-align: left; transition: 0.12s; }
-                .cs-prob-item:hover { background: rgba(255,255,255,0.03); color: #fff; }
-                .cs-prob-item.on { background: rgba(99,102,241,0.09); color: #fff; }
-                .cs-pi-num { font-size: 0.6rem; opacity: 0.2; font-weight: 700; width: 16px; flex-shrink: 0; }
-                .cs-pi-info { display: flex; flex-direction: column; line-height: 1.3; min-width: 0; }
-                .cs-pi-title { font-size: 0.8rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
-                .cs-pi-diff { font-size: 0.62rem; font-weight: 700; }
-
-                /* Empty / no-sel */
-                .cs-empty { display: flex; flex-direction: column; align-items: center; gap: 0.65rem; padding: 2.5rem 1rem; text-align: center; opacity: 0.35; }
-                .cs-empty p { font-size: 0.78rem; }
-                .cs-add-first { background: transparent; border: none; color: #818cf8; cursor: pointer; font-size: 0.78rem; font-weight: 600; }
-                .cs-no-sel { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.7rem; opacity: 0.25; }
-                .cs-no-sel p { font-size: 0.82rem; }
-
-                /* Problem editor */
-                .pe-root { display: flex; flex-direction: column; height: 100%; }
-                .pe-header { padding: 0.9rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.05); flex-shrink: 0; display: flex; flex-direction: column; gap: 0.65rem; }
-                .pe-title-row { display: flex; align-items: center; gap: 0.85rem; }
-                .pe-title-input { flex: 1; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.08); color: #fff; font-size: 1.05rem; font-weight: 700; padding: 0.2rem 0; outline: none; font-family: inherit; }
-                .pe-title-input:focus { border-bottom-color: #6366f1; }
-                .pe-meta-selects { display: flex; gap: 0.4rem; flex-shrink: 0; }
-                .pe-select { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); padding: 0.3rem 0.5rem; border-radius: 7px; font-weight: 700; font-size: 0.75rem; outline: none; cursor: pointer; color: #e2e8f0; }
-                .pe-actions { display: flex; align-items: center; justify-content: flex-end; gap: 0.4rem; }
-                .pe-save-btn { background: rgba(129, 140, 248,0.1); border: 1px solid rgba(129, 140, 248,0.25); color: #34d399; padding: 0.4rem 0.85rem; border-radius: 7px; font-weight: 700; display: flex; align-items: center; gap: 0.35rem; cursor: pointer; font-size: 0.78rem; }
-                .pe-save-btn:hover { background: rgba(129, 140, 248,0.18); }
-                .pe-save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-                .pe-del-btn { background: transparent; border: 1px solid rgba(239,68,68,0.15); color: rgba(239,68,68,0.5); padding: 0.4rem 0.75rem; border-radius: 7px; font-weight: 600; display: flex; align-items: center; gap: 0.3rem; cursor: pointer; font-size: 0.76rem; }
-                .pe-del-btn:hover { color: #f87171; background: rgba(239,68,68,0.06); }
-                .pe-spin { animation: spin 1s linear infinite; }
-                @keyframes spin { to { transform: rotate(360deg); } }
-                .pe-body { flex: 1; overflow-y: auto; padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
-                .pe-section { display: flex; flex-direction: column; gap: 0.35rem; }
-                .pe-section-label { font-size: 0.62rem; font-weight: 700; opacity: 0.3; text-transform: uppercase; letter-spacing: 0.7px; display: flex; align-items: center; gap: 0.3rem; }
-                .pe-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; }
-                .pe-section input, .pe-section textarea {
-                    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
-                    padding: 0.55rem 0.75rem; border-radius: 9px; color: #e2e8f0; outline: none;
-                    font-family: inherit; font-size: 0.845rem; line-height: 1.6; width: 100%; resize: vertical; transition: border-color 0.15s;
-                }
-                .pe-section input:focus, .pe-section textarea:focus { border-color: rgba(99,102,241,0.45); }
-                .pe-section textarea.mono, .pe-section input.mono { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; }
-                select option { background: #1a1a2e; }
-            `}</style>
         </div>
     );
 };
