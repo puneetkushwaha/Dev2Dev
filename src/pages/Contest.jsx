@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { Trophy, Clock, Users, Calendar, ArrowRight, Brain, Zap, Bell } from 'lucide-react';
-import Navbar from '../components/Navbar';
 
 const Contest = () => {
     const [contests, setContests] = useState([]);
@@ -41,7 +40,6 @@ const Contest = () => {
 
     return (
         <div className="contest-page-root">
-            <Navbar />
             <main className="contest-main">
                 <header className="contest-header">
                     <div className="header-content animate-fade-in">
