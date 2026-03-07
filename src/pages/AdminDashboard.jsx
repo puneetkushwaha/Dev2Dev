@@ -1188,7 +1188,7 @@ const AdminDashboard = () => {
             try { const r = await axios.get(url, cfg); return r.data; }
             catch (e) { console.warn('Fetch failed:', url, e.response?.status); return null; }
         };
-        const [s, d, u, e, cs, t, iv, n] = await Promise.all([
+        const [s, d, u, e, cs, t, iv, n, contestsData] = await Promise.all([
             safeGet(getApiUrl('/api/admin/stats'), authConfig()),
             safeGet(getApiUrl('/api/admin/domains'), authConfig()),
             safeGet(getApiUrl('/api/admin/users'), authConfig()),
