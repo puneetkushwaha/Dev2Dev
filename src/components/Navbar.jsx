@@ -11,11 +11,13 @@ const Navbar = () => {
     const [searchQuery, setSearchQuery] = useState(new URLSearchParams(location.search).get('search') || '');
     const [scrolled, setScrolled] = useState(false);
     const [showAptitudeDropdown, setShowAptitudeDropdown] = useState(false);
+    const [showProfileDropdown, setShowProfileDropdown] = useState(false);
     const [notificationCount, setNotificationCount] = useState(0);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     // Add refs for dropdown closing logic
     const aptitudeRef = useRef(null);
+    const profileRef = useRef(null);
 
     useEffect(() => {
         const fetchNotifications = async () => {
@@ -39,6 +41,9 @@ const Navbar = () => {
         const handleClickOutside = (event) => {
             if (aptitudeRef.current && !aptitudeRef.current.contains(event.target)) {
                 setShowAptitudeDropdown(false);
+            }
+            if (profileRef.current && !profileRef.current.contains(event.target)) {
+                setShowProfileDropdown(false);
             }
         };
 
@@ -117,7 +122,7 @@ const Navbar = () => {
                 <div className="nav-center hide-mobile">
                     <Link to="/exams" className={`gfg-nav-link ${currentPath === '/exams' ? 'active' : ''}`}>Practice</Link>
                     <Link to="/learning" className={`gfg-nav-link ${currentPath === '/learning' ? 'active' : ''}`}>Courses</Link>
-                    <Link to="/leaderboard" className={`gfg-nav-link ${currentPath === '/leaderboard' ? 'active' : ''}`}>Leaderboard</Link>
+                    <Link to="/contest" className={`gfg-nav-link ${currentPath === '/contest' ? 'active' : ''}`}>Contest</Link>
                     <Link to="/tutorials" className={`gfg-nav-link ${currentPath === '/tutorials' ? 'active' : ''}`}>Tutorials</Link>
                     <Link to="/interview" className={`gfg-nav-link ${currentPath === '/interview' ? 'active' : ''}`}>Interviews</Link>
                     <Link to="/resume" className={`gfg-nav-link ${currentPath === '/resume' ? 'active' : ''}`}>Resume</Link>
@@ -138,12 +143,34 @@ const Navbar = () => {
 
                     {userRole === 'admin' && <Link to="/admin" className="admin-pill hide-mobile">Admin</Link>}
 
-                    <Link to="/profile" className={`nav-profile-circle ${currentPath === '/profile' ? 'active' : ''}`} title="Profile">
-                        <User size={20} color="#fff" />
-                    </Link>
-                    <button onClick={handleLogout} className="nav-logout-btn hide-mobile" title="Logout">
-                        <LogOut size={20} color="#ef4444" />
-                    </button>
+                    <div className="profile-dropdown-container" ref={profileRef}>
+                        <div 
+                            className={`nav-profile-circle ${currentPath === '/profile' ? 'active' : ''}`} 
+                            title="Profile"
+                            onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            <User size={20} color="#fff" />
+                        </div>
+
+                        {showProfileDropdown && (
+                            <div className="profile-dropdown-menu elite-glass-dropdown">
+                                <Link to="/profile" className="dropdown-item" onClick={() => setShowProfileDropdown(false)}>
+                                    <User size={16} />
+                                    Profile
+                                </Link>
+                                <Link to="/leaderboard" className="dropdown-item" onClick={() => setShowProfileDropdown(false)}>
+                                    <Trophy size={16} />
+                                    Leaderboard
+                                </Link>
+                                <div className="dropdown-divider"></div>
+                                <button onClick={handleLogout} className="dropdown-item text-danger">
+                                    <LogOut size={16} />
+                                    Logout
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </nav>
 
@@ -177,6 +204,7 @@ const Navbar = () => {
                             <Link to="/dashboard"><span>Dashboard</span> <MonitorPlay size={18} opacity={0.5} /></Link>
                             <Link to="/exams"><span>Practice Problems</span> <Code2 size={18} opacity={0.5} /></Link>
                             <Link to="/learning"><span>Learning Courses</span> <BookOpen size={18} opacity={0.5} /></Link>
+                            <Link to="/contest"><span>Contests</span> <Trophy size={18} opacity={0.5} /></Link>
                             <Link to="/leaderboard"><span>Leaderboard</span> <Trophy size={18} opacity={0.5} /></Link>
                             <Link to="/interview"><span>Mock Interviews</span> <Briefcase size={18} opacity={0.5} /></Link>
                             <Link to="/resume"><span>Resume Analyzer</span> <FileText size={18} opacity={0.5} /></Link>
@@ -568,6 +596,51 @@ const Navbar = () => {
                 @keyframes elite-dropdown-slide {
                     from { transform: translateY(10px); opacity: 0; }
                     to { transform: translateY(0); opacity: 1; }
+                }
+
+                .profile-dropdown-container {
+                    position: relative;
+                }
+                .profile-dropdown-menu {
+                    position: absolute;
+                    top: calc(100% + 15px);
+                    right: 0;
+                    background: rgba(18, 18, 18, 0.95);
+                    backdrop-filter: blur(20px);
+                    border: 1px solid rgba(255,255,255,0.1);
+                    border-radius: 16px;
+                    width: 200px;
+                    z-index: 1001;
+                    padding: 0.5rem;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(99,102,241,0.1);
+                    animation: elite-dropdown-slide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+                }
+                .profile-dropdown-menu .dropdown-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 0.75rem 1rem;
+                    color: rgba(255,255,255,0.7);
+                    text-decoration: none;
+                    font-size: 0.9rem;
+                    border-radius: 10px;
+                    transition: all 0.2s ease;
+                }
+                .profile-dropdown-menu .dropdown-item:hover {
+                    background: rgba(255,255,255,0.05);
+                    color: #fff;
+                    transform: translateX(5px);
+                }
+                .profile-dropdown-menu .dropdown-item.text-danger {
+                    color: #ef4444;
+                }
+                .profile-dropdown-menu .dropdown-item.text-danger:hover {
+                    background: rgba(239, 68, 68, 0.05);
+                }
+                .dropdown-divider {
+                    height: 1px;
+                    background: rgba(255,255,255,0.05);
+                    margin: 0.5rem 0;
                 }
             `}</style>
         </div>

@@ -8,8 +8,8 @@ import {
     Brain, Code, Info, Loader2, ArrowLeft,
     FileText, Users, LayoutDashboard,
     Database, Shield, LogOut, Search,
-    Clock, Award, RefreshCcw, Mic,
-    XCircle, Save, BookOpen, Zap, HelpCircle, Globe, CheckCircle2, Cpu, Play, Bell
+    Clock, Award, RefreshCcw, Mic, CloudUpload, Timer,
+    XCircle, Save, BookOpen, Zap, HelpCircle, Globe, CheckCircle2, Cpu, Play, Bell, Trophy
 } from 'lucide-react';
 
 
@@ -411,6 +411,147 @@ const UniversalDomainEditor = ({ domain, topics, onBack, onSaveDomain, onSaveTop
                     </div>
                 </div>
             )}
+        </div>
+    );
+};
+
+// ──────────────────────────────────────────
+// Sub-component: ContestEditorModal
+// ──────────────────────────────────────────
+const ContestEditorModal = ({ contest, onSave, onClose, onAIUpload, structuring }) => {
+    const [data, setData] = useState({ ...contest });
+    const [saving, setSaving] = useState(false);
+
+    const handleSave = async () => {
+        setSaving(true);
+        await onSave(data);
+        setSaving(false);
+    };
+
+    const addQuestion = () => {
+        const q = [...(data.questions || [])];
+        q.push({ questionText: '', options: ['', '', '', ''], correctAnswer: '', difficulty: 'Medium', explanation: '', type: 'mcq' });
+        setData({ ...data, questions: q });
+    };
+
+    const updateQ = (i, field, val) => {
+        const q = [...(data.questions || [])];
+        q[i] = { ...q[i], [field]: val };
+        setData({ ...data, questions: q });
+    };
+
+    const updateOption = (qi, oi, val) => {
+        const q = [...(data.questions || [])];
+        q[qi].options[oi] = val;
+        setData({ ...data, questions: q });
+    };
+
+    const removeQ = (i) => {
+        const q = [...(data.questions || [])].filter((_, idx) => idx !== i);
+        setData({ ...data, questions: q });
+    };
+
+    return (
+        <div style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 100,
+            background: 'rgba(0,0,0,0.8)', padding: '2rem', display: 'flex', justifyContent: 'center'
+        }} className="animate-fade-in">
+            <div style={{
+                background: '#0F172A', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)',
+                width: '100%', maxWidth: '900px', display: 'flex', flexDirection: 'column'
+            }}>
+                <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h2 style={{ margin: 0, fontSize: '1.25rem' }}>{data._id ? 'Edit' : 'Create'} Contest: {data.title}</h2>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                        <div className="ai-upload-btn" style={{ position: 'relative' }}>
+                            <input 
+                                type="file" 
+                                accept=".pdf,.txt" 
+                                style={{ position: 'absolute', opacity: 0, width: '100%', height: '100%', cursor: 'pointer' }}
+                                onChange={(e) => onAIUpload(e.target.files[0])}
+                                disabled={structuring}
+                            />
+                            <button className="btn-secondary" disabled={structuring}>
+                                {structuring ? <Loader2 size={14} className="spin" /> : <CloudUpload size={14} />}
+                                {structuring ? 'Processing...' : 'AI Upload (PDF/Text)'}
+                            </button>
+                        </div>
+                        <button className="btn-secondary" onClick={onClose} disabled={saving}>Cancel</button>
+                        <button className="btn-primary" onClick={handleSave} disabled={saving}>
+                            {saving ? <Loader2 size={14} className="spin" /> : <Save size={14} />} Save Contest
+                        </button>
+                    </div>
+                </div>
+                <div style={{ padding: '1.5rem', overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                    <div className="form-row">
+                        <div className="form-group" style={{ flex: 2 }}>
+                            <label>Title</label>
+                            <input value={data.title} onChange={e => setData({ ...data, title: e.target.value })} />
+                        </div>
+                        <div className="form-group">
+                            <label>Duration (mins)</label>
+                            <input type="number" value={data.durationMinutes} onChange={e => setData({ ...data, durationMinutes: Number(e.target.value) })} />
+                        </div>
+                    </div>
+                    <div className="form-row">
+                        <div className="form-group">
+                            <label>Start Time</label>
+                            <input type="datetime-local" value={data.startTime ? new Date(data.startTime).toISOString().slice(0, 16) : ''} onChange={e => setData({ ...data, startTime: e.target.value })} />
+                        </div>
+                        <div className="form-group">
+                            <label>End Time</label>
+                            <input type="datetime-local" value={data.endTime ? new Date(data.endTime).toISOString().slice(0, 16) : ''} onChange={e => setData({ ...data, endTime: e.target.value })} />
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style={{ fontSize: '1rem', marginTop: 0, marginBottom: '1rem' }}>Questions</h3>
+                        <div className="quiz-editor">
+                            {(data.questions || []).map((q, qi) => (
+                                <div key={qi} className="quiz-question-block">
+                                    <div className="qb-header">
+                                        <span className="qb-num">Q{qi + 1}</span>
+                                        <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                            <select
+                                                style={{ padding: '0.2rem', fontSize: '0.7rem', background: 'rgba(255,255,255,0.05)', color: '#fff', border: 'none', borderRadius: '4px' }}
+                                                value={q.type || 'mcq'}
+                                                onChange={e => updateQ(qi, 'type', e.target.value)}
+                                            >
+                                                <option value="mcq">MCQ</option>
+                                                <option value="coding">Coding</option>
+                                            </select>
+                                            <button onClick={() => removeQ(qi)} className="icon-only delete"><Trash2 size={13} /></button>
+                                        </div>
+                                    </div>
+                                    <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+                                        <label>Question Text</label>
+                                        {q.type === 'coding' ? (
+                                            <textarea value={q.questionText} onChange={e => updateQ(qi, 'questionText', e.target.value)} rows={4} />
+                                        ) : (
+                                            <input value={q.questionText} onChange={e => updateQ(qi, 'questionText', e.target.value)} />
+                                        )}
+                                    </div>
+                                    {q.type === 'mcq' && (
+                                        <div className="options-grid">
+                                            {(q.options || ['', '', '', '']).map((opt, oi) => (
+                                                <div key={oi} className="option-row">
+                                                    <button
+                                                        className={`correct-btn ${q.correctAnswer === String(oi) ? 'active' : ''}`}
+                                                        onClick={() => updateQ(qi, 'correctAnswer', String(oi))}
+                                                    >
+                                                        <CheckCircle2 size={14} />
+                                                    </button>
+                                                    <input value={opt} onChange={e => updateOption(qi, oi, e.target.value)} placeholder={`Option ${oi + 1}`} />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                            <button className="btn-dashed" onClick={addQuestion}><Plus size={14} /> Add Question</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
@@ -1022,15 +1163,18 @@ const AdminDashboard = () => {
     const [tutorials, setTutorials] = useState([]);
     const [interviews, setInterviews] = useState([]);
     const [notifications, setNotifications] = useState([]);
+    const [contests, setContests] = useState([]);
     const [newNotification, setNewNotification] = useState({ title: '', message: '', type: 'info' });
 
     const [activeTab, setActiveTab] = useState('overview');
     const [universalEditor, setUniversalEditor] = useState(null); // { domain }
     const [editingExam, setEditingExam] = useState(null);
+    const [editingContest, setEditingContest] = useState(null);
     const [editingTutorial, setEditingTutorial] = useState(null);
     const [selectedInterview, setSelectedInterview] = useState(null);
     const [selectedUserDetails, setSelectedUserDetails] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [structuring, setStructuring] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
     // User Management State
@@ -1053,6 +1197,7 @@ const AdminDashboard = () => {
             safeGet(getApiUrl('/api/admin/tutorials'), authConfig()),
             safeGet(getApiUrl('/api/interviews/all'), authConfig()),
             safeGet(getApiUrl('/api/notifications'), authConfig()),
+            safeGet(getApiUrl('/api/contests'), authConfig()),
         ]);
         if (s) setStats(s);
         if (d) setDomains(d);
@@ -1062,6 +1207,7 @@ const AdminDashboard = () => {
         if (t) setTutorials(t);
         if (iv) setInterviews(iv);
         if (n) setNotifications(n);
+        if (contestsData) setContests(contestsData);
         setLoading(false);
     };
 
@@ -1146,6 +1292,45 @@ const AdminDashboard = () => {
             setEditingTutorial(null);
             fetchAllData();
         } catch (err) { alert(err.response?.data?.message || err.message); }
+    };
+
+    const saveContest = async (data) => {
+        try {
+            if (data._id) {
+                await axios.put(getApiUrl(`/api/contests/${data._id}`), data, authConfig());
+            } else {
+                await axios.post(getApiUrl('/api/contests'), data, authConfig());
+            }
+            setEditingContest(null);
+            fetchAllData();
+        } catch (err) { alert(err.response?.data?.message || err.message); }
+    };
+
+    const handleContestAIUpload = async (file) => {
+        setStructuring(true);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            // 1. Parse PDF/Text using existing endpoint
+            const parseRes = await axios.post(getApiUrl('/api/admin/parse-file'), formData, {
+                headers: { ...authConfig().headers, 'Content-Type': 'multipart/form-data' }
+            });
+            
+            const rawText = parseRes.data.text;
+            
+            // 2. Structure using new AI endpoint
+            const structureRes = await axios.post(getApiUrl('/api/contests/ai-structure'), {
+                rawText,
+                targetType: 'contest'
+            }, authConfig());
+            
+            setEditingContest(structureRes.data);
+        } catch (err) {
+            alert("AI structuring failed: " + (err.response?.data?.message || err.message));
+        } finally {
+            setStructuring(false);
+        }
     };
 
     const handleDelete = async (type, id) => {
@@ -1508,6 +1693,41 @@ const AdminDashboard = () => {
         </div>
     );
 
+    const renderContestsView = () => (
+        <div className="animate-fade-in content-view">
+            <div className="view-header">
+                <h2 className="view-title">Coding Contests</h2>
+                <button className="btn-primary" onClick={() => setEditingContest({ title: 'New Contest', durationMinutes: 60, startTime: new Date(), endTime: new Date(Date.now() + 86400000), questions: [] })}>
+                    <Plus size={18} /> New Contest
+                </button>
+            </div>
+            <div className="pro-grid">
+                {contests.map(c => (
+                    <div key={c._id} className="glass-card">
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <div className="badge" style={{ background: c.isActive ? 'rgba(52, 211, 153, 0.1)' : 'rgba(239, 68, 68, 0.1)', color: c.isActive ? '#34d399' : '#ef4444' }}>
+                                {c.isActive ? 'Active' : 'Ended'}
+                            </div>
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <button className="icon-only" onClick={() => setEditingContest(c)}><Edit size={14} /></button>
+                                <button className="icon-only delete" onClick={() => handleDelete('contest', c._id)}><Trash2 size={14} /></button>
+                            </div>
+                        </div>
+                        <h3 style={{ margin: '0.75rem 0 0.5rem 0' }}>{c.title}</h3>
+                        <div className="exam-meta">
+                            <span><Timer size={12} /> {c.durationMinutes}m</span>
+                            <span><Users size={12} /> {c.participants?.length || 0} Joined</span>
+                        </div>
+                        <div style={{ fontSize: '0.7rem', opacity: 0.4, marginTop: '0.5rem' }}>
+                            Starts: {new Date(c.startTime).toLocaleString()}
+                        </div>
+                    </div>
+                ))}
+                {contests.length === 0 && <div className="placeholder-text">No contests scheduled yet.</div>}
+            </div>
+        </div>
+    );
+
     const handleCreateNotification = async () => {
         if (!newNotification.title || !newNotification.message) return alert('Title and message required');
         try {
@@ -1631,6 +1851,7 @@ const AdminDashboard = () => {
                         { id: 'users', label: 'Users', Icon: Users },
                         { id: 'exams', label: 'Exams', Icon: Award },
                         { id: 'tutorials', label: 'Tutorials', Icon: Play },
+                        { id: 'contests', label: 'Contests', Icon: Trophy },
                         { id: 'notifications', label: 'Notifications', Icon: Bell },
                         { id: 'results', label: 'Exam Results', Icon: CheckCircle2 },
                         { id: 'interviews', label: 'Interviews', Icon: Mic },
@@ -1657,6 +1878,7 @@ const AdminDashboard = () => {
                         {activeTab === 'users' && renderUsersView()}
                         {activeTab === 'exams' && renderExamsView()}
                         {activeTab === 'tutorials' && renderTutorialsView()}
+                        {activeTab === 'contests' && renderContestsView()}
                         {activeTab === 'notifications' && renderNotificationsView()}
                         {activeTab === 'results' && renderExamResultsView()}
                         {activeTab === 'interviews' && renderInterviewsView()}
@@ -1681,6 +1903,16 @@ const AdminDashboard = () => {
                     domains={domains}
                     onSave={saveExam}
                     onClose={() => setEditingExam(null)}
+                />
+            )}
+
+            {editingContest && (
+                <ContestEditorModal
+                    contest={editingContest}
+                    onSave={saveContest}
+                    onAIUpload={handleContestAIUpload}
+                    structuring={structuring}
+                    onClose={() => setEditingContest(null)}
                 />
             )}
 
