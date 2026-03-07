@@ -53,8 +53,10 @@
 }
 
 .cs-tab.on {
-    background: rgba(99, 102, 241, 0.1);
-    box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+    background: rgba(99, 102, 241, 0.12);
+    color: var(--accent-indigo);
+    border-color: rgba(99, 102, 241, 0.3);
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.1);
 }
 
 .cs-count {
@@ -68,10 +70,10 @@
 /* 3-col body */
 .cs-body {
     display: grid;
-    grid-template-columns: 240px 280px 1fr;
+    grid-template-columns: 260px 320px 1fr; /* Increased widths for better content room */
     flex: 1;
     overflow: hidden;
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(0, 0, 0, 0.05);
 }
 
 .cs-col {
@@ -127,9 +129,10 @@
 }
 
 .cs-topic-item.on {
-    background: rgba(99, 102, 241, 0.1);
+    background: rgba(99, 102, 241, 0.12);
     color: var(--accent-indigo);
-    font-weight: 600;
+    font-weight: 700;
+    border: 1px solid rgba(99, 102, 241, 0.15);
 }
 
 /* Problem editor */
