@@ -14,6 +14,7 @@ const ExamEngine = () => {
     const [searchParams] = useSearchParams();
     const typeQuery = searchParams.get('type');
     const idQuery = searchParams.get('id');
+    const contestIdQuery = searchParams.get('contestId');
     const searchTerm = searchParams.get('search') || '';
 
     const [availableExams, setAvailableExams] = useState([]);
@@ -119,6 +120,33 @@ const ExamEngine = () => {
             return;
         }
 
+        const fetchContest = async () => {
+            try {
+                const res = await axios.get(getApiUrl(`/api/contests/${contestIdQuery}`), {
+                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                });
+                const contestData = res.data;
+                const contestExamObj = {
+                    _id: contestData._id,
+                    title: contestData.title,
+                    durationMinutes: contestData.durationMinutes || 60,
+                    questions: contestData.questions || [],
+                    isContest: true
+                };
+                startExam(contestExamObj);
+            } catch (err) {
+                console.error("Error fetching contest:", err);
+                alert("Failed to load contest data.");
+            } finally {
+                setLoadingExams(false);
+            }
+        };
+
+        if (contestIdQuery) {
+            fetchContest();
+            return;
+        }
+
         const fetchExams = async () => {
             try {
                 const res = await axios.get(getApiUrl('/api/users/exams'), {
@@ -132,7 +160,7 @@ const ExamEngine = () => {
             }
         };
         fetchExams();
-    }, [typeQuery, idQuery]);
+    }, [typeQuery, idQuery, contestIdQuery]);
 
     const startExam = (examObj) => {
         setActiveExam(examObj);
@@ -256,17 +284,38 @@ const ExamEngine = () => {
         const token = localStorage.getItem('token');
         if (token) {
             try {
-                const response = await axios.post(getApiUrl('/api/users/submit-exam'), {
-                    examName: activeExam.title,
-                    answers: answers
-                }, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                let response;
+                if (activeExam.isContest) {
+                    // Transform answers for contest participant object
+                    const formattedAnswers = Object.keys(answers).map(key => ({
+                        questionIndex: parseInt(key),
+                        userAnswer: answers[key]
+                    }));
+                    response = await axios.post(getApiUrl(`/api/contests/${activeExam._id}/participate`), {
+                        answers: formattedAnswers
+                    }, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                } else {
+                    response = await axios.post(getApiUrl('/api/users/submit-exam'), {
+                        examName: activeExam.title,
+                        answers: answers
+                    }, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                }
 
-                const finalResult = response.data.result;
+                const finalResult = response.data.result || {
+                    score: response.data.score,
+                    totalMarks: (activeExam.questions?.length || 0) * 10,
+                    passed: response.data.score >= ((activeExam.questions?.length || 0) * 10 * 0.4), // Default 40% pass
+                    mcqScore: response.data.score,
+                    codingScore: 0,
+                    detailedAnalysis: { mcqResults: [] }
+                };
                 setResult(finalResult);
             } catch (e) {
-                console.error("Failed to submit exam score to profile", e);
+                console.error("Failed to submit exam/contest", e);
                 alert("Evaluation failed. Please check connection.");
             }
         }
@@ -438,10 +487,12 @@ const ExamEngine = () => {
                         color: '#fff',
                         letterSpacing: '-1.5px'
                     }}>
-                        Certification Exams
+                        {contestIdQuery ? 'Arena Competition' : 'Certification Exams'}
                     </h1>
                     <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.4)', maxWidth: '600px', lineHeight: 1.6 }}>
-                        Test your domain expertise with AI-curated mock assessments and track your progress.
+                        {contestIdQuery 
+                            ? "Entering the high-stakes arena. Synchronizing with global combatants..."
+                            : "Test your domain expertise with AI-curated mock assessments and track your progress."}
                     </p>
                 </div>
 
@@ -774,7 +825,7 @@ const ExamEngine = () => {
                                         </div>
                                     </div>
                                     <div style={{ display: 'flex', gap: '15px', color: 'rgba(255,255,255,0.4)' }}>
-                                        <RotateCcw size={14} style={{ cursor: 'pointer' }} onClick={() => handleAnswerChange(q?.starterCode || '')} />
+                                        <RotateCcw size={14} style={{ cursor: 'pointer' }} onClick={() => handleAnswerChange(q?.starterCode || q?.starterCodes?.javascript || '')} />
                                         <Settings size={14} style={{ cursor: 'pointer' }} />
                                     </div>
                                 </div>
@@ -837,7 +888,7 @@ const ExamEngine = () => {
                                             height="400px"
                                             language="javascript"
                                             theme="vs-dark"
-                                            value={answers[currentQuestion] !== undefined ? answers[currentQuestion] : (q?.starterCode || '// Start typing your solution here...\n')}
+                                            value={answers[currentQuestion] !== undefined ? answers[currentQuestion] : (q?.starterCode || q?.starterCodes?.javascript || '// Start typing your solution here...\n')}
                                             onChange={handleAnswerChange}
                                             onMount={(editor, monaco) => {
                                                 console.log("Monaco Mounted");
