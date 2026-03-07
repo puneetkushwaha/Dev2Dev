@@ -10,7 +10,7 @@ import {
     FileText, Users, LayoutDashboard,
     Database, Shield, LogOut, Search,
     Clock, Award, RefreshCcw, Mic, CloudUpload, Timer,
-    XCircle, Save, BookOpen, Zap, HelpCircle, Globe, CheckCircle2, Cpu, Play, Bell, Trophy
+    XCircle, Save, BookOpen, Zap, HelpCircle, Globe, CheckCircle2, Cpu, Play, Bell, Trophy, Mail
 } from 'lucide-react';
 
 
