@@ -1423,10 +1423,29 @@ const AdminDashboard = () => {
         }
     };
 
+    const handleVerifyEmail = async () => {
+        try {
+            const res = await axios.get(getApiUrl('/api/admin/verify-email-config'), authConfig());
+            alert(res.data.message);
+        } catch (err) {
+            alert("Email config verification failed: " + (err.response?.data?.message || err.message));
+        }
+    };
+
     // ── Renders ──
     const renderOverview = () => (
         <div className="animate-fade-in content-view">
-            <h2 className="view-title">Platform Overview</h2>
+            <div className="section-header">
+                <h2><Activity /> Platform Stats</h2>
+                <div className="header-actions">
+                    <button onClick={handleVerifyEmail} className="btn-secondary">
+                        <ShieldAlert size={16} /> Verify Email Config
+                    </button>
+                    <button onClick={fetchAllData} className="btn-secondary">
+                        <Activity size={16} /> Refresh
+                    </button>
+                </div>
+            </div>
             <div className="stats-grid">
                 {[
                     { label: 'Total Users', val: stats.users, cls: 'users', Icon: Users },
