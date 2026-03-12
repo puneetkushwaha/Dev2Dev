@@ -6,7 +6,7 @@ import { Trophy, Clock, Users, Calendar, ArrowRight, Zap, Target, Star, Award, S
 const Contest = () => {
     const [contests, setContests] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('global');
+    const [activeTab, setActiveTab] = useState('company');
     const [searchTerm, setSearchTerm] = useState('');
 
     const getApiUrl = (path) => {
@@ -130,11 +130,11 @@ const Contest = () => {
             <main className="premium-content">
                 <section className="controls-box">
                     <div className="nav-tabs">
-                        <button className={`tab-btn ${activeTab === 'global' ? 'active' : ''}`} onClick={() => setActiveTab('global')}>
-                            Global Tracks
-                        </button>
                         <button className={`tab-btn ${activeTab === 'company' ? 'active' : ''}`} onClick={() => setActiveTab('company')}>
                             Company Prep
+                        </button>
+                        <button className={`tab-btn ${activeTab === 'global' ? 'active' : ''}`} onClick={() => setActiveTab('global')}>
+                            Global Tracks
                         </button>
                     </div>
                     <div className="search-wrapper">
@@ -149,7 +149,20 @@ const Contest = () => {
                 </section>
 
                 <div className="grid-section">
-                    {activeTab === 'global' ? (
+                    {activeTab === 'company' ? (
+                        <div className="track-group">
+                            <div className="track-head">
+                                <Shield size={20} color="#6366f1" />
+                                <h2>Corporate Simulations</h2>
+                            </div>
+                            <div className="card-grid">
+                                {companyContests.length > 0 ? 
+                                    companyContests.map(c => renderContestCard(c)) : 
+                                    <div className="empty-state">No company-specific tracks found.</div>
+                                }
+                            </div>
+                        </div>
+                    ) : (
                         <>
                             <div className="track-group">
                                 <div className="track-head">
@@ -173,19 +186,6 @@ const Contest = () => {
                                 </div>
                             </div>
                         </>
-                    ) : (
-                        <div className="track-group">
-                            <div className="track-head">
-                                <Shield size={20} color="#6366f1" />
-                                <h2>Corporate Simulations</h2>
-                            </div>
-                            <div className="card-grid">
-                                {companyContests.length > 0 ? 
-                                    companyContests.map(c => renderContestCard(c)) : 
-                                    <div className="empty-state">No company-specific tracks found.</div>
-                                }
-                            </div>
-                        </div>
                     )}
                 </div>
 

@@ -459,7 +459,7 @@ const ContestEditorModal = ({ contest, onSave, onClose, onAIUpload, structuring 
         }} className="animate-fade-in">
             <div style={{
                 background: '#0F172A', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)',
-                width: '100%', maxWidth: '900px', display: 'flex', flexDirection: 'column'
+                width: '100%', maxWidth: '900px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden'
             }}>
                 <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h2 style={{ margin: 0, fontSize: '1.25rem' }}>{data._id ? 'Edit' : 'Create'} Contest: {data.title}</h2>
@@ -575,6 +575,14 @@ const ContestEditorModal = ({ contest, onSave, onClose, onAIUpload, structuring 
                         </div>
                     </div>
                 </div>
+                {/* Footer Save Button for visibility */}
+                <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+                    <button className="btn-secondary" onClick={onClose} disabled={saving}>Cancel</button>
+                    <button className="btn-primary" onClick={handleSave} disabled={saving}>
+                        {saving ? <Loader2 size={14} className="spin" /> : <Save size={14} />} 
+                        {saving ? 'Saving...' : 'Save Contest'}
+                    </button>
+                </div>
             </div>
         </div>
     );
@@ -623,7 +631,7 @@ const ExamEditorModal = ({ exam, domains, onSave, onClose }) => {
         }} className="animate-fade-in">
             <div style={{
                 background: '#0F172A', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)',
-                width: '100%', maxWidth: '900px', display: 'flex', flexDirection: 'column'
+                width: '100%', maxWidth: '900px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden'
             }}>
                 <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Edit Exam: {data.title}</h2>
