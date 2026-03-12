@@ -99,15 +99,22 @@ const ResumeAnalyzer = () => {
                 <div className="card glass-panel analysis-results-card">
                     <div className="analysis-header">
                         <div className="analysis-header-left">
-                            <FileText size={32} color="var(--accent-primary)" />
+                            <FileText size={48} color="var(--accent-primary)" />
                             <div>
-                                <h3 style={{ margin: 0 }}>{file?.name}</h3>
-                                <span className="text-muted">Analysis Complete</span>
+                                <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>{file?.name}</h2>
+                                <span className="text-muted" style={{ fontWeight: 600, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '1px' }}>Analysis Complete</span>
                             </div>
                         </div>
-                        <div className="analysis-score-container">
-                            <div className="analysis-score">{result.score}/100</div>
-                            <span className="text-muted">ATS Compatibility</span>
+                        <div className="analysis-score-container" style={{ textAlign: 'right' }}>
+                            <div className="analysis-score" style={{ 
+                                fontSize: '3rem', 
+                                fontWeight: 900, 
+                                color: result.score >= 80 ? '#10b981' : result.score >= 60 ? '#f59e0b' : '#ef4444',
+                                lineHeight: 1
+                            }}>
+                                {result.score}<span style={{ fontSize: '1rem', opacity: 0.5 }}>/100</span>
+                            </div>
+                            <span style={{ fontWeight: 700, fontSize: '0.8rem', opacity: 0.7 }}>ATS Compatibility</span>
                         </div>
                     </div>
 
