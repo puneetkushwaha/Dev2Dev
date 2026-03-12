@@ -121,6 +121,23 @@ const About = () => {
                         </p>
                     </div>
                 </div>
+
+                <div className="architect-section" style={{ marginTop: '6rem', textAlign: 'center' }}>
+                    <div className="hero-badge" style={{ margin: '0 auto 1.5rem' }}>The Architect</div>
+                    <h2 style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>Designed & Built by <span className="text-gradient">Puneet Kushwaha</span></h2>
+                    <p className="hero-desc" style={{ maxWidth: '700px', margin: '0 auto 2rem' }}>
+                        Puneet is a Full Stack Engineer and Technical Architect dedicated to building tools that empower the next generation of developers. 
+                        Dev2Dev is a culmination of his passion for high-performance systems and impact-driven educational tech.
+                    </p>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem' }}>
+                        <a href="https://www.linkedin.com/in/puneettkushwaha/" target="_blank" rel="noopener noreferrer" className="btn-auth-nav" style={{ padding: '0.8rem 2rem', fontSize: '0.9rem' }}>
+                            View Profiles
+                        </a>
+                        <a href="https://pportfolio-rho.vercel.app/" target="_blank" rel="noopener noreferrer" className="btn-secondary" style={{ padding: '0.8rem 2rem', fontSize: '0.9rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', textDecoration: 'none', borderRadius: '12px' }}>
+                            Visit Portfolio
+                        </a>
+                    </div>
+                </div>
             </section>
         </div>
     );

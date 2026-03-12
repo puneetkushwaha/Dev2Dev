@@ -50,7 +50,12 @@ const Footer = () => {
             </div>
 
             <div className="footer-bottom">
-                <p>© 2026 Dev2Dev Engine. Precision-engineered for Pioneers.</p>
+                <div>
+                    <p>© 2026 Dev2Dev Engine. Precision-engineered for Pioneers.</p>
+                    <p className="footer-credits">
+                        Designed & Developed by <a href="https://pportfolio-rho.vercel.app/" target="_blank" rel="noopener noreferrer">Puneet Kushwaha</a>
+                    </p>
+                </div>
                 <div className="footer-socials">
                     <a href="https://www.linkedin.com/in/puneettkushwaha/" target="_blank" rel="noopener noreferrer" className="footer-social-link" title="LinkedIn">
                         <Linkedin size={18} />

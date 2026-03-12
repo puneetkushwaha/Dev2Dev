@@ -102,6 +102,22 @@
     font-size: 0.75rem;
 }
 
+.footer-credits {
+    margin-top: 0.5rem;
+}
+
+.footer-credits a {
+    color: rgba(168, 85, 247, 0.6);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.footer-credits a:hover {
+    color: #a855f7;
+    text-shadow: 0 0 8px rgba(168, 85, 247, 0.4);
+}
+
 .footer-socials {
     display: flex;
     gap: 1.5rem;
