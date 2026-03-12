@@ -110,7 +110,7 @@ const AdminFeedback = () => {
                                     <td>
                                         {f.screenshotPath ? (
                                             <a 
-                                                href={`${getApiUrl('').replace(/\/api$/, '')}${f.screenshotPath}`} 
+                                                href={`${getApiUrl('').replace(/\/$/, '')}${f.screenshotPath}`} 
                                                 target="_blank" 
                                                 rel="noopener noreferrer"
                                                 className="btn-sm highlight"
