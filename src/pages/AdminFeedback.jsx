@@ -78,6 +78,7 @@ const AdminFeedback = () => {
                 <table className="pro-table">
                     <thead>
                         <tr>
+                            <th>Ref No.</th>
                             <th>User</th>
                             <th>Description</th>
                             <th>Screenshot</th>
@@ -90,6 +91,11 @@ const AdminFeedback = () => {
                         {feedback.length > 0 ? (
                             feedback.map((f) => (
                                 <tr key={f._id}>
+                                    <td>
+                                        <code style={{ background: 'rgba(255,255,255,0.05)', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                            {f.refNumber}
+                                        </code>
+                                    </td>
                                     <td>
                                         <div style={{ display: 'flex', flexDirection: 'column' }}>
                                             <strong style={{ color: '#fff' }}>{f.user?.name || 'Deleted User'}</strong>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { MessageSquare, X, Send, Image as ImageIcon, CheckCircle2, Loader2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { MessageSquare, X, Send, Image as ImageIcon, CheckCircle2, Loader2, Search } from 'lucide-react';
 import { getApiUrl } from '../api/config';
 import './FeedbackButton.css';
 
@@ -10,6 +11,7 @@ const FeedbackButton = () => {
     const [screenshot, setScreenshot] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [refNumber, setRefNumber] = useState('');
     const [error, setError] = useState('');
 
     const handleSubmit = async (e) => {
@@ -30,20 +32,17 @@ const FeedbackButton = () => {
 
         try {
             const token = localStorage.getItem('token');
-            await axios.post(getApiUrl('/api/feedback'), formData, {
+            const res = await axios.post(getApiUrl('/api/feedback'), formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     Authorization: `Bearer ${token}`
                 }
             });
 
+            setRefNumber(res.data.refNumber);
             setIsSuccess(true);
-            setTimeout(() => {
-                setIsOpen(false);
-                setIsSuccess(false);
-                setDescription('');
-                setScreenshot(null);
-            }, 3000);
+            
+            // Don't auto-close immediately so user can see/copy the ref number
         } catch (err) {
             console.error('Feedback submission error:', err);
             setError(err.response?.data?.message || 'Failed to submit feedback. Please try again.');
@@ -84,20 +83,71 @@ const FeedbackButton = () => {
                 <div className="feedback-modal-overlay" onClick={() => !isSubmitting && setIsOpen(false)}>
                     <div className="feedback-modal-content" onClick={(e) => e.stopPropagation()}>
                         {isSuccess ? (
-                            <div style={{ textAlign: 'center', padding: '2rem' }}>
-                                <CheckCircle2 size={64} color="#4ade80" style={{ marginBottom: '1rem' }} />
-                                <h3 style={{ color: 'white', marginBottom: '0.5rem' }}>Thank You!</h3>
-                                <p style={{ color: 'rgba(255,255,255,0.7)' }}>
-                                    Your feedback has been submitted successfully. Our team will look into it.
+                            <div style={{ textAlign: 'center', padding: '1rem' }}>
+                                <CheckCircle2 size={56} color="#4ade80" style={{ marginBottom: '1rem' }} />
+                                <h3 style={{ color: 'white', marginBottom: '0.5rem' }}>Successfully Submitted!</h3>
+                                <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}>
+                                    Your feedback has been received. Note your reference number:
                                 </p>
+                                <div style={{ 
+                                    background: 'rgba(99, 102, 241, 0.1)', 
+                                    padding: '0.75rem', 
+                                    borderRadius: '8px', 
+                                    margin: '1rem 0',
+                                    border: '1px solid rgba(99, 102, 241, 0.2)',
+                                    color: '#fff',
+                                    fontWeight: 'bold',
+                                    fontSize: '1.2rem',
+                                    letterSpacing: '1px'
+                                }}>
+                                    {refNumber}
+                                </div>
+                                <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', marginBottom: '1.5rem' }}>
+                                    We've also sent this to your email.
+                                </p>
+                                <div style={{ display: 'flex', gap: '10px' }}>
+                                    <button 
+                                        className="btn-secondary" 
+                                        style={{ flex: 1 }}
+                                        onClick={() => {
+                                            setIsSuccess(false);
+                                            setIsOpen(false);
+                                            setDescription('');
+                                            setScreenshot(null);
+                                        }}
+                                    >
+                                        Close
+                                    </button>
+                                    <Link 
+                                        to="/track-feedback" 
+                                        className="btn-primary" 
+                                        style={{ flex: 1, textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                        onClick={() => setIsOpen(false)}
+                                    >
+                                        Track Status
+                                    </Link>
+                                </div>
                             </div>
                         ) : (
                             <>
                                 <div className="feedback-modal-header">
-                                    <h3>Send Feedback</h3>
-                                    <button className="close-modal-btn" onClick={() => setIsOpen(false)}>
-                                        <X size={24} />
-                                    </button>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <MessageSquare size={20} color="#6366f1" />
+                                        <h3>Send Feedback</h3>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <Link 
+                                            to="/track-feedback" 
+                                            className="btn-sm" 
+                                            style={{ display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'none', color: '#818cf8' }}
+                                            onClick={() => setIsOpen(false)}
+                                        >
+                                            <Search size={14} /> Track
+                                        </Link>
+                                        <button className="close-modal-btn" onClick={() => setIsOpen(false)}>
+                                            <X size={24} />
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <form onSubmit={handleSubmit}>

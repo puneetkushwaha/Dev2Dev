@@ -36,6 +36,7 @@ import ResetPassword from './pages/ResetPassword';
 import Notifications from './pages/Notifications';
 import Leaderboard from './pages/Leaderboard';
 import Contest from './pages/Contest';
+import FeedbackTracking from './pages/FeedbackTracking';
 import { HelmetProvider } from 'react-helmet-async';
 import ScrollToTop from './components/ScrollToTop';
 import Footer from './components/Footer';
@@ -57,6 +58,7 @@ function App() {
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/track-feedback" element={<FeedbackTracking />} />
 
           {/* Protected Routes inside AuthLayout */}
           <Route element={<AuthLayout />}>
