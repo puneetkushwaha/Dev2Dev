@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import Loader from '../components/Loader';
+import AdminFeedback from './AdminFeedback';
 import { getApiUrl } from '../api/config';
 import CoreCSManager from './CoreCSManager';
 import './AdminDashboard.css';
@@ -1927,6 +1928,7 @@ const AdminDashboard = () => {
                             { id: 'notifications', label: 'Notifications', Icon: Bell },
                             { id: 'results', label: 'Exam Results', Icon: CheckCircle2 },
                             { id: 'interviews', label: 'Interviews', Icon: Mic },
+                            { id: 'feedback', label: 'User Feedback', Icon: MessageSquare },
                         ].map(({ id, label, Icon }) => (
                             <button key={id} className={activeTab === id ? 'active' : ''} onClick={() => { setActiveTab(id); setUniversalEditor(null); }}>
                                 <Icon size={17} /> {label}
@@ -1979,6 +1981,7 @@ const AdminDashboard = () => {
                         { id: 'notifications', label: 'Notifications', Icon: Bell },
                         { id: 'results', label: 'Exam Results', Icon: CheckCircle2 },
                         { id: 'interviews', label: 'Interviews', Icon: Mic },
+                        { id: 'feedback', label: 'User Feedback', Icon: MessageSquare },
                     ].map(({ id, label, Icon }) => (
                         <button key={id} className={activeTab === id ? 'active' : ''} onClick={() => setActiveTab(id)}>
                             <Icon size={17} /> {label}
@@ -2006,6 +2009,7 @@ const AdminDashboard = () => {
                         {activeTab === 'notifications' && renderNotificationsView()}
                         {activeTab === 'results' && renderExamResultsView()}
                         {activeTab === 'interviews' && renderInterviewsView()}
+                        {activeTab === 'feedback' && <AdminFeedback />}
                         {activeTab === 'corecs' && (
                             <div style={{ height: 'calc(100vh - 90px)', display: 'flex', flexDirection: 'column' }}>
                                 <CoreCSManager

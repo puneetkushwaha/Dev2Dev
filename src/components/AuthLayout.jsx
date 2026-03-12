@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
+import FeedbackButton from './FeedbackButton';
 
 const AuthLayout = () => {
     // Simple auth check. If token exists, user is logged in.
@@ -17,6 +18,7 @@ const AuthLayout = () => {
             <main style={{ flex: 1 }}>
                 <Outlet />
             </main>
+            <FeedbackButton />
         </div>
     );
 };
