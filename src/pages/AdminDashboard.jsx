@@ -1187,7 +1187,7 @@ const AddUserModal = ({ user, onChange, onSave, onClose, saving }) => {
     );
 };
 const AdminDashboard = () => {
-    const [stats, setStats] = useState({ users: 0, domains: 0, topics: 0, exams: 0 });
+    const [stats, setStats] = useState({ users: 0, domains: 0, topics: 0, exams: 0, todayVisits: 0, todayUniqueVisits: 0 });
     const [domains, setDomains] = useState([]);
     const [topics, setTopics] = useState([]);
     const [users, setUsers] = useState([]);
@@ -1470,9 +1470,9 @@ const AdminDashboard = () => {
             <div className="stats-grid">
                 {[
                     { label: 'Total Users', val: stats.users, cls: 'users', Icon: Users },
-                    { label: 'Domains', val: stats.domains, cls: 'domains', Icon: Database },
+                    { label: 'Today\'s Visits', val: stats.todayVisits || 0, cls: 'domains', Icon: Globe },
+                    { label: 'Unique Today', val: stats.todayUniqueVisits || 0, cls: 'exams', Icon: Activity },
                     { label: 'Lessons', val: stats.topics, cls: 'topics', Icon: FileText },
-                    { label: 'Exams Live', val: stats.exams, cls: 'exams', Icon: Award },
                     { label: 'Tutorials', val: tutorials.length, cls: 'tutorials', Icon: Play },
                 ].map(({ label, val, cls, Icon }) => (
                     <div key={cls} className="stat-card">
