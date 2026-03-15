@@ -1470,8 +1470,8 @@ const AdminDashboard = () => {
             <div className="stats-grid">
                 {[
                     { label: 'Total Users', val: stats.users, cls: 'users', Icon: Users },
-                    { label: 'Today\'s Visits', val: stats.todayVisits || 0, cls: 'domains', Icon: Globe },
-                    { label: 'Unique Today', val: stats.todayUniqueVisits || 0, cls: 'exams', Icon: Activity },
+                    { label: 'Total Traffic', val: stats.todayVisits || 0, cls: 'domains', Icon: Globe },
+                    { label: 'Real Visitors', val: stats.todayUniqueVisits || 0, cls: 'exams', Icon: Activity },
                     { label: 'Lessons', val: stats.topics, cls: 'topics', Icon: FileText },
                     { label: 'Tutorials', val: tutorials.length, cls: 'tutorials', Icon: Play },
                 ].map(({ label, val, cls, Icon }) => (
