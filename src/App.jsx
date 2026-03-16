@@ -13,6 +13,7 @@ import DomainSelection from './pages/DomainSelection';
 import DomainOverview from './pages/DomainOverview';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminFeedback from './pages/AdminFeedback';
+import AdminProtectedRoute from './components/AdminProtectedRoute';
 import Dashboard from './pages/Dashboard';
 import Problems from './pages/Problems';
 import ProblemView from './pages/ProblemView';
@@ -75,8 +76,10 @@ function App() {
             <Route path="/interview-prep" element={<InterviewPrep />} />
             <Route path="/mock-assessment" element={<MockAssessment />} />
             <Route path="/mock-report" element={<MockReport />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/feedback" element={<AdminFeedback />} />
+            <Route element={<AdminProtectedRoute />}>
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/feedback" element={<AdminFeedback />} />
+            </Route>
             <Route path="/oops" element={<OopsGuide />} />
             <Route path="/os-tutorial" element={<OSTutorial />} />
             <Route path="/dbms-tutorial" element={<DBMSTutorial />} />
